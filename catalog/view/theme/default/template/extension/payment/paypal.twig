@@ -162,7 +162,7 @@
 }
 
 #paypal_button_submit {
-	width: 16em;	
+	width: 100%;	
 	padding: 1em 1em;
 	color: #fff;
 	background: #282c37;
@@ -172,10 +172,9 @@
 	-webkit-box-shadow: none;
 	border: 0;
 	z-index: 0;
-	opacity: 0;
+	opacity: 0.1;
 	outline: 0;
 	-webkit-appearance: none;
-	cursor: pointer;
 }
 
 #paypal_button_submit:hover {
@@ -189,6 +188,7 @@
 
 #paypal_button_submit.show-button {
 	opacity: 1;
+	cursor: pointer;
 }
 {% endif %}
 
@@ -511,40 +511,42 @@ function setupPayPal() {
 				});
 			
 				paypal_button_submit.addEventListener('click', function (event) {
-					console.log('CCF Event "click", state=' + hostedFieldsInstance.getState() + ',event=' + event);
-
 					event.preventDefault();
 					
-					showPayPalAlert({wait: true});
+					if ($('#paypal_button_submit').hasClass('show-button')) {
+						console.log('CCF Event "click", state=' + hostedFieldsInstance.getState() + ',event=' + event);
+
+						showPayPalAlert({wait: true});
 					
-					hostedFieldsInstance.submit({
-						// Need to specify when triggering 3D Secure authentication
-						{% if secure_status %}
-                        contingencies: ['3D_SECURE']
-						{% endif %}
+						hostedFieldsInstance.submit({
+							// Need to specify when triggering 3D Secure authentication
+							{% if secure_status %}
+							contingencies: ['3D_SECURE']
+							{% endif %}
 						
-                    }).then(function (payload) {
-						console.log(payload);
-						console.log('PayPal CCF submitted:', payload);
+						}).then(function (payload) {
+							console.log(payload);
+							console.log('PayPal CCF submitted:', payload);
 						
-						$.ajax({
-							method: 'post',
-							url: 'index.php?route=extension/payment/paypal/approveOrder',
-							data: {'payload': JSON.stringify(payload)},
-							dataType: 'json',
-							async: false,
-							success: function(json) {					
-								showPayPalAlert(json);
+							$.ajax({
+								method: 'post',
+								url: 'index.php?route=extension/payment/paypal/approveOrder',
+								data: {'payload': JSON.stringify(payload)},
+								dataType: 'json',
+								async: false,
+								success: function(json) {					
+									showPayPalAlert(json);
 								
-								if (json['success']) {
-									location = json['success'];
+									if (json['success']) {
+										location = json['success'];
+									}
+								},
+								error: function(xhr, ajaxOptions, thrownError) {
+									console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
 								}
-							},
-							error: function(xhr, ajaxOptions, thrownError) {
-								console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-							}
+							});
 						});
-					});
+					}
 				}, false);
 			});
 		} else {

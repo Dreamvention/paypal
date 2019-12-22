@@ -40,14 +40,8 @@ class PayPal {
 			
 			return $this->access_token;
 		} else {
-			if (isset($result['message'])) {
-				$this->errors[] = $result['message'];
-			}
-			
-			if (isset($result['error_description'])) {
-				$this->errors[] = $result['error_description'];
-			}
-			
+			$this->addError($result);
+						
 			return false;
 		}
 	}
@@ -66,13 +60,7 @@ class PayPal {
 		if (isset($result['client_token']) && $result['client_token']) {
 			return $result['client_token'];
 		} else {
-			if (isset($result['message'])) {
-				$this->errors[] = $result['message'];
-			}
-			
-			if (isset($result['error_description'])) {
-				$this->errors[] = $result['error_description'];
-			}
+			$this->addError($result);
 			
 			return false;
 		}
@@ -88,13 +76,7 @@ class PayPal {
 		if (isset($result['client_id']) && $result['client_id']) {
 			return $result;
 		} else {
-			if (isset($result['message'])) {
-				$this->errors[] = $result['message'];
-			}
-			
-			if (isset($result['error_description'])) {
-				$this->errors[] = $result['error_description'];
-			}
+			$this->addError($result);
 			
 			return false;
 		}
@@ -111,13 +93,7 @@ class PayPal {
 		if (isset($result['payer_id']) && $result['payer_id']) {
 			return $result;
 		} else {
-			if (isset($result['message'])) {
-				$this->errors[] = $result['message'];
-			}
-			
-			if (isset($result['error_description'])) {
-				$this->errors[] = $result['error_description'];
-			}
+			$this->addError($result);
 			
 			return false;
 		}
@@ -133,13 +109,58 @@ class PayPal {
 		if (isset($result['owner_info']) && $result['owner_info']) {
 			return $result;
 		} else {
-			if (isset($result['message'])) {
-				$this->errors[] = $result['message'];
-			}
+			$this->addError($result);
 			
-			if (isset($result['error_description'])) {
-				$this->errors[] = $result['error_description'];
-			}
+			return false;
+		}
+	}
+	
+	//IN:  webhook info
+	public function createWebhook($webhook_info) {
+		$command = '/v1/notifications/webhooks';
+		
+		$params = $webhook_info;
+				
+		$result = $this->execute('POST', $command, $params, true);
+		
+		if (isset($result['id']) && $result['id']) {
+			return $result;
+		} else {
+			$this->addError($result);
+			
+			return false;
+		}
+	}
+	
+	//IN:  webhook id
+	//OUT: webhook info, if no return - check errors
+	public function updateWebhook($webhook_id, $webhook_info) {
+		$command = '/v1/notifications/webhooks/' . $webhook_id;
+		
+		$params = $webhook_info;
+				
+		$result = $this->execute('PATCH', $command, $params, true);
+		
+		if (isset($result['id']) && $result['id']) {
+			return $result;
+		} else {
+			$this->addError($result);
+			
+			return false;
+		}
+	}
+	
+	//IN:  webhook id
+	//OUT: webhook info, if no return - check errors
+	public function getWebhook($webhook_id) {
+		$command = '/v1/notifications/webhooks/' . $webhook_id;
+				
+		$result = $this->execute('GET', $command);
+		
+		if (isset($result['id']) && $result['id']) {
+			return $result;
+		} else {
+			$this->addError($result);
 			
 			return false;
 		}
@@ -156,13 +177,7 @@ class PayPal {
 		if (isset($result['id']) && $result['id']) {
 			return $result;
 		} else {
-			if (isset($result['message'])) {
-				$this->errors[] = $result['message'];
-			}
-			
-			if (isset($result['error_description'])) {
-				$this->errors[] = $result['error_description'];
-			}
+			$this->addError($result);
 			
 			return false;
 		}
@@ -180,13 +195,7 @@ class PayPal {
 		if (isset($result['id']) && $result['id']) {
 			return $result;
 		} else {
-			if (isset($result['message'])) {
-				$this->errors[] = $result['message'];
-			}
-			
-			if (isset($result['error_description'])) {
-				$this->errors[] = $result['error_description'];
-			}
+			$this->addError($result);
 			
 			return false;
 		}
@@ -202,13 +211,7 @@ class PayPal {
 		if (isset($result['id']) && $result['id']) {
 			return $result;
 		} else {
-			if (isset($result['message'])) {
-				$this->errors[] = $result['message'];
-			}
-			
-			if (isset($result['error_description'])) {
-				$this->errors[] = $result['error_description'];
-			}
+			$this->addError($result);
 			
 			return false;
 		}
@@ -223,13 +226,7 @@ class PayPal {
 		if (isset($result['id']) && $result['id']) {
 			return $result;
 		} else {
-			if (isset($result['message'])) {
-				$this->errors[] = $result['message'];
-			}
-			
-			if (isset($result['error_description'])) {
-				$this->errors[] = $result['error_description'];
-			}
+			$this->addError($result);
 			
 			return false;
 		}
@@ -244,16 +241,27 @@ class PayPal {
 		if (isset($result['id']) && $result['id']) {
 			return $result;
 		} else {
-			if (isset($result['message'])) {
-				$this->errors[] = $result['message'];
-			}
-			
-			if (isset($result['error_description'])) {
-				$this->errors[] = $result['error_description'];
-			}
+			$this->addError($result);
 			
 			return false;
 		}
+	}
+	
+	//IN: error_info
+	public function addError($error_info) {
+		$error['title'] = '';
+		
+		if (isset($error_info['message'])) {
+			$error['title'] = $error_info['message'];
+		}
+			
+		if (isset($error_info['error_description'])) {
+			$error['title'] = $error_info['error_description'];
+		}
+		
+		$error['data'] = $error_info;
+			
+		$this->errors[] = $error;
 	}
 			
 	//OUT: number of errors
@@ -288,6 +296,7 @@ class PayPal {
 			$curl_options[CURLOPT_HTTPHEADER][] = 'Accept: application/json';
 			$curl_options[CURLOPT_HTTPHEADER][] = 'Accept-Language: en_US';
 			$curl_options[CURLOPT_HTTPHEADER][] = 'Content-Type: application/json';
+			$curl_options[CURLOPT_HTTPHEADER][] = 'PayPal-Request-Id: ' . token(50);
 												
 			if ($this->access_token) {
 				$curl_options[CURLOPT_HTTPHEADER][] = 'Authorization: Bearer ' . $this->access_token;

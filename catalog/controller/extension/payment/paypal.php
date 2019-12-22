@@ -5,6 +5,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 	public function index() {
 		$this->load->language('extension/payment/paypal');
 		
+		$this->load->model('extension/payment/paypal');
 		$this->load->model('localisation/country');
 				
 		$country = $this->model_localisation_country->getCountry($this->config->get('config_country_id'));
@@ -42,39 +43,57 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['secure_status'] = $setting['checkout']['card']['secure_status'];
 				
 		$data['order_id'] = $this->session->data['order_id'];
-
-		$token_info = array(
-			'grant_type' => 'client_credentials'
-		);	
 										
 		require_once DIR_SYSTEM .'library/paypal/paypal.php';
 		
 		$paypal = new PayPal($data['client_id'], $data['secret'], $data['environment']);
+		
+		$token_info = array(
+			'grant_type' => 'client_credentials'
+		);	
 				
 		$paypal->setAccessToken($token_info);
 		
 		$data['client_token'] = $paypal->getClientToken();
 						
 		if ($paypal->hasErrors()) {
-			$this->error['warning'] = implode(' ', $paypal->getErrors());
-		}				
+			$error_title = array();
+				
+			$errors = $paypal->getErrors();
+								
+			foreach ($errors as $error) {
+				$error_title[] = $error['title'];
+					
+				$this->model_extension_payment_paypal->log($error['data'], $error['title']);
+			}
+				
+			$this->error['warning'] = implode(' ', $error_title);
+		}			
 
 		return $this->load->view('extension/payment/paypal', $data);
 	}
 		
 	public function createOrder() {					
+		$this->load->model('extension/payment/paypal');
 		$this->load->model('checkout/order');
-		
+				
 		$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
 		
-		$total_price = $this->currency->format($order_info['total'], $order_info['currency_code'], $order_info['currency_value'], false);
-		$currency_code = $order_info['currency_code'];
-
 		$client_id = $this->config->get('payment_paypal_client_id');
 		$secret = $this->config->get('payment_paypal_secret');
 		$merchant_id = $this->config->get('payment_paypal_merchant_id');
 		$environment = $this->config->get('payment_paypal_environment');
 		$transaction_method = $this->config->get('payment_paypal_transaction_method');	
+		
+		require_once DIR_SYSTEM . 'library/paypal/paypal.php';
+		
+		$paypal = new PayPal($client_id, $secret, $environment);
+		
+		$token_info = array(
+			'grant_type' => 'client_credentials'
+		);	
+		
+		$paypal->setAccessToken($token_info);
 		
 		$shipping_info = array();
 
@@ -96,32 +115,91 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					$shipping_info['address']['country_code'] = $country_info['iso_code_2'];
 				}
 			}
-		}
 			
-		$token_info = array(
-			'grant_type' => 'client_credentials'
-		);	
+			$shipping_preference = 'GET_FROM_FILE';
+		} else {
+			$shipping_preference = 'NO_SHIPPING';
+		}
+		
+		$item_info = array();
 				
+		foreach ($this->cart->getProducts() as $product) {
+			$item_info[] = array(
+				'name' => $product['name'],
+				'sku' => $product['model'],
+				'url' => $this->url->link('product/product', 'product_id=' . $product['product_id']),
+				'quantity' => $product['quantity'],
+				'unit_amount' => array(
+					'currency_code' => $order_info['currency_code'],
+					'value' => $this->currency->format($product['price'], $order_info['currency_code'], $order_info['currency_value'], false)
+				)
+			);
+		}
+				
+		$sub_total = $this->cart->getSubTotal();
+		$total = $this->cart->getTotal();
+		$tax_total = $total - $sub_total;
+						
+		$discount_total = 0;
+		$handling_total = 0;
+		$shipping_total = 0;
+		
+		if (isset($this->session->data['shipping_method'])) {
+			$shipping_total = $this->tax->calculate($this->session->data['shipping_method']['cost'], $this->session->data['shipping_method']['tax_class_id'], $this->config->get('config_tax'));
+		}
+		
+		$rebate = $sub_total + $tax_total + $shipping_total - $order_info['total'];
+		
+		if ($rebate > 0) {
+			$discount_total = $rebate;
+		} elseif ($rebate < 0) {
+			$handling_total = -$rebate;
+		}
+
+		$amount_info = array(
+			'currency_code' => $order_info['currency_code'],
+			'value' => $this->currency->format($order_info['total'], $order_info['currency_code'], $order_info['currency_value'], false),
+			'breakdown' => array(
+				'item_total' => array(
+					'currency_code' => $order_info['currency_code'],
+					'value' => $this->currency->format($sub_total, $order_info['currency_code'], $order_info['currency_value'], false)
+				),
+				'tax_total' => array(
+					'currency_code' => $order_info['currency_code'],
+					'value' => $this->currency->format($tax_total, $order_info['currency_code'], $order_info['currency_value'], false)
+				),
+				'shipping' => array(
+					'currency_code' => $order_info['currency_code'],
+					'value' => $this->currency->format($shipping_total, $order_info['currency_code'], $order_info['currency_value'], false)
+				),
+				'handling' => array(
+					'currency_code' => $order_info['currency_code'],
+					'value' => $this->currency->format($handling_total, $order_info['currency_code'], $order_info['currency_value'], false)
+				),
+				'discount' => array(
+					'currency_code' => $order_info['currency_code'],
+					'value' => $this->currency->format($discount_total, $order_info['currency_code'], $order_info['currency_value'], false)
+				)
+			)
+		);
+	
 		$order_info = array(
 			'intent' => strtoupper($transaction_method),
 			'purchase_units' => array(
 				array(
 					'reference_id' => 'default',
-					'amount' => array(
-						'currency_code' => $currency_code,
-						'value' => $total_price
-					),
-					'shipping' => $shipping_info
+					'description' => 'Your order ' . $order_info['order_id'],
+					'invoice_id' => $order_info['order_id'],
+					'shipping' => $shipping_info,
+					'items' => $item_info,
+					'amount' => $amount_info
 				)
+			),
+			'application_context' => array(
+				'shipping_preference' => $shipping_preference
 			)
 		);
-		$data['order_info'] = 	$order_info;	
-		require_once DIR_SYSTEM .'library/paypal/paypal.php';
-		
-		$paypal = new PayPal($client_id, $secret, $environment);
-				
-		$paypal->setAccessToken($token_info);
-		
+
 		$result = $paypal->createOrder($order_info);
 			
 		$data['order_id'] = '';
@@ -131,7 +209,17 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		}
 		
 		if ($paypal->hasErrors()) {
-			$this->error['warning'] = implode(' ', $paypal->getErrors());
+			$error_title = array();
+				
+			$errors = $paypal->getErrors();
+								
+			foreach ($errors as $error) {
+				$error_title[] = $error['title'];
+					
+				$this->model_extension_payment_paypal->log($error['data'], $error['title']);
+			}
+				
+			$this->error['warning'] = implode(' ', $error_title);
 		}
 				
 		$data['error'] = $this->error;
@@ -141,6 +229,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 	
 	public function approveOrder() {
 		$this->load->language('extension/payment/paypal');
+		
+		$this->load->model('extension/payment/paypal');
 		
 		if (isset($this->request->post['order_id'])) {
 			$order_id = $this->request->post['order_id'];
@@ -180,14 +270,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$environment = $this->config->get('payment_paypal_environment');
 			$transaction_method = $this->config->get('payment_paypal_transaction_method');
 			
-			$token_info = array(
-				'grant_type' => 'client_credentials'
-			);	
-						
 			require_once DIR_SYSTEM .'library/paypal/paypal.php';
 		
 			$paypal = new PayPal($client_id, $secret, $environment);
-						
+			
+			$token_info = array(
+				'grant_type' => 'client_credentials'
+			);	
+		
 			$paypal->setAccessToken($token_info);
 		
 			if ($transaction_method == 'authorize') {
@@ -197,14 +287,20 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			}
 			
 			if ($paypal->hasErrors()) {
-				$this->error['warning'] = implode(' ', $paypal->getErrors());
+				$error_title = array();
+				
+				$errors = $paypal->getErrors();
+								
+				foreach ($errors as $error) {
+					$error_title[] = $error['title'];
+					
+					$this->model_extension_payment_paypal->log($error['data'], $error['title']);
+				}
+				
+				$this->error['warning'] = implode(' ', $error_title);
 			}
 		
-			if (!$this->error) {
-				$this->load->model('checkout/order');
-
-				$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $this->config->get('payment_paypal_order_status_id'));
-			
+			if (!$this->error) {			
 				$data['success'] = $this->url->link('checkout/success');
 			}
 		}
@@ -213,5 +309,65 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($data));		
+	}
+	
+	public function webhook() {
+		$this->load->model('extension/payment/paypal');
+		
+		$webhook_data = json_decode(html_entity_decode(file_get_contents('php://input')), true);
+		
+		$this->model_extension_payment_paypal->log($webhook_data, 'Webhook');
+		
+		if (isset($webhook_data['event_type']) && isset($webhook_data['resource']['invoice_id'])) {
+			// Setting
+			$_config = new Config();
+			$_config->load('paypal');
+			
+			$config_setting = $_config->get('paypal_setting');
+		
+			$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
+			
+			$order_id = $webhook_data['resource']['invoice_id'];
+									
+			if ($webhook_data['event_type'] == 'PAYMENT.AUTHORIZATION.CREATED') {
+				$order_status_id = $setting['order_status']['pending']['id'];
+			}
+		
+			if ($webhook_data['event_type'] == 'PAYMENT.AUTHORIZATION.VOIDED') {
+				$order_status_id = $setting['order_status']['voided']['id'];
+			}
+			
+			if ($webhook_data['event_type'] == 'PAYMENT.CAPTURE.COMPLETED') {
+				$order_status_id = $setting['order_status']['completed']['id'];
+			}
+		
+			if ($webhook_data['event_type'] == 'PAYMENT.CAPTURE.DENIED') {
+				$order_status_id = $setting['order_status']['denied']['id'];
+			}
+		
+			if ($webhook_data['event_type'] == 'PAYMENT.CAPTURE.PENDING') {
+				$order_status_id = $setting['order_status']['pending']['id'];
+			}
+		
+			if ($webhook_data['event_type'] == 'PAYMENT.CAPTURE.REFUNDED') {
+				$order_status_id = $setting['order_status']['refunded']['id'];
+			}
+		
+			if ($webhook_data['event_type'] == 'PAYMENT.CAPTURE.REVERSED') {
+				$order_status_id = $setting['order_status']['reversed']['id'];
+			}
+		
+			if ($webhook_data['event_type'] == 'CHECKOUT.ORDER.COMPLETED') {
+				$order_status_id = $setting['order_status']['processed']['id'];
+			}
+		
+			if ($webhook_data['event_type'] == 'CHECKOUT.ORDER.APPROVED') {
+				$order_status_id = $setting['order_status']['pending']['id'];
+			}
+			
+			$this->load->model('checkout/order');
+
+			$this->model_checkout_order->addOrderHistory($order_id, $order_status_id);
+		}
 	}
 }

@@ -3,10 +3,11 @@
 $_['heading_title']		 				= 'PayPal Commerce Platform';
 
 // Text
-$_['text_paypal']		 				= '<a target="_BLANK" href="https://www.paypal.com/uk/mrb/pal=V4T754QB63XXL"><img src="view/image/payment/paypal.png" alt="PayPal Website Payment" title="PayPal Website Payment" style="border: 1px solid #EEEEEE;" /></a>';
+$_['text_paypal']		 				= '<a target="_BLANK" href="https://www.paypal.com/uk/mrb/pal=V4T754QB63XXL"><img src="view/image/payment/paypal.png" alt="PayPal Commerce Platform" title="PayPal Commerce Platform" style="border: 1px solid #EEEEEE;" /></a>';
 $_['text_extensions']     				= 'Extensions';
 $_['text_edit']          				= 'Edit PayPal';
 $_['text_general']				 	 	= 'General';
+$_['text_order_status']				 	= 'Order Status';
 $_['text_checkout_express']				= 'Checkout';
 $_['text_checkout_card']				= 'Advanced Card';
 $_['text_production']			 	 	= 'Production';
@@ -14,6 +15,16 @@ $_['text_sandbox']			 			= 'Sandbox';
 $_['text_authorization']			 	= 'Authorization';
 $_['text_sale']			 	 			= 'Sale';
 $_['text_connect']						= 'Your seller account has been connected.<br />Client ID = %s<br />Secret = %s<br />Merchant ID = %s<br />If you would like to connect another account, please, disconnect.';
+$_['text_canceled_reversal_status']		= 'Canceled Reversal Status';
+$_['text_completed_status']				= 'Completed Status';
+$_['text_denied_status']				= 'Denied Status';
+$_['text_expired_status']				= 'Expired Status';
+$_['text_failed_status']				= 'Failed Status';
+$_['text_pending_status']				= 'Pending Status';
+$_['text_processed_status']				= 'Processed Status';
+$_['text_refunded_status']				= 'Refunded Status';
+$_['text_reversed_status']				= 'Reversed Status';
+$_['text_voided_status']				= 'Voided Status';
 $_['text_align_left']					= 'Align Left';
 $_['text_align_center']					= 'Align Center';
 $_['text_align_right']					= 'Align Right';
@@ -36,6 +47,7 @@ $_['text_pay_pal']			 	 		= 'PayPal';
 $_['text_installment']			 	 	= 'Installment';
 $_['text_accept']			 	 		= 'Accept';
 $_['text_decline']			 	 		= 'Decline';
+$_['text_recommended']			 	 	= '(recommended)';
 $_['text_3ds_undefined']				= 'You have not required 3D Secure for the buyer or the card network did not require a 3D Secure.';
 $_['text_3ds_error']					= 'An error occurred with the 3DS authentication system.';
 $_['text_3ds_skipped_by_buyer'] 		= 'Buyer was presented the 3D Secure challenge but chose to skip the authentication.';
@@ -51,6 +63,7 @@ $_['entry_connect']	 					= 'Connect';
 $_['entry_checkout_express_status']		= 'Checkout';
 $_['entry_checkout_card_status']		= 'Advanced Card';
 $_['entry_environment']				 	= 'Environment';
+$_['entry_debug']				 		= 'Debug Logging';
 $_['entry_transaction_method']	 		= 'Settlement Method';
 $_['entry_total']		 				= 'Total';
 $_['entry_order_status'] 				= 'Order Status';
@@ -72,6 +85,7 @@ $_['entry_secure_scenario'] 			= '3D Secure Scenarios';
 $_['help_checkout_express']				= 'If your country is not available in the list when going through the PayPal onboarding experience please <a id="button_connect_express_checkout" href="%s" target="_blank" data-paypal-onboard-complete="onBoardedCallback">click here</a>.';
 $_['help_checkout_express_status']		= 'When activated PayPal will display personalized Smart Buttons avalible to your customers based on their location.';
 $_['help_checkout_card_status']			= 'PayPal verifies if you are eligible for advanced card payment and will display this option on the checkout step if available.';
+$_['help_total']		 				= 'The checkout total the order must reach before this payment method becomes active';
 $_['help_secure_status'] 				= '3D Secure enables you to authenticate card holders through card issuers. It reduces the likelihood of fraud when you use supported cards and improves transaction perfomance. A successful 3D Secure authentication can shift liability for chargebacks due to fraud from you -the merchant- to the card issuer.';
 $_['help_secure_scenario'] 				= '3D Secure authentication is perfomed only if the card is enrolled for the service. In scenarios where the 3D Secure authentication has not been successful, you have the option to complete the payment at your own risk, meaning that you -the merchant- will be liable in case of a chargeback.';
 
@@ -79,9 +93,6 @@ $_['help_secure_scenario'] 				= '3D Secure authentication is perfomed only if t
 $_['button_connect'] 					= 'Connect with PayPal';
 $_['button_disconnect'] 				= 'Disconnect';
 $_['button_smart_button']				= 'Smart Button Configure';
-
-// Help
-$_['help_total']		 				= 'The checkout total the order must reach before this payment method becomes active';
 
 // Success
 $_['success_save']		 				= 'Success: You have modified PayPal!';

@@ -12,7 +12,7 @@
 }
 
 </style>
-<script type="text/javascript" src="https://www.paypal.com/sdk/js?components=buttons&client-id={{ client_id }}&merchant-id={{ merchant_id }}&currency={{ currency_code }}&intent={{ transaction_method }}{% if (environment == 'sandbox') %}&buyer-country=NL{% endif %}" data-partner-attribution-id="{{ partner_id }}"></script>
+<script type="text/javascript" src="https://www.paypal.com/sdk/js?components=buttons&client-id={{ client_id }}&merchant-id={{ merchant_id }}&currency={{ currency_code }}&intent={{ transaction_method }}&commit=false{% if (environment == 'sandbox') %}&buyer-country=NL{% endif %}" data-partner-attribution-id="{{ partner_id }}"></script>
 <script type="text/javascript">
 
 window.onload = function() {

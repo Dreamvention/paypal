@@ -17,4 +17,11 @@ class ModelExtensionPaymentPayPal extends Model {
 			$this->load->controller('extension/module/paypal_smart_button/install');
         }
 	}
+	
+	public function log($data, $title = null) {
+		if ($this->config->get('payment_paypal_debug')) {
+			$log = new Log('paypal.log');
+			$log->write('PayPal debug (' . $title . '): ' . json_encode($data));
+		}
+	}
 }

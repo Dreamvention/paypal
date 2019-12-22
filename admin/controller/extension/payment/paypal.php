@@ -7,6 +7,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 
 		$this->document->setTitle($this->language->get('heading_title'));
 
+		$this->load->model('extension/payment/paypal');
 		$this->load->model('setting/setting');
 				
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
@@ -40,6 +41,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['callback_url'] = str_replace('&amp;', '&', $this->url->link('extension/payment/paypal/callback', 'user_token=' . $this->session->data['user_token'], true));
 		$data['configure_smart_button_url'] = $this->url->link('extension/payment/paypal/configureSmartButton', 'user_token=' . $this->session->data['user_token'], true);
 		
+		if (isset($this->request->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1'))) {
+			$data['server'] = HTTPS_SERVER;
+			$data['catalog'] = HTTPS_CATALOG;
+		} else {
+			$data['server'] = HTTP_SERVER;
+			$data['catalog'] = HTTP_CATALOG;
+		}
+		
 		// Setting 		
 		$_config = new Config();
 		$_config->load('paypal');
@@ -71,16 +80,16 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			
 		if (isset($this->session->data['authorization_code']) && isset($this->session->data['shared_id']) && isset($this->session->data['seller_nonce']) && isset($this->request->get['merchantIdInPayPal'])) {
 			$shared_id = $this->session->data['shared_id'];
+									
+			require_once DIR_SYSTEM .'library/paypal/paypal.php';
+					
+			$paypal = new PayPal($shared_id);
 			
 			$token_info = array(
 				'grant_type' => 'authorization_code',
 				'code' => $this->session->data['authorization_code'],
 				'code_verifier' => $this->session->data['seller_nonce']
 			);
-						
-			require_once DIR_SYSTEM .'library/paypal/paypal.php';
-					
-			$paypal = new PayPal($shared_id);
 			
 			$paypal->setAccessToken($token_info);
 											
@@ -90,15 +99,44 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				$client_id = $result['client_id'];
 				$secret = $result['client_secret'];
 			}
-			
-			if ($paypal->hasErrors()) {
-				$this->error['warning'] = implode(' ', $paypal->getErrors());
-			}
-			
-			$token_info = array(
-				'grant_type' => 'client_credentials'
+						
+			$webhook_info = array(
+				'url' => $data['catalog'] . 'index.php?route=extension/payment/paypal/webhook',
+				'event_types' => array(
+					array('name' => 'PAYMENT.AUTHORIZATION.CREATED'),
+					array('name' => 'PAYMENT.AUTHORIZATION.VOIDED'),
+					array('name' => 'PAYMENT.CAPTURE.COMPLETED'),
+					array('name' => 'PAYMENT.CAPTURE.DENIED'),
+					array('name' => 'PAYMENT.CAPTURE.PENDING'),
+					array('name' => 'PAYMENT.CAPTURE.REFUNDED'),
+					array('name' => 'PAYMENT.CAPTURE.REVERSED'),
+					array('name' => 'CHECKOUT.ORDER.COMPLETED'),
+					array('name' => 'CHECKOUT.ORDER.APPROVED')
+				)
 			);
 			
+			$result = $paypal->createWebhook($webhook_info);
+			
+			$webhook_id = '';
+		
+			if (isset($result['id'])) {
+				$webhook_id = $result['id'];
+			}
+		
+			if ($paypal->hasErrors()) {
+				$error_title = array();
+				
+				$errors = $paypal->getErrors();
+								
+				foreach ($errors as $error) {
+					$error_title[] = $error['title'];
+					
+					$this->model_extension_payment_paypal->log($error['data'], $error['title']);
+				}
+				
+				$this->error['warning'] = implode(' ', $error_title);
+			}
+   			
 			$merchant_id = $this->request->get['merchantIdInPayPal'];
 						
 			unset($this->session->data['authorization_code']);
@@ -129,8 +167,22 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		} else {
 			$data['merchant_id'] = $this->config->get('payment_paypal_merchant_id');
 		}
-				
+		
 		$data['text_connect'] = sprintf($this->language->get('text_connect'), $data['client_id'], $data['secret'], $data['merchant_id']);
+		
+		if (isset($webhook_id)) {
+			$data['webhook_id'] = $webhook_id;
+		} elseif (isset($this->request->post['payment_paypal_webhook_id'])) {
+			$data['webhook_id'] = $this->request->post['payment_paypal_webhook_id'];
+		} else {
+			$data['webhook_id'] = $this->config->get('payment_paypal_webhook_id');
+		}
+
+		if (isset($this->request->post['payment_paypal_debug'])) {
+			$data['debug'] = $this->request->post['payment_paypal_debug'];
+		} else {
+			$data['debug'] = $this->config->get('payment_paypal_debug');
+		}
 								
 		if (isset($this->request->post['payment_paypal_transaction_method'])) {
 			$data['transaction_method'] = $this->request->post['payment_paypal_transaction_method'];
@@ -143,13 +195,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		} else {
 			$data['total'] = $this->config->get('payment_paypal_total');
 		}
-
-		if (isset($this->request->post['payment_paypal_order_status_id'])) {
-			$data['order_status_id'] = $this->request->post['payment_paypal_order_status_id'];
-		} else {
-			$data['order_status_id'] = $this->config->get('payment_paypal_order_status_id');
-		}
-
+		
 		$this->load->model('localisation/order_status');
 
 		$data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
@@ -182,20 +228,32 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$data['setting'] = array_replace_recursive((array)$data['setting'], (array)$this->config->get('payment_paypal_setting'));
 		}
 		
-		$token_info = array(
-			'grant_type' => 'client_credentials'
-		);	
-										
-		require_once DIR_SYSTEM .'library/paypal/paypal.php';
+		if ($data['client_id'] && $data['secret']) {										
+			require_once DIR_SYSTEM .'library/paypal/paypal.php';
 		
-		$paypal = new PayPal($data['client_id'], $data['secret'], $data['environment']);
+			$paypal = new PayPal($data['client_id'], $data['secret'], $data['environment']);
+			
+			$token_info = array(
+				'grant_type' => 'client_credentials'
+			);	
 				
-		$paypal->setAccessToken($token_info);
+			$paypal->setAccessToken($token_info);
 		
-		$data['client_token'] = $paypal->getClientToken();
+			$data['client_token'] = $paypal->getClientToken();
 						
-		if ($paypal->hasErrors()) {
-			$this->error['warning'] = implode(' ', $paypal->getErrors());
+			if ($paypal->hasErrors()) {
+				$error_title = array();
+				
+				$errors = $paypal->getErrors();
+								
+				foreach ($errors as $error) {
+					$error_title[] = $error['title'];
+					
+					$this->model_extension_payment_paypal->log($error['data'], $error['title']);
+				}
+				
+				$this->error['warning'] = implode(' ', $error_title);
+			}
 		}
 		
 		if (isset($this->error['warning'])) {

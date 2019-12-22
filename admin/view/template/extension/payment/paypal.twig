@@ -28,6 +28,7 @@
 				<form action="{{ action }}" method="post" enctype="multipart/form-data" id="form_payment" class="form-horizontal">
 					<ul class="nav nav-tabs">
 						<li class="nav-tab active"><a href="#tab_general" data-toggle="tab">{{ text_general }}</a></li>
+						<li class="nav-tab"><a href="#tab_order_status" data-toggle="tab">{{ text_order_status }}</a></li>
 						<li class="nav-tab"><a href="#tab_checkout_express" data-toggle="tab">{{ text_checkout_express }}</a></li>
 						<li class="nav-tab hidden"><a href="#tab_checkout_card" data-toggle="tab">{{ text_checkout_card }}</a></li>
 					</ul>
@@ -76,11 +77,13 @@
 										<a id="button_disconnect" class="btn btn-danger">{{ button_disconnect }}</a>
 									</div>
 									{% endif %}
-									<input type="hidden" name="payment_paypal_client_id" value="{{ client_id }}" placeholder="{{ entry_client_id }}" id="input_client_id" />
-									<input type="hidden" name="payment_paypal_secret" value="{{ secret }}" placeholder="{{ entry_secret }}" id="input_secret" />
-									<input type="hidden" name="payment_paypal_merchant_id" value="{{ merchant_id }}" placeholder="{{ entry_merchant_id }}" id="input_merchant_id" />
+									<input type="hidden" name="payment_paypal_client_id" value="{{ client_id }}" id="input_client_id" />
+									<input type="hidden" name="payment_paypal_secret" value="{{ secret }}" id="input_secret" />
+									<input type="hidden" name="payment_paypal_merchant_id" value="{{ merchant_id }}" id="input_merchant_id" />
+									<input type="hidden" name="payment_paypal_webhook_id" value="{{ webhook_id }}" id="input_webhook_id" />
 								</div>
 							</div>
+							{% if client_id and secret and merchant_id %}
 							<div class="form-group">
 								<label class="col-sm-2 control-label" for="input_checkout_express_status"><span data-toggle="tooltip" title="{{ help_checkout_express_status }}">{{ entry_checkout_express_status }}</span></label>
 								<div class="col-sm-10">
@@ -112,6 +115,21 @@
 									</div>
 								</div>
 							</div>
+							{% endif %}
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input_debug">{{ entry_debug }}</label>
+								<div class="col-sm-10">
+									<select name="payment_paypal_debug" id="input_debug" class="form-control">
+										{% if debug %}
+										<option value="1" selected="selected">{{ text_enabled }}</option>
+										<option value="0">{{ text_disabled }}</option>
+										{% else %}
+										<option value="1">{{ text_enabled }}</option>
+										<option value="0" selected="selected">{{ text_disabled }}</option>
+										{% endif %}
+									</select>
+								</div>
+							</div>
 							<div class="form-group">
 								<label class="col-sm-2 control-label" for="input_transaction_method">{{ entry_transaction_method }}</label>
 								<div class="col-sm-10">
@@ -132,9 +150,9 @@
 									<select name="payment_paypal_order_status_id" id="input_order_status" class="form-control">
 										{% for order_status in order_statuses %}
 										{% if order_status['order_status_id'] == order_status_id %}
-										<option value="{{ order_status.order_status_id }}" selected="selected">{{ order_status['name'] }}</option>
+										<option value="{{ order_status['order_status_id'] }}" selected="selected">{{ order_status['name'] }}</option>
 										{% else %}
-										<option value="{{ order_status.order_status_id }}">{{ order_status['name'] }}</option>
+										<option value="{{ order_status['order_status_id'] }}">{{ order_status['name'] }}</option>
 										{% endif %}
 										{% endfor %}
 									</select>
@@ -187,6 +205,24 @@
 									<a href="{{ configure_smart_button_url }}" target="_blank" class="btn btn-primary">{{ button_smart_button }}</a>
 								</div>
 							</div>
+						</div>
+						<div class="tab-pane" id="tab_order_status">
+							{% for paypal_order_status in setting['order_status'] %}
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input_order_status_{{ paypal_order_status['code'] }}">{{ attribute(_context, paypal_order_status['name']) }}</label>
+								<div class="col-sm-10">
+									<select name="payment_paypal_setting[order_status][{{ paypal_order_status['code'] }}][id]" id="input_{{ paypal_order_status['code'] }}_status" class="form-control">
+										{% for order_status in order_statuses %}
+										{% if order_status['order_status_id'] == paypal_order_status['id'] %}
+										<option value="{{ order_status['order_status_id'] }}" selected="selected">{{ order_status['name'] }}</option>
+										{% else %}
+										<option value="{{ order_status['order_status_id'] }}">{{ order_status['name'] }}</option>
+										{% endif %}
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+							{% endfor %}
 						</div>
 						<div class="tab-pane" id="tab_checkout_express">
 							<div class="form-group">
@@ -307,13 +343,17 @@
 								<label class="col-sm-2 control-label" for="input_checkout_card_secure_scenario"><span data-toggle="tooltip" title="{{ help_secure_scenario }}">{{ entry_secure_scenario }}</span></label>
 								<div class="col-sm-10">
 									{% for secure_scenario in setting['secure_scenario'] %}
-									<label class="radio-inline nav">{{ attribute(_context, secure_scenario['name']) }}</label>
-									<label class="radio-inline">
-										<input type="radio" name="payment_paypal_setting[checkout][card][secure_scenario][{{ secure_scenario['code'] }}]" value="1" {% if setting['checkout']['card']['secure_scenario'][secure_scenario['code']] %}checked="checked"{% endif %} /> {{ text_accept }}
-									</label>
-									<label class="radio-inline">
-										<input type="radio" name="payment_paypal_setting[checkout][card][secure_scenario][{{ secure_scenario['code'] }}]" value="0" {% if not setting['checkout']['card']['secure_scenario'][secure_scenario['code']] %}checked="checked"{% endif %} /> {{ text_decline }}
-									</label>
+									<div class="row">
+										<div class="col-sm-8">
+											<label class="control-label" for="input_checkout_card_secure_scenario">{{ attribute(_context, secure_scenario['name']) }}</label>
+										</div>
+										<div class="col-sm-4">										
+											<select name="payment_paypal_setting[checkout][card][secure_scenario][{{ secure_scenario['code'] }}]" class="form-control">
+												<option value="1" {% if setting['checkout']['card']['secure_scenario'][secure_scenario['code']] %}selected="selected"{% endif %}>{{ text_accept }}{% if setting['checkout']['card']['secure_scenario_recommended'][secure_scenario['code']] %} {{ text_recommended }}{% endif %}</option>
+												<option value="0" {% if not setting['checkout']['card']['secure_scenario'][secure_scenario['code']] %}selected="selected"{% endif %}>{{ text_decline }}{% if not setting['checkout']['card']['secure_scenario_recommended'][secure_scenario['code']] %} {{ text_recommended }}{% endif %}</option>
+											</select>
+										</div>
+									</div>
 									<br />
 									{% endfor %}
 								</div>

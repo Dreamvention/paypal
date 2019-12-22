@@ -10,11 +10,63 @@ $_['paypal_setting'] = array(
 			'client_id' => 'AfeIgIr-fIcEucsVXvdq21Ufu0wAALWhgJdVF4ItUK1IZFA9I4JIRdfyJ9vWrd9oi0B6mBGtJYDrlYsG'
 		)
 	),
+	'order_status' => array(
+		'canceled_reversal' => array(
+			'code' => 'canceled_reversal',
+			'name' => 'text_canceled_reversal_status',
+			'id' => 9
+		),
+		'completed' => array(
+			'code' => 'completed',
+			'name' => 'text_completed_status',
+			'id' => 5
+		),
+		'denied' => array(
+			'code' => 'denied',
+			'name' => 'text_denied_status',
+			'id' => 8
+		),
+		'expired' => array(
+			'code' => 'expired',
+			'name' => 'text_expired_status',
+			'id' => 14
+		),
+		'failed' => array(
+			'code' => 'failed',
+			'name' => 'text_failed_status',
+			'id' => 10
+		),
+		'pending' => array(
+			'code' => 'pending',
+			'name' => 'text_pending_status',
+			'id' => 1
+		),
+		'processed' => array(
+			'code' => 'processed',
+			'name' => 'text_processed_status',
+			'id' => 15
+		),
+		'refunded' => array(
+			'code' => 'refunded',
+			'name' => 'text_refunded_status',
+			'id' => 11
+		),
+		'reversed' => array(
+			'code' => 'reversed',
+			'name' => 'text_reversed_status',
+			'id' => 12
+		),
+		'voided' => array(
+			'code' => 'voided',
+			'name' => 'text_voided_status',
+			'id' => 16
+		)
+	),
 	'checkout' => array(
 		'express' => array(
 			'status' => true,
 			'button_align' => 'right',
-			'button_size' => 'medium',
+			'button_size' => 'large',
 			'button_color' => 'gold',
 			'button_shape' => 'rect',
 			'button_label' => 'paypal'
@@ -22,17 +74,27 @@ $_['paypal_setting'] = array(
 		'card' => array(
 			'status' => false,
 			'form_align' => 'right',
-			'form_size' => 'medium',
+			'form_size' => 'large',
 			'secure_status' => true,
 			'secure_scenario' => array(
-				'undefined' => 0,
+				'undefined' => 1,
 				'error' => 0,
 				'skipped_by_buyer' => 0,
 				'failure' => 0,
 				'bypassed' => 0,
-				'attempted' => 0,
+				'attempted' => 1,
 				'unavailable' => 0,
-				'card_ineligible' => 0
+				'card_ineligible' => 1
+			),
+			'secure_scenario_recommended' => array(
+				'undefined' => 1,
+				'error' => 0,
+				'skipped_by_buyer' => 0,
+				'failure' => 0,
+				'bypassed' => 0,
+				'attempted' => 1,
+				'unavailable' => 0,
+				'card_ineligible' => 1
 			)
 		)
 	),
