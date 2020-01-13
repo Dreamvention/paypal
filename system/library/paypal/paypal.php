@@ -5,24 +5,29 @@ class PayPal {
 		'production' => 'https://api.paypal.com'
 	);
 	private $environment = 'sandbox';
+	private $partner_id = '';
 	private $client_id = '';
 	private $secret = '';
 	private $access_token = '';
 	private $errors = array();
 	private $last_response = array();
 		
-	//IN:  client_id and secret
-	public function __construct($client_id = '', $secret = '', $environment = '') {
-		if ($client_id) {
-			$this->client_id = $client_id;
+	//IN:  paypal info
+	public function __construct($paypal_info) {
+		if (isset($paypal_info['partner_id']) && $paypal_info['partner_id']) {
+			$this->partner_id = $paypal_info['partner_id'];
 		}
 		
-		if ($secret) {
-			$this->secret = $secret;
+		if (isset($paypal_info['client_id']) && $paypal_info['client_id']) {
+			$this->client_id = $paypal_info['client_id'];
 		}
-				
-		if (($environment == 'production') || ($environment == 'sandbox')) {
-			$this->environment = $environment;
+		
+		if (isset($paypal_info['secret']) && $paypal_info['secret']) {
+			$this->secret = $paypal_info['secret'];
+		}
+
+		if (isset($paypal_info['environment']) && (($paypal_info['environment'] == 'production') || ($paypal_info['environment'] == 'sandbox'))) {
+			$this->environment = $paypal_info['environment'];
 		}
 	}
 	
@@ -40,7 +45,7 @@ class PayPal {
 			
 			return $this->access_token;
 		} else {
-			$this->addError($result);
+			$this->errors[] = $result;
 						
 			return false;
 		}
@@ -60,7 +65,7 @@ class PayPal {
 		if (isset($result['client_token']) && $result['client_token']) {
 			return $result['client_token'];
 		} else {
-			$this->addError($result);
+			$this->errors[] = $result;
 			
 			return false;
 		}
@@ -76,45 +81,12 @@ class PayPal {
 		if (isset($result['client_id']) && $result['client_id']) {
 			return $result;
 		} else {
-			$this->addError($result);
+			$this->errors[] = $result;
 			
 			return false;
 		}
 	}
-	
-	//IN:  partner_id, merchant info
-	public function setMerchantAccount($partner_id, $merchant_info) {
-		$command = '/v1/customer/partners/' . $partner_id . '/merchant-accounts';
 		
-		$params = $merchant_info;
-				
-		$result = $this->execute('POST', $command, $params, true);
-		
-		if (isset($result['payer_id']) && $result['payer_id']) {
-			return $result;
-		} else {
-			$this->addError($result);
-			
-			return false;
-		}
-	}
-	
-	//IN:   partner_id, merchant id
-	//OUT:  merchant info, if no return - check errors
-	public function getMerchantAccount($partner_id, $merchant_id) {
-		$command = '/v1/customer/partners/' . $partner_id . '/merchant-accounts/' . $merchant_id;
-				
-		$result = $this->execute('GET', $command);
-		
-		if (isset($result['owner_info']) && $result['owner_info']) {
-			return $result;
-		} else {
-			$this->addError($result);
-			
-			return false;
-		}
-	}
-	
 	//IN:  webhook info
 	public function createWebhook($webhook_info) {
 		$command = '/v1/notifications/webhooks';
@@ -126,7 +98,7 @@ class PayPal {
 		if (isset($result['id']) && $result['id']) {
 			return $result;
 		} else {
-			$this->addError($result);
+			$this->errors[] = $result;
 			
 			return false;
 		}
@@ -144,10 +116,19 @@ class PayPal {
 		if (isset($result['id']) && $result['id']) {
 			return $result;
 		} else {
-			$this->addError($result);
+			$this->errors[] = $result;
 			
 			return false;
 		}
+	}
+	
+	//IN:  webhook id
+	public function deleteWebhook($webhook_id) {
+		$command = '/v1/notifications/webhooks/' . $webhook_id;
+				
+		$result = $this->execute('DELETE', $command);
+		
+		return true;
 	}
 	
 	//IN:  webhook id
@@ -160,7 +141,22 @@ class PayPal {
 		if (isset($result['id']) && $result['id']) {
 			return $result;
 		} else {
-			$this->addError($result);
+			$this->errors[] = $result;
+			
+			return false;
+		}
+	}
+	
+	//OUT: webhooks info, if no return - check errors
+	public function getWebhooks() {
+		$command = '/v1/notifications/webhooks';
+				
+		$result = $this->execute('GET', $command);
+		
+		if (isset($result['webhooks']) && $result['webhooks']) {
+			return $result['webhooks'];
+		} else {
+			$this->errors[] = $result;
 			
 			return false;
 		}
@@ -177,7 +173,7 @@ class PayPal {
 		if (isset($result['id']) && $result['id']) {
 			return $result;
 		} else {
-			$this->addError($result);
+			$this->errors[] = $result;
 			
 			return false;
 		}
@@ -195,7 +191,7 @@ class PayPal {
 		if (isset($result['id']) && $result['id']) {
 			return $result;
 		} else {
-			$this->addError($result);
+			$this->errors[] = $result;
 			
 			return false;
 		}
@@ -211,7 +207,7 @@ class PayPal {
 		if (isset($result['id']) && $result['id']) {
 			return $result;
 		} else {
-			$this->addError($result);
+			$this->errors[] = $result;
 			
 			return false;
 		}
@@ -226,7 +222,7 @@ class PayPal {
 		if (isset($result['id']) && $result['id']) {
 			return $result;
 		} else {
-			$this->addError($result);
+			$this->errors[] = $result;
 			
 			return false;
 		}
@@ -241,29 +237,12 @@ class PayPal {
 		if (isset($result['id']) && $result['id']) {
 			return $result;
 		} else {
-			$this->addError($result);
+			$this->errors[] = $result;
 			
 			return false;
 		}
 	}
-	
-	//IN: error_info
-	public function addError($error_info) {
-		$error['title'] = '';
-		
-		if (isset($error_info['message'])) {
-			$error['title'] = $error_info['message'];
-		}
-			
-		if (isset($error_info['error_description'])) {
-			$error['title'] = $error_info['error_description'];
-		}
-		
-		$error['data'] = $error_info;
-			
-		$this->errors[] = $error;
-	}
-			
+				
 	//OUT: number of errors
 	public function hasErrors()	{
 		return count($this->errors);
@@ -289,7 +268,8 @@ class PayPal {
 				CURLOPT_RETURNTRANSFER => true,
 				CURLOPT_INFILESIZE => Null,
 				CURLOPT_HTTPHEADER => array(),
-				CURLOPT_TIMEOUT => 60
+				CURLOPT_CONNECTTIMEOUT => 10,
+				CURLOPT_TIMEOUT => 10
 			);
 			
 			$curl_options[CURLOPT_HTTPHEADER][] = 'Accept-Charset: utf-8';
@@ -297,7 +277,8 @@ class PayPal {
 			$curl_options[CURLOPT_HTTPHEADER][] = 'Accept-Language: en_US';
 			$curl_options[CURLOPT_HTTPHEADER][] = 'Content-Type: application/json';
 			$curl_options[CURLOPT_HTTPHEADER][] = 'PayPal-Request-Id: ' . token(50);
-												
+			$curl_options[CURLOPT_HTTPHEADER][] = 'PayPal-Partner-Attribution-Id: OPENCARTLIMITED_Cart_OpenCartPCP';
+			
 			if ($this->access_token) {
 				$curl_options[CURLOPT_HTTPHEADER][] = 'Authorization: Bearer ' . $this->access_token;
 			} elseif ($this->client_id && $this->secret) {
@@ -323,6 +304,12 @@ class PayPal {
 					$curl_options[CURLOPT_CUSTOMREQUEST] = strtoupper($method);
 										
 					break;
+				case 'delete':
+					$curl_options[CURLOPT_POST] = true;
+					$curl_options[CURLOPT_POSTFIELDS] = $this->buildQuery($params, $json);
+					$curl_options[CURLOPT_CUSTOMREQUEST] = strtoupper($method);
+										
+					break;
 				case 'put':
 					$curl_options[CURLOPT_PUT] = true;
 					
@@ -334,7 +321,7 @@ class PayPal {
 							$curl_options[CURLOPT_INFILE] = $buffer;
 							$curl_options[CURLOPT_INFILESIZE] = strlen($params_string);
 						} else {
-							$this->errors[] = 'Unable to open a temporary file';
+							$this->errors[] = array('name' => 'FAILED_OPEN_TEMP_FILE', 'message' => 'Unable to open a temporary file');
 						}
 					}
 					
@@ -350,6 +337,15 @@ class PayPal {
 			$ch = curl_init();
 			curl_setopt_array($ch, $curl_options);
 			$response = curl_exec($ch);
+			
+			if (curl_errno($ch)) {
+				$curl_code = curl_errno($ch);
+				
+				$constant = get_defined_constants(true);
+				$curl_constant = preg_grep('/^CURLE_/', array_flip($constant['curl']));
+				
+				$this->errors[] = array('name' => $curl_constant[$curl_code], 'message' => curl_strerror($curl_code));
+			}
 	
             /*$status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 			

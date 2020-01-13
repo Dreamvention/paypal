@@ -46,7 +46,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 										
 		require_once DIR_SYSTEM .'library/paypal/paypal.php';
 		
-		$paypal = new PayPal($data['client_id'], $data['secret'], $data['environment']);
+		$paypal_info = array(
+			'partner_id' => $data['partner_id'],
+			'client_id' => $data['client_id'],
+			'secret' => $data['secret'],
+			'environment' => $data['environment']
+		);
+		
+		$paypal = new PayPal($paypal_info);
 		
 		$token_info = array(
 			'grant_type' => 'client_credentials'
@@ -57,37 +64,59 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['client_token'] = $paypal->getClientToken();
 						
 		if ($paypal->hasErrors()) {
-			$error_title = array();
+			$error_messages = array();
 				
 			$errors = $paypal->getErrors();
 								
 			foreach ($errors as $error) {
-				$error_title[] = $error['title'];
+				if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
+					$error['message'] = $this->language->get('error_timeout');
+				}
 					
-				$this->model_extension_payment_paypal->log($error['data'], $error['title']);
+				$error_messages[] = $error['message'];
+					
+				$this->model_extension_payment_paypal->log($error, $error['message']);
 			}
 				
-			$this->error['warning'] = implode(' ', $error_title);
+			$this->error['warning'] = implode(' ', $error_messages);
 		}			
 
 		return $this->load->view('extension/payment/paypal', $data);
 	}
 		
 	public function createOrder() {					
+		$this->load->language('extension/payment/paypal');
+		
 		$this->load->model('extension/payment/paypal');
 		$this->load->model('checkout/order');
 				
 		$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
 		
+		// Setting
+		$_config = new Config();
+		$_config->load('paypal');
+			
+		$config_setting = $_config->get('paypal_setting');
+		
+		$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
+		
 		$client_id = $this->config->get('payment_paypal_client_id');
 		$secret = $this->config->get('payment_paypal_secret');
 		$merchant_id = $this->config->get('payment_paypal_merchant_id');
 		$environment = $this->config->get('payment_paypal_environment');
+		$partner_id = $setting['partner'][$environment]['partner_id'];
 		$transaction_method = $this->config->get('payment_paypal_transaction_method');	
 		
 		require_once DIR_SYSTEM . 'library/paypal/paypal.php';
 		
-		$paypal = new PayPal($client_id, $secret, $environment);
+		$paypal_info = array(
+			'partner_id' => $partner_id,
+			'client_id' => $client_id,
+			'secret' => $secret,
+			'environment' => $environment
+		);
+		
+		$paypal = new PayPal($paypal_info);
 		
 		$token_info = array(
 			'grant_type' => 'client_credentials'
@@ -98,25 +127,25 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$shipping_info = array();
 
 		if ($this->cart->hasShipping()) {
-			$shipping_info['name']['full_name'] = (isset($this->session->data['shipping_address']['firstname']) ? $this->session->data['shipping_address']['firstname'] : '');
-			$shipping_info['name']['full_name'] .= (isset($this->session->data['shipping_address']['lastname']) ? (' ' . $this->session->data['shipping_address']['lastname']) : '');			
-			$shipping_info['address']['address_line_1'] = (isset($this->session->data['shipping_address']['address_1']) ? $this->session->data['shipping_address']['address_1'] : '');
-			$shipping_info['address']['address_line_2'] = (isset($this->session->data['shipping_address']['address_2']) ? $this->session->data['shipping_address']['address_2'] : '');			
-			$shipping_info['address']['admin_area_1'] = (isset($this->session->data['shipping_address']['zone']) ? $this->session->data['shipping_address']['zone'] : '');
-			$shipping_info['address']['admin_area_2'] = (isset($this->session->data['shipping_address']['city']) ? $this->session->data['shipping_address']['city'] : '');
-			$shipping_info['address']['postal_code'] = (isset($this->session->data['shipping_address']['postcode']) ? $this->session->data['shipping_address']['postcode'] : '');
+			$shipping_info['name']['full_name'] = $order_info['shipping_firstname'];
+			$shipping_info['name']['full_name'] .= $order_info['shipping_lastname'];			
+			$shipping_info['address']['address_line_1'] = $order_info['shipping_address_1'];
+			$shipping_info['address']['address_line_2'] = $order_info['shipping_address_2'];			
+			$shipping_info['address']['admin_area_1'] = $order_info['shipping_zone'];
+			$shipping_info['address']['admin_area_2'] = $order_info['shipping_city'];
+			$shipping_info['address']['postal_code'] = $order_info['shipping_postcode'];
 			
-			if (isset($this->session->data['shipping_address']['country_id'])) {
+			if ($order_info['shipping_country_id']) {
 				$this->load->model('localisation/country');
 				
-				$country_info = $this->model_localisation_country->getCountry($this->session->data['shipping_address']['country_id']);
+				$country_info = $this->model_localisation_country->getCountry($order_info['shipping_country_id']);
 			
 				if ($country_info) {
 					$shipping_info['address']['country_code'] = $country_info['iso_code_2'];
 				}
 			}
 			
-			$shipping_preference = 'GET_FROM_FILE';
+			$shipping_preference = 'SET_PROVIDED_ADDRESS';
 		} else {
 			$shipping_preference = 'NO_SHIPPING';
 		}
@@ -209,17 +238,21 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		}
 		
 		if ($paypal->hasErrors()) {
-			$error_title = array();
+			$error_messages = array();
 				
 			$errors = $paypal->getErrors();
 								
 			foreach ($errors as $error) {
-				$error_title[] = $error['title'];
+				if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
+					$error['message'] = $this->language->get('error_timeout');
+				}
+				
+				$error_messages[] = $error['message'];
 					
-				$this->model_extension_payment_paypal->log($error['data'], $error['title']);
+				$this->model_extension_payment_paypal->log($error, $error['message']);
 			}
 				
-			$this->error['warning'] = implode(' ', $error_title);
+			$this->error['warning'] = implode(' ', $error_messages);
 		}
 				
 		$data['error'] = $this->error;
@@ -231,7 +264,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$this->load->language('extension/payment/paypal');
 		
 		$this->load->model('extension/payment/paypal');
-		
+				
 		if (isset($this->request->post['order_id'])) {
 			$order_id = $this->request->post['order_id'];
 		}
@@ -241,15 +274,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			
 			if (isset($payload['orderId'])) {
 				$order_id = $payload['orderId'];
-			
-				// Setting
-				$_config = new Config();
-				$_config->load('paypal');
-			
-				$config_setting = $_config->get('paypal_setting');
-		
-				$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
-			
+						
 				if ($setting['checkout']['card']['secure_status']) {					
 					$secure_scenario_code = isset($payload['authenticationReason']) ? strtolower($payload['authenticationReason']) : 'undefined';
 					
@@ -265,14 +290,30 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		}
 					
 		if (isset($order_id) && !$this->error) {
+			// Setting
+			$_config = new Config();
+			$_config->load('paypal');
+			
+			$config_setting = $_config->get('paypal_setting');
+		
+			$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
+		
 			$client_id = $this->config->get('payment_paypal_client_id');
 			$secret = $this->config->get('payment_paypal_secret');
 			$environment = $this->config->get('payment_paypal_environment');
+			$partner_id = $setting['partner'][$environment]['partner_id'];
 			$transaction_method = $this->config->get('payment_paypal_transaction_method');
 			
 			require_once DIR_SYSTEM .'library/paypal/paypal.php';
 		
-			$paypal = new PayPal($client_id, $secret, $environment);
+			$paypal_info = array(
+				'partner_id' => $partner_id,
+				'client_id' => $client_id,
+				'secret' => $secret,
+				'environment' => $environment
+			);
+		
+			$paypal = new PayPal($paypal_info);
 			
 			$token_info = array(
 				'grant_type' => 'client_credentials'
@@ -282,25 +323,51 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		
 			if ($transaction_method == 'authorize') {
 				$result = $paypal->setOrderAuthorize($order_id);
+				
+				if (isset($result['purchase_units'][0]['payments']['authorizations'][0]['seller_protection'])) {
+					$seller_protection_status = $result['purchase_units'][0]['payments']['authorizations'][0]['seller_protection']['status'];
+				}
 			} else {
 				$result = $paypal->setOrderCapture($order_id);
+				
+				if (isset($result['purchase_units'][0]['payments']['captures'][0]['seller_protection'])) {
+					$seller_protection_status = $result['purchase_units'][0]['payments']['captures'][0]['seller_protection']['status'];
+				}
+			}
+			
+			if (!$this->cart->hasShipping()) {
+				$seller_protection_status = 'NOT_ELIGIBLE';
 			}
 			
 			if ($paypal->hasErrors()) {
-				$error_title = array();
+				$error_messages = array();
 				
 				$errors = $paypal->getErrors();
 								
 				foreach ($errors as $error) {
-					$error_title[] = $error['title'];
+					if (isset($error['details'][0]['issue']) && ($error['details'][0]['issue'] == 'INSTRUMENT_DECLINED')) {
+						$data['restart'] = true;
+					}
 					
-					$this->model_extension_payment_paypal->log($error['data'], $error['title']);
+					if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
+						$error['message'] = $this->language->get('error_timeout');
+					}
+					
+					$error_messages[] = $error['message'];
+					
+					$this->model_extension_payment_paypal->log($error, $error['message']);
 				}
 				
-				$this->error['warning'] = implode(' ', $error_title);
+				$this->error['warning'] = implode(' ', $error_messages);
 			}
 		
-			if (!$this->error) {			
+			if (!$this->error) {
+				$this->load->model('checkout/order');
+				
+				$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
+				
+				$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $this->config->get('config_order_status_id'), $message);
+				
 				$data['success'] = $this->url->link('checkout/success');
 			}
 		}
@@ -358,7 +425,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			}
 		
 			if ($webhook_data['event_type'] == 'CHECKOUT.ORDER.COMPLETED') {
-				$order_status_id = $setting['order_status']['processed']['id'];
+				$order_status_id = $setting['order_status']['completed']['id'];
 			}
 		
 			if ($webhook_data['event_type'] == 'CHECKOUT.ORDER.APPROVED') {

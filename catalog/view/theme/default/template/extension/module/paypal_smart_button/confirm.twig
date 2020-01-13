@@ -30,41 +30,6 @@
 		{% endif %}
 		<div id="content" class="{{ class }}">{{ content_top }}
 			<h1>{{ heading_title }}</h1>
-			{% if has_shipping %}
-			{% if not shipping_methods %}
-			<div class="alert alert-warning alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_no_shipping }}</div>
-			{% else %}
-			<form action="{{ action_shipping }}" method="post" id="shipping_form">
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<h4 class="panel-title">{{ text_checkout_shipping_method }}</h4>
-					</div>
-					<div class="panel-body">
-						{% for shipping_method in shipping_methods %}
-						<p><strong>{{ shipping_method['title'] }}</strong></p>
-						{% if not shipping_method['error'] %}
-						{% for quote in shipping_method['quote'] %}
-						<div class="radio">
-							<label>
-								{% if quote['code'] == code or not code %}
-								{% set code = quote['code'] %}
-								<input type="radio" name="shipping_method" value="{{ quote['code'] }}" id="{{ quote['code'] }}" checked="checked" />
-								{% else %}
-								<input type="radio" name="shipping_method" value="{{ quote['code'] }}" id="{{ quote['code'] }}" />
-								{% endif %}
-								{{ quote['title'] }} - {{ quote['text'] }}
-							</label>
-						</div>
-						{% endfor %}
-						{% else %}
-						<div class="alert alert-danger alert-dismissible">{{ shipping_method['error'] }}</div>
-						{% endif %}
-						{% endfor %}
-					</div>
-				</div>
-			</form>
-			{% endif %}
-			{% endif %}
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h4 class="panel-title">{{ text_checkout_payment_address }}<div class="button-payment-address pull-right" role="button"><i class="fa fa-pencil"></i></div></h4>
@@ -134,6 +99,58 @@
 				</div>
 			</div>
 			{% endif %}
+			{% if has_shipping %}
+			{% if not shipping_methods %}
+			<div class="alert alert-warning alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_no_shipping }}</div>
+			{% else %}
+			<form action="{{ action_shipping }}" method="post" id="shipping_form">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h4 class="panel-title">{{ text_checkout_shipping_method }}</h4>
+					</div>
+					<div class="panel-body">
+						{% for shipping_method in shipping_methods %}
+						<p><strong>{{ shipping_method['title'] }}</strong></p>
+						{% if not shipping_method['error'] %}
+						{% for quote in shipping_method['quote'] %}
+						<div class="radio">
+							<label>
+								{% if quote['code'] == code or not code %}
+								{% set code = quote['code'] %}
+								<input type="radio" name="shipping_method" value="{{ quote['code'] }}" id="{{ quote['code'] }}" checked="checked" />
+								{% else %}
+								<input type="radio" name="shipping_method" value="{{ quote['code'] }}" id="{{ quote['code'] }}" />
+								{% endif %}
+								{{ quote['title'] }} - {{ quote['text'] }}
+							</label>
+						</div>
+						{% endfor %}
+						{% else %}
+						<div class="alert alert-danger alert-dismissible">{{ shipping_method['error'] }}</div>
+						{% endif %}
+						{% endfor %}
+					</div>
+				</div>
+			</form>
+			{% endif %}
+			{% endif %}
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">{{ text_checkout_payment_method }}</h4>
+				</div>
+				<div class="panel-body">
+					{% for payment_method in payment_methods %}
+					{% if payment_method['code'] == 'paypal' %}
+					<div class="radio">
+						<label>
+							<input type="radio" name="payment_method" value="{{ payment_method['code'] }}" checked="checked" />
+							{{ payment_method['title'] }}
+						</label>
+					</div>
+					{% endif %}
+					{% endfor %}
+				</div>
+			</div>
 			<div class="table-responsive">
 				<table class="table table-bordered">
 					<thead>

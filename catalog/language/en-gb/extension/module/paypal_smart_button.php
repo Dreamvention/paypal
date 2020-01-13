@@ -4,10 +4,12 @@ $_['text_title']						= 'PayPal';
 $_['text_checkout_payment_address']  	= 'Billing Details';
 $_['text_checkout_shipping_address'] 	= 'Delivery Details';
 $_['text_checkout_shipping_method']  	= 'Delivery Method';
+$_['text_checkout_payment_method']  	= 'Payment Method';
 $_['text_your_details']              	= 'Your Personal Details';
 $_['text_your_address']              	= 'Your Address';
 $_['text_cart']               			= 'Shopping Cart';
 $_['text_shipping_updated']   			= 'Shipping service updated';
+$_['text_order_message']				= 'PayPal Seller Protection - %s';
 
 // Entry
 $_['entry_email']                    	= 'E-Mail';
@@ -44,3 +46,4 @@ $_['error_zone']                     	= 'Please select a region / state!';
 $_['error_agree']                    	= 'Warning: You must agree to the %s!';
 $_['error_address']                  	= 'Warning: You must select address!';
 $_['error_custom_field']             	= '%s required!';
+$_['error_timeout'] 	  				= 'Sorry, PayPal is currently busy. Please try again later!';

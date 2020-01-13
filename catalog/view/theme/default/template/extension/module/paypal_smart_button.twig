@@ -38,6 +38,8 @@ function setupPayPalSmartButton() {
 				},
 				// Set up the transaction
 				createOrder: function(data, actions) {
+					order_id = false;
+					
 					$.ajax({
 						method: 'post',
 						url: 'index.php?route=extension/module/paypal_smart_button/createOrder',

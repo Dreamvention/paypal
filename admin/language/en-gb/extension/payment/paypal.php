@@ -15,13 +15,10 @@ $_['text_sandbox']			 			= 'Sandbox';
 $_['text_authorization']			 	= 'Authorization';
 $_['text_sale']			 	 			= 'Sale';
 $_['text_connect']						= 'Your seller account has been connected.<br />Client ID = %s<br />Secret = %s<br />Merchant ID = %s<br />If you would like to connect another account, please, disconnect.';
-$_['text_canceled_reversal_status']		= 'Canceled Reversal Status';
 $_['text_completed_status']				= 'Completed Status';
 $_['text_denied_status']				= 'Denied Status';
-$_['text_expired_status']				= 'Expired Status';
 $_['text_failed_status']				= 'Failed Status';
 $_['text_pending_status']				= 'Pending Status';
-$_['text_processed_status']				= 'Processed Status';
 $_['text_refunded_status']				= 'Refunded Status';
 $_['text_reversed_status']				= 'Reversed Status';
 $_['text_voided_status']				= 'Voided Status';
@@ -66,7 +63,6 @@ $_['entry_environment']				 	= 'Environment';
 $_['entry_debug']				 		= 'Debug Logging';
 $_['entry_transaction_method']	 		= 'Settlement Method';
 $_['entry_total']		 				= 'Total';
-$_['entry_order_status'] 				= 'Order Status';
 $_['entry_geo_zone']	 				= 'Geo Zone';
 $_['entry_status']		 				= 'Status';
 $_['entry_sort_order']	 				= 'Sort Order';
@@ -99,3 +95,4 @@ $_['success_save']		 				= 'Success: You have modified PayPal!';
 
 // Error
 $_['error_permission']	 				= 'Warning: You do not have permission to modify payment PayPal!';
+$_['error_timeout'] 	  				= 'Sorry, PayPal is currently busy. Please try again later!';

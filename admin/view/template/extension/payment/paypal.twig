@@ -145,20 +145,6 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label" for="input_order_status">{{ entry_order_status }}</label>
-								<div class="col-sm-10">
-									<select name="payment_paypal_order_status_id" id="input_order_status" class="form-control">
-										{% for order_status in order_statuses %}
-										{% if order_status['order_status_id'] == order_status_id %}
-										<option value="{{ order_status['order_status_id'] }}" selected="selected">{{ order_status['name'] }}</option>
-										{% else %}
-										<option value="{{ order_status['order_status_id'] }}">{{ order_status['name'] }}</option>
-										{% endif %}
-										{% endfor %}
-									</select>
-								</div>
-							</div>
-							<div class="form-group">
 								<label class="col-sm-2 control-label" for="input_total"><span data-toggle="tooltip" title="{{ help_total }}">{{ entry_total }}</span></label>
 								<div class="col-sm-10">
 									<input type="text" name="payment_paypal_total" value="{{ total }}" placeholder="{{ entry_total }}" id="input_total" class="form-control" />
@@ -349,8 +335,8 @@
 										</div>
 										<div class="col-sm-4">										
 											<select name="payment_paypal_setting[checkout][card][secure_scenario][{{ secure_scenario['code'] }}]" class="form-control">
-												<option value="1" {% if setting['checkout']['card']['secure_scenario'][secure_scenario['code']] %}selected="selected"{% endif %}>{{ text_accept }}{% if setting['checkout']['card']['secure_scenario_recommended'][secure_scenario['code']] %} {{ text_recommended }}{% endif %}</option>
-												<option value="0" {% if not setting['checkout']['card']['secure_scenario'][secure_scenario['code']] %}selected="selected"{% endif %}>{{ text_decline }}{% if not setting['checkout']['card']['secure_scenario_recommended'][secure_scenario['code']] %} {{ text_recommended }}{% endif %}</option>
+												<option value="1" {% if setting['checkout']['card']['secure_scenario'][secure_scenario['code']] %}selected="selected"{% endif %}>{{ text_accept }}{% if secure_scenario['recommended'] %} {{ text_recommended }}{% endif %}</option>
+												<option value="0" {% if not setting['checkout']['card']['secure_scenario'][secure_scenario['code']] %}selected="selected"{% endif %}>{{ text_decline }}{% if not secure_scenario['recommended'] %} {{ text_recommended }}{% endif %}</option>
 											</select>
 										</div>
 									</div>

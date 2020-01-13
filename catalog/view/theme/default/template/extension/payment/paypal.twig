@@ -337,13 +337,15 @@ function setupPayPal() {
 			},
 			// Set up the transaction
 			createOrder: function(data, actions) {
+				order_id = false;
+				
 				$.ajax({
 					method: 'post',
 					url: 'index.php?route=extension/payment/paypal/createOrder',
-					data: $('#product input[type=\'text\'], #product input[type=\'hidden\'], #product input[type=\'radio\']:checked, #product input[type=\'checkbox\']:checked, #product select, #product textarea'),
+					data: '',
 					dataType: 'json',
 					async: false,
-					success: function(json) {console.log(json);							
+					success: function(json) {						
 						showPayPalAlert(json);
 							
 						order_id = json['order_id'];
@@ -356,8 +358,10 @@ function setupPayPal() {
 				return order_id;	
 			},
 			// Finalize the transaction
-			onApprove: function(data, actions) {				
+			onApprove: function(data, actions) {			
 				// Call your server to save the transaction
+				restart = false;
+				
 				$.ajax({
 					method: 'post',
 					url: 'index.php?route=extension/payment/paypal/approveOrder',
@@ -366,6 +370,10 @@ function setupPayPal() {
 					async: false,
 					success: function(json) {							
 						showPayPalAlert(json);
+						
+						if (json['restart']) {
+							restart = json['restart'];
+						}
 							
 						if (json['success']) {
 							location = json['success'];
@@ -375,6 +383,10 @@ function setupPayPal() {
 						console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
 					}
 				});
+				
+				if (restart) {
+					return actions.restart();
+				}
 			}
 		}).render('#paypal_express_button_container');
 	} catch (error) {
@@ -423,6 +435,8 @@ function setupPayPal() {
 					}
 				},
 				createOrder: function(data, actions) {
+					order_id = false;
+					
 					$.ajax({
 						method: 'post',
 						url: 'index.php?route=extension/payment/paypal/createOrder',

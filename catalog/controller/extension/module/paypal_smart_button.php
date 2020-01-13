@@ -66,6 +66,8 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 	}
 	
 	public function createOrder() {
+		$this->load->language('extension/module/paypal_smart_button');
+		
 		$this->load->model('extension/module/paypal_smart_button');
 		
 		$errors = array();
@@ -134,50 +136,19 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 			}
 		}
 		
-		if (!$errors) {
-			/*$totals = array();
-			$taxes = $this->cart->getTaxes();
-			$total = 0;
-
-			// Because __call can not keep var references so we put them into an array.
-			$total_data = array(
-				'totals' => &$totals,
-				'taxes'  => &$taxes,
-				'total'  => &$total
-			);
-
-			$this->load->model('setting/extension');
-
-			$sort_order = array();
-
-			$results = $this->model_setting_extension->getExtensions('total');
-
-			foreach ($results as $key => $value) {
-				$sort_order[$key] = $this->config->get('total_' . $value['code'] . '_sort_order');
-			}
-
-			array_multisort($sort_order, SORT_ASC, $results);
-
-			foreach ($results as $result) {
-				if ($this->config->get('total_' . $result['code'] . '_status')) {
-					$this->load->model('extension/total/' . $result['code']);
-
-					// We have to put the totals in an array so that they pass by reference.
-					$this->{'model_extension_total_' . $result['code']}->getTotal($total_data);
-				}
-			}
-
-			$sort_order = array();
-
-			foreach ($totals as $key => $value) {
-				$sort_order[$key] = $value['sort_order'];
-			}
-
-			array_multisort($sort_order, SORT_ASC, $totals);
-			*/								
+		if (!$errors) {					
+			// Setting
+			$_config = new Config();
+			$_config->load('paypal');
+			
+			$config_setting = $_config->get('paypal_setting');
+		
+			$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
+		
 			$client_id = $this->config->get('payment_paypal_client_id');
 			$secret = $this->config->get('payment_paypal_secret');
 			$environment = $this->config->get('payment_paypal_environment');
+			$partner_id = $setting['partner'][$environment]['partner_id'];
 			$transaction_method = $this->config->get('payment_paypal_transaction_method');	
 			
 			$currency_code = $this->session->data['currency'];
@@ -185,7 +156,14 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 			
 			require_once DIR_SYSTEM .'library/paypal/paypal.php';
 		
-			$paypal = new PayPal($client_id, $secret, $environment);
+			$paypal_info = array(
+				'partner_id' => $partner_id,
+				'client_id' => $client_id,
+				'secret' => $secret,
+				'environment' => $environment
+			);
+		
+			$paypal = new PayPal($paypal_info);
 			
 			$token_info = array(
 				'grant_type' => 'client_credentials'
@@ -254,17 +232,21 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 			}
 			
 			if ($paypal->hasErrors()) {
-				$error_title = array();
+				$error_messages = array();
 				
 				$errors = $paypal->getErrors();
 								
 				foreach ($errors as $error) {
-					$error_title[] = $error['title'];
+					if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
+						$error['message'] = $this->language->get('error_timeout');
+					}
 					
-					$this->model_extension_module_paypal_smart_button->log($error['data'], $error['title']);
+					$error_messages[] = $error['message'];
+					
+					$this->model_extension_payment_paypal->log($error, $error['message']);
 				}
 				
-				$this->error['warning'] = implode(' ', $error_title);
+				$this->error['warning'] = implode(' ', $error_messages);
 			}
 		} else {
 			$this->error['warning'] = implode(' ', $errors);
@@ -305,17 +287,33 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 			$this->response->addHeader('Content-Type: application/json');
 			$this->response->setOutput(json_encode($json));
 		}
+		
+		// Setting
+		$_config = new Config();
+		$_config->load('paypal');
+			
+		$config_setting = $_config->get('paypal_setting');
+		
+		$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
 				
 		$client_id = $this->config->get('payment_paypal_client_id');
 		$secret = $this->config->get('payment_paypal_secret');
 		$environment = $this->config->get('payment_paypal_environment');
+		$partner_id = $setting['partner'][$environment]['partner_id'];
 		$transaction_method = $this->config->get('payment_paypal_transaction_method');
 
 		$order_id = $this->session->data['paypal_order_id'];
 
 		require_once DIR_SYSTEM .'library/paypal/paypal.php';
 		
-		$paypal = new PayPal($client_id, $secret, $environment);
+		$paypal_info = array(
+			'partner_id' => $partner_id,
+			'client_id' => $client_id,
+			'secret' => $secret,
+			'environment' => $environment
+		);
+		
+		$paypal = new PayPal($paypal_info);
 		
 		$token_info = array(
 			'grant_type' => 'client_credentials'
@@ -326,17 +324,21 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 		$order_info = $paypal->getOrder($order_id);
 								
 		if ($paypal->hasErrors()) {
-			$error_title = array();
+			$error_messages = array();
 				
 			$errors = $paypal->getErrors();
 								
 			foreach ($errors as $error) {
-				$error_title[] = $error['title'];
+				if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
+					$error['message'] = $this->language->get('error_timeout');
+				}
 					
-				$this->model_extension_module_paypal_smart_button->log($error['data'], $error['title']);
+				$error_messages[] = $error['message'];
+					
+				$this->model_extension_payment_paypal->log($error, $error['message']);
 			}
 				
-			$this->error['warning'] = implode(' ', $error_title);
+			$this->error['warning'] = implode(' ', $error_messages);
 		}
 		
 		if ($order_info && !$this->error) {
@@ -697,6 +699,9 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 		}
 
 		array_multisort($sort_order, SORT_ASC, $method_data);
+		
+		$this->session->data['payment_methods'] = $method_data;
+		$data['payment_methods'] = $method_data;
 
 		if (!isset($method_data['paypal'])) {
 			$this->session->data['error_warning'] = $this->language->get('error_unavailable');
@@ -802,10 +807,10 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 	}
 	
 	public function completeOrder() {		
-		$this->load->language('extension/payment/paypal');
+		$this->load->language('extension/module/paypal_smart_button');
 						
 		$this->load->model('extension/module/paypal_smart_button');
-		
+				
 		// Validate if payment address has been set.
 		if (empty($this->session->data['payment_address'])) {
 			$this->response->redirect($this->url->link('checkout/checkout', '', true));
@@ -836,7 +841,7 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 			$this->response->redirect($this->url->link('checkout/cart', '', true));
 		}
 		
-		if (isset($this->session->data['paypal_order_id'])) {					
+		if (isset($this->session->data['paypal_order_id'])) {			
 			$order_data = array();
 
 			$totals = array();
@@ -1104,14 +1109,30 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 
 			$this->session->data['order_id'] = $this->model_checkout_order->addOrder($order_data);
 			
+			// Setting
+			$_config = new Config();
+			$_config->load('paypal');
+			
+			$config_setting = $_config->get('paypal_setting');
+		
+			$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
+			
 			$client_id = $this->config->get('payment_paypal_client_id');
 			$secret = $this->config->get('payment_paypal_secret');
 			$environment = $this->config->get('payment_paypal_environment');
+			$partner_id = $setting['partner'][$environment]['partner_id'];
 			$transaction_method = $this->config->get('payment_paypal_transaction_method');
 
 			require_once DIR_SYSTEM .'library/paypal/paypal.php';
 		
-			$paypal = new PayPal($client_id, $secret, $environment);
+			$paypal_info = array(
+				'partner_id' => $partner_id,
+				'client_id' => $client_id,
+				'secret' => $secret,
+				'environment' => $environment
+			);
+		
+			$paypal = new PayPal($paypal_info);
 			
 			$token_info = array(
 				'grant_type' => 'client_credentials'
@@ -1120,27 +1141,21 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 			$paypal->setAccessToken($token_info);
 			
 			$order_id = $this->session->data['paypal_order_id'];
-
-			$order_info = array(
-				array(
-					'op' => 'replace',
-					'path' => '/purchase_units/@reference_id==\'default\'/description',
-					'value' => 'Your order ' . $this->session->data['order_id']
-				)
-			);
-					
-			$result = $paypal->updateOrder($order_id, $order_info);
 			
-			$order_info = array(
-				array(
-					'op' => 'replace',
-					'path' => '/purchase_units/@reference_id==\'default\'/invoice_id',
-					'value' => $this->session->data['order_id']
-				)
-			);
-					
-			$result = $paypal->updateOrder($order_id, $order_info);			
+			$order_info = array();
 			
+			$order_info[] = array(
+				'op' => 'add',
+				'path' => '/purchase_units/@reference_id==\'default\'/description',
+				'value' => 'Your order ' . $this->session->data['order_id']
+			);
+			
+			$order_info[] = array(
+				'op' => 'add',
+				'path' => '/purchase_units/@reference_id==\'default\'/invoice_id',
+				'value' => $this->session->data['order_id']
+			);
+						
 			$shipping_info = array();
 
 			if ($this->cart->hasShipping()) {
@@ -1161,28 +1176,20 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 						$shipping_info['address']['country_code'] = $country_info['iso_code_2'];
 					}
 				}
-			}
-			
-			$order_info = array(
-				array(
+				
+				$order_info[] = array(
 					'op' => 'replace',
 					'path' => '/purchase_units/@reference_id==\'default\'/shipping/name',
 					'value' => $shipping_info['name']
-				)
-			);
-			
-			$result = $paypal->updateOrder($order_id, $order_info);
-			
-			$order_info = array(
-				array(
+				);
+				
+				$order_info[] = array(
 					'op' => 'replace',
 					'path' => '/purchase_units/@reference_id==\'default\'/shipping/address',
 					'value' => $shipping_info['address']
-				)
-			);
-			
-			$result = $paypal->updateOrder($order_id, $order_info);
-						
+				);
+			}
+												
 			$sub_total = $this->cart->getSubTotal();
 			$total = $this->cart->getTotal();
 			$tax_total = $total - $sub_total;
@@ -1195,7 +1202,7 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 				$shipping_total = $this->tax->calculate($this->session->data['shipping_method']['cost'], $this->session->data['shipping_method']['tax_class_id'], $this->config->get('config_tax'));
 			}
 		
-			$rebate = $sub_total + $tax_total + $shipping_total - $order_info['total'];
+			$rebate = $sub_total + $tax_total + $shipping_total - $order_data['total'];
 		
 			if ($rebate > 0) {
 				$discount_total = $rebate;
@@ -1230,39 +1237,57 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 				)
 			);
 					
-			$order_info = array(
-				array(
-					'op' => 'replace',
-					'path' => '/purchase_units/@reference_id==\'default\'/amount',
-					'value' => $amount_info
-				)
+			$order_info[] = array(
+				'op' => 'replace',
+				'path' => '/purchase_units/@reference_id==\'default\'/amount',
+				'value' => $amount_info
 			);
 					
 			$result = $paypal->updateOrder($order_id, $order_info);
 			
 			if ($transaction_method == 'authorize') {
 				$result = $paypal->setOrderAuthorize($order_id);
+				
+				if (isset($result['purchase_units'][0]['payments']['authorizations'][0]['seller_protection'])) {
+					$seller_protection_status = $result['purchase_units'][0]['payments']['authorizations'][0]['seller_protection']['status'];
+				}
 			} else {
 				$result = $paypal->setOrderCapture($order_id);
+				
+				if (isset($result['purchase_units'][0]['payments']['captures'][0]['seller_protection'])) {
+					$seller_protection_status = $result['purchase_units'][0]['payments']['captures'][0]['seller_protection']['status'];
+				}
+			}
+			
+			if (!$this->cart->hasShipping()) {
+				$seller_protection_status = 'NOT_ELIGIBLE';
 			}
 			
 			if ($paypal->hasErrors()) {
-				$error_title = array();
+				$error_messages = array();
 				
 				$errors = $paypal->getErrors();
 								
 				foreach ($errors as $error) {
-					$error_title[] = $error['title'];
+					if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
+						$error['message'] = $this->language->get('error_timeout');
+					}
 					
-					$this->model_extension_module_paypal_smart_button->log($error['data'], $error['title']);
+					$error_messages[] = $error['message'];
+					
+					$this->model_extension_payment_paypal->log($error, $error['message']);
 				}
 				
-				$this->error['warning'] = implode(' ', $error_title);
+				$this->error['warning'] = implode(' ', $error_messages);
 			}
 		
 			unset($this->session->data['paypal_order_id']);
 			
-			if (!$this->error) {				
+			if (!$this->error) {								
+				$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
+				
+				$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $this->config->get('config_order_status_id'), $message);
+				
 				$this->response->redirect($this->url->link('checkout/success', '', true));
 			} else {
 				$this->session->data['error'] = $this->error['warning'];

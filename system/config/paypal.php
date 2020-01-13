@@ -11,11 +11,6 @@ $_['paypal_setting'] = array(
 		)
 	),
 	'order_status' => array(
-		'canceled_reversal' => array(
-			'code' => 'canceled_reversal',
-			'name' => 'text_canceled_reversal_status',
-			'id' => 9
-		),
 		'completed' => array(
 			'code' => 'completed',
 			'name' => 'text_completed_status',
@@ -26,11 +21,6 @@ $_['paypal_setting'] = array(
 			'name' => 'text_denied_status',
 			'id' => 8
 		),
-		'expired' => array(
-			'code' => 'expired',
-			'name' => 'text_expired_status',
-			'id' => 14
-		),
 		'failed' => array(
 			'code' => 'failed',
 			'name' => 'text_failed_status',
@@ -40,11 +30,6 @@ $_['paypal_setting'] = array(
 			'code' => 'pending',
 			'name' => 'text_pending_status',
 			'id' => 1
-		),
-		'processed' => array(
-			'code' => 'processed',
-			'name' => 'text_processed_status',
-			'id' => 15
 		),
 		'refunded' => array(
 			'code' => 'refunded',
@@ -77,16 +62,6 @@ $_['paypal_setting'] = array(
 			'form_size' => 'large',
 			'secure_status' => true,
 			'secure_scenario' => array(
-				'undefined' => 1,
-				'error' => 0,
-				'skipped_by_buyer' => 0,
-				'failure' => 0,
-				'bypassed' => 0,
-				'attempted' => 1,
-				'unavailable' => 0,
-				'card_ineligible' => 1
-			),
-			'secure_scenario_recommended' => array(
 				'undefined' => 1,
 				'error' => 0,
 				'skipped_by_buyer' => 0,
@@ -231,42 +206,50 @@ $_['paypal_setting'] = array(
 		'undefined' => array(
 			'code' => 'undefined',
 			'name' => 'text_3ds_undefined',
-			'error' => 'error_3ds_undefined'
+			'error' => 'error_3ds_undefined',
+			'recommended' => 1
 		),
 		'error' => array(
 			'code' => 'error',
 			'name' => 'text_3ds_error',
-			'error' => 'error_3ds_undefined'
+			'error' => 'error_3ds_undefined',
+			'recommended' => 0
 		),
 		'skipped_by_buyer' => array(
 			'code' => 'skipped_by_buyer',
 			'name' => 'text_3ds_skipped_by_buyer',
-			'error' => 'error_3ds_skipped_by_buyer'
+			'error' => 'error_3ds_skipped_by_buyer',
+			'recommended' => 0
 		),
 		'failure' => array(
 			'code' => 'failure',
 			'name' => 'text_3ds_failure',
-			'error' => 'error_3ds_failure'
+			'error' => 'error_3ds_failure',
+			'recommended' => 0
 		),
 		'bypassed' => array(
 			'code' => 'bypassed',
 			'name' => 'text_3ds_bypassed',
-			'error' => 'error_3ds_bypassed'
+			'error' => 'error_3ds_bypassed',
+			'recommended' => 0
 		),
 		'attempted' => array(
 			'code' => 'attempted',
 			'name' => 'text_3ds_attempted',
-			'error' => 'error_3ds_attempted'
+			'error' => 'error_3ds_attempted',
+			'recommended' => 1
 		),
 		'unavailable' => array(
 			'code' => 'unavailable',
 			'name' => 'text_3ds_unavailable',
-			'error' => 'error_3ds_unavailable'
+			'error' => 'error_3ds_unavailable',
+			'recommended' => 0
 		),
 		'card_ineligible' => array(
 			'code' => 'card_ineligible',
 			'name' => 'text_3ds_card_ineligible',
-			'error' => 'error_3ds_card_ineligible'
+			'error' => 'error_3ds_card_ineligible',
+			'recommended' => 1
 		)
 	)
 );

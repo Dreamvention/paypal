@@ -78,12 +78,15 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		
 		$data['help_checkout_express'] = sprintf($this->language->get('help_checkout_express'), $data['configure_url'][$data['environment']]['express_checkout']);
 			
-		if (isset($this->session->data['authorization_code']) && isset($this->session->data['shared_id']) && isset($this->session->data['seller_nonce']) && isset($this->request->get['merchantIdInPayPal'])) {
-			$shared_id = $this->session->data['shared_id'];
-									
+		if (isset($this->session->data['authorization_code']) && isset($this->session->data['shared_id']) && isset($this->session->data['seller_nonce']) && isset($this->request->get['merchantIdInPayPal'])) {						
 			require_once DIR_SYSTEM .'library/paypal/paypal.php';
+			
+			$paypal_info = array(
+				'client_id' => $this->session->data['shared_id'],
+				'environment' => $data['environment']
+			);
 					
-			$paypal = new PayPal($shared_id);
+			$paypal = new PayPal($paypal_info);
 			
 			$token_info = array(
 				'grant_type' => 'authorization_code',
@@ -124,17 +127,21 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			}
 		
 			if ($paypal->hasErrors()) {
-				$error_title = array();
+				$error_messages = array();
 				
 				$errors = $paypal->getErrors();
 								
 				foreach ($errors as $error) {
-					$error_title[] = $error['title'];
+					if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
+						$error['message'] = $this->language->get('error_timeout');
+					}
 					
-					$this->model_extension_payment_paypal->log($error['data'], $error['title']);
+					$error_messages[] = $error['message'];
+					
+					$this->model_extension_payment_paypal->log($error, $error['message']);
 				}
 				
-				$this->error['warning'] = implode(' ', $error_title);
+				$this->error['warning'] = implode(' ', $error_messages);
 			}
    			
 			$merchant_id = $this->request->get['merchantIdInPayPal'];
@@ -230,8 +237,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		
 		if ($data['client_id'] && $data['secret']) {										
 			require_once DIR_SYSTEM .'library/paypal/paypal.php';
+			
+			$paypal_info = array(
+				'client_id' => $data['client_id'],
+				'secret' => $data['secret'],
+				'environment' => $data['environment']
+			);
 		
-			$paypal = new PayPal($data['client_id'], $data['secret'], $data['environment']);
+			$paypal = new PayPal($paypal_info);
 			
 			$token_info = array(
 				'grant_type' => 'client_credentials'
@@ -240,19 +253,23 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$paypal->setAccessToken($token_info);
 		
 			$data['client_token'] = $paypal->getClientToken();
-						
+									
 			if ($paypal->hasErrors()) {
-				$error_title = array();
+				$error_messages = array();
 				
 				$errors = $paypal->getErrors();
 								
 				foreach ($errors as $error) {
-					$error_title[] = $error['title'];
+					if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
+						$error['message'] = $this->language->get('error_timeout');
+					}
 					
-					$this->model_extension_payment_paypal->log($error['data'], $error['title']);
+					$error_messages[] = $error['message'];
+					
+					$this->model_extension_payment_paypal->log($error, $error['message']);
 				}
 				
-				$this->error['warning'] = implode(' ', $error_title);
+				$this->error['warning'] = implode(' ', $error_messages);
 			}
 		}
 		
@@ -293,18 +310,39 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		if (!$this->user->hasPermission('modify', 'extension/payment/paypal')) {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
+				
+		require_once DIR_SYSTEM .'library/paypal/paypal.php';
+		
+		$paypal_info = array(
+			'client_id' => $this->request->post['payment_paypal_client_id'],
+			'secret' => $this->request->post['payment_paypal_secret'],
+			'environment' => $this->request->post['payment_paypal_environment']
+		);
+		
+		$paypal = new PayPal($paypal_info);
 		
 		$token_info = array(
 			'grant_type' => 'client_credentials'
 		);	
-		
-		require_once DIR_SYSTEM .'library/paypal/paypal.php';
-					
-		$paypal = new PayPal($this->request->post['payment_paypal_client_id'], $this->request->post['payment_paypal_secret'], $this->request->post['payment_paypal_environment']);			
+							
 		$paypal->setAccessToken($token_info);
 				
 		if ($paypal->hasErrors()) {
-			$this->error['warning'] = implode(' ', $paypal->getErrors());
+			$error_messages = array();
+				
+			$errors = $paypal->getErrors();
+								
+			foreach ($errors as $error) {
+				if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
+					$error['message'] = $this->language->get('error_timeout');
+				}
+				
+				$error_messages[] = $error['message'];
+					
+				$this->model_extension_payment_paypal->log($error, $error['message']);
+			}
+				
+			$this->error['warning'] = implode(' ', $error_messages);
 		}
 		
 		return !$this->error;

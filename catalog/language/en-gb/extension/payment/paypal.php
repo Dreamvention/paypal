@@ -4,6 +4,7 @@ $_['text_title']						= 'PayPal (Express, Card)';
 $_['text_paypal_express']				= 'PayPal Express';
 $_['text_paypal_card']					= 'PayPal Card';
 $_['text_wait']							= 'Please wait!';
+$_['text_order_message']				= 'PayPal Seller Protection - %s';
 
 // Entry
 $_['entry_card_number']					= 'Card Number';
@@ -24,3 +25,4 @@ $_['error_3ds_unavailable']				= 'Issuing bank is not able to complete authentic
 $_['error_3ds_attempted']				= 'Card is not enrolled in 3D Secure as card issuing bank is not participating in 3D Secure.';
 $_['error_3ds_card_ineligible']			= 'Card is not eligible for 3DS Secure authentication.';
 $_['error_payment']						= 'Please choose another payment method or <a href="%s" target="_blank">contact us</a>.';
+$_['error_timeout'] 	  				= 'Sorry, PayPal is currently busy. Please try again later!';
