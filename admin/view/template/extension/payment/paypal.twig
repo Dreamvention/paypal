@@ -372,10 +372,12 @@ try {
 <script type="text/javascript">
 
 function onBoardedCallback(authorization_code, shared_id) {
+	var environment = $('#input_environment').val();
+	
 	$.ajax({
 		url: '{{ callback_url }}',
 		type: 'post',
-		data: 'authorization_code=' + authorization_code + '&shared_id=' + shared_id + '&seller_nonce={{ seller_nonce }}',
+		data: 'environment=' + environment + '&authorization_code=' + authorization_code + '&shared_id=' + shared_id + '&seller_nonce={{ seller_nonce }}',
 		dataType: 'json',
 		success: function(json) {
 			

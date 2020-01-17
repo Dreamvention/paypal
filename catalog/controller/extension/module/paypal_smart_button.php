@@ -154,7 +154,7 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 			$currency_code = $this->session->data['currency'];
 			$currency_value = $this->currency->getValue($this->session->data['currency']);
 			
-			require_once DIR_SYSTEM .'library/paypal/paypal.php';
+			require_once DIR_SYSTEM . 'library/paypal/paypal.php';
 		
 			$paypal_info = array(
 				'partner_id' => $partner_id,
@@ -243,7 +243,7 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 					
 					$error_messages[] = $error['message'];
 					
-					$this->model_extension_payment_paypal->log($error, $error['message']);
+					$this->model_extension_module_paypal_smart_button->log($error, $error['message']);
 				}
 				
 				$this->error['warning'] = implode(' ', $error_messages);
@@ -304,7 +304,7 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 
 		$order_id = $this->session->data['paypal_order_id'];
 
-		require_once DIR_SYSTEM .'library/paypal/paypal.php';
+		require_once DIR_SYSTEM . 'library/paypal/paypal.php';
 		
 		$paypal_info = array(
 			'partner_id' => $partner_id,
@@ -335,7 +335,7 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 					
 				$error_messages[] = $error['message'];
 					
-				$this->model_extension_payment_paypal->log($error, $error['message']);
+				$this->model_extension_module_paypal_smart_button->log($error, $error['message']);
 			}
 				
 			$this->error['warning'] = implode(' ', $error_messages);
@@ -565,6 +565,28 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 				$price = false;
 				$total = false;
 			}
+			
+			$recurring = '';
+
+			if ($product['recurring']) {
+				$frequencies = array(
+					'day'        => $this->language->get('text_day'),
+					'week'       => $this->language->get('text_week'),
+					'semi_month' => $this->language->get('text_semi_month'),
+					'month'      => $this->language->get('text_month'),
+					'year'       => $this->language->get('text_year'),
+				);
+
+				if ($product['recurring']['trial']) {
+					$recurring = sprintf($this->language->get('text_trial_description'), $this->currency->format($this->tax->calculate($product['recurring']['trial_price'] * $product['quantity'], $product['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']), $product['recurring']['trial_cycle'], $frequencies[$product['recurring']['trial_frequency']], $product['recurring']['trial_duration']) . ' ';
+				}
+
+				if ($product['recurring']['duration']) {
+					$recurring .= sprintf($this->language->get('text_payment_description'), $this->currency->format($this->tax->calculate($product['recurring']['price'] * $product['quantity'], $product['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']), $product['recurring']['cycle'], $frequencies[$product['recurring']['frequency']], $product['recurring']['duration']);
+				} else {
+					$recurring .= sprintf($this->language->get('text_payment_cancel'), $this->currency->format($this->tax->calculate($product['recurring']['price'] * $product['quantity'], $product['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']), $product['recurring']['cycle'], $frequencies[$product['recurring']['frequency']], $product['recurring']['duration']);
+				}
+			}
 
 			$data['products'][] = array(
 				'cart_id'               => $product['cart_id'],
@@ -572,17 +594,31 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 				'name'                  => $product['name'],
 				'model'                 => $product['model'],
 				'option'                => $option_data,
+				'recurring' 			=> $recurring,
 				'quantity'              => $product['quantity'],
 				'stock'                 => $product['stock'] ? true : !(!$this->config->get('config_stock_checkout') || $this->config->get('config_stock_warning')),
 				'reward'                => ($product['reward'] ? sprintf($this->language->get('text_points'), $product['reward']) : ''),
 				'price'                 => $price,
 				'total'                 => $total,
-				'href'                  => $this->url->link('product/product', 'product_id=' . $product['product_id']),
-				'remove'                => $this->url->link('checkout/cart', 'remove=' . $product['cart_id']),
+				'href'                  => $this->url->link('product/product', 'product_id=' . $product['product_id'])
 			);
 		}
 
+		// Gift Voucher
 		$data['vouchers'] = array();
+
+		if (!empty($this->session->data['vouchers'])) {
+			foreach ($this->session->data['vouchers'] as $key => $voucher) {
+				$data['vouchers'][] = array(
+					'key'         => $key,
+					'description' => $voucher['description'],
+					'amount'      => $this->currency->format($voucher['amount'], $this->session->data['currency']),
+					'remove'      => $this->url->link('checkout/cart', 'remove=' . $key)
+				);
+			}
+		}
+		
+		$this->load->model('setting/extension');
 		
 		if ($this->cart->hasShipping()) {
 			$data['has_shipping'] = true;
@@ -601,8 +637,6 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 			if (!empty($data['shipping_address'])) {
 				// Shipping Methods
 				$quote_data = array();
-
-				$this->load->model('setting/extension');
 
 				$results = $this->model_setting_extension->getExtensions('shipping');
 
@@ -676,8 +710,6 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 
 		$method_data = array();
 
-		$this->load->model('setting/extension');
-
 		$results = $this->model_setting_extension->getExtensions('payment');
 
 		foreach ($results as $result) {
@@ -718,8 +750,6 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 		$data['custom_fields'] = $this->model_account_custom_field->getCustomFields();
 
 		// Totals
-		$this->load->model('setting/extension');
-
 		$totals = array();
 		$taxes = $this->cart->getTaxes();
 		$total = 0;
@@ -1123,7 +1153,7 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 			$partner_id = $setting['partner'][$environment]['partner_id'];
 			$transaction_method = $this->config->get('payment_paypal_transaction_method');
 
-			require_once DIR_SYSTEM .'library/paypal/paypal.php';
+			require_once DIR_SYSTEM . 'library/paypal/paypal.php';
 		
 			$paypal_info = array(
 				'partner_id' => $partner_id,
@@ -1275,7 +1305,7 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 					
 					$error_messages[] = $error['message'];
 					
-					$this->model_extension_payment_paypal->log($error, $error['message']);
+					$this->model_extension_module_paypal_smart_button->log($error, $error['message']);
 				}
 				
 				$this->error['warning'] = implode(' ', $error_messages);
@@ -1638,7 +1668,7 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 	}
 
 	private function validateVoucher() {
-		$this->load->model('extension/total/coupon');
+		$this->load->model('extension/total/voucher');
 
 		$voucher_info = $this->model_extension_total_voucher->getVoucher($this->request->post['voucher']);
 

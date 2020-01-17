@@ -41,7 +41,7 @@ $_['paypal_smart_button_setting'] = array(
 			'code'	=> 'before',
 			'name'	=> 'text_insert_before'
 		),
-		'into_after' => array(
+		'after' => array(
 			'code'	=> 'after',
 			'name'	=> 'text_insert_after'
 		)

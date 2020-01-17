@@ -166,7 +166,7 @@
 						{% for product in products %}
 						<tr>
 							<td class="text-left">
-								<a href="{{ product.href }}">{{ product['name'] }}</a>
+								<a href="{{ product['href'] }}">{{ product['name'] }}</a>
 								{% for option in product['option'] %} <br />
 								<small> - {{ option['name'] }}: {{ option['value'] }}</small>
 								{% endfor %}

@@ -54,36 +54,15 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$_config->load('paypal');
 		
 		$data['setting'] = $_config->get('paypal_setting');
-		
-		if (isset($this->request->post['payment_paypal_environment'])) {
-			$data['environment'] = $this->request->post['payment_paypal_environment'];
-		} elseif ($this->config->get('payment_paypal_environment')) {
-			$data['environment'] = $this->config->get('payment_paypal_environment');
-		} else {
-			$data['environment'] = 'production';
-		}
-				
-		$data['seller_nonce'] = token(50);
-		
-		$data['configure_url'] = array(
-			'production' => array(
-				'ppcp' => 'https://www.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['production']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['production']['client_id'] . '&features=PAYMENT,REFUND&product=ppcp&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce'],
-				'express_checkout' => 'https://www.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['production']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['production']['client_id'] . '&features=PAYMENT,REFUND&product=EXPRESS_CHECKOUT&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce']
-			),
-			'sandbox' => array(
-				'ppcp' => 'https://www.sandbox.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['sandbox']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['sandbox']['client_id'] . '&features=PAYMENT,REFUND&product=ppcp&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce'],
-				'express_checkout' => 'https://www.sandbox.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['sandbox']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['sandbox']['client_id'] . '&features=PAYMENT,REFUND&product=EXPRESS_CHECKOUT&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce']
-			)
-		);
-		
-		$data['help_checkout_express'] = sprintf($this->language->get('help_checkout_express'), $data['configure_url'][$data['environment']]['express_checkout']);
+					
+		if (isset($this->session->data['environment']) && isset($this->session->data['authorization_code']) && isset($this->session->data['shared_id']) && isset($this->session->data['seller_nonce']) && isset($this->request->get['merchantIdInPayPal'])) {						
+			$environment = $this->session->data['environment'];
 			
-		if (isset($this->session->data['authorization_code']) && isset($this->session->data['shared_id']) && isset($this->session->data['seller_nonce']) && isset($this->request->get['merchantIdInPayPal'])) {						
-			require_once DIR_SYSTEM .'library/paypal/paypal.php';
+			require_once DIR_SYSTEM . 'library/paypal/paypal.php';
 			
 			$paypal_info = array(
 				'client_id' => $this->session->data['shared_id'],
-				'environment' => $data['environment']
+				'environment' => $environment
 			);
 					
 			$paypal = new PayPal($paypal_info);
@@ -96,7 +75,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			
 			$paypal->setAccessToken($token_info);
 											
-			$result = $paypal->getSellerCredentials($data['setting']['partner'][$data['environment']]['partner_id']);
+			$result = $paypal->getSellerCredentials($data['setting']['partner'][$environment]['partner_id']);
 			
 			if (isset($result['client_id']) && isset($result['client_secret'])) {
 				$client_id = $result['client_id'];
@@ -150,6 +129,31 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			unset($this->session->data['shared_id']);
 			unset($this->session->data['seller_nonce']);
 		}
+		
+		if (isset($environment)) {
+			$data['environment'] = $environment;
+		} elseif (isset($this->request->post['payment_paypal_environment'])) {
+			$data['environment'] = $this->request->post['payment_paypal_environment'];
+		} elseif ($this->config->get('payment_paypal_environment')) {
+			$data['environment'] = $this->config->get('payment_paypal_environment');
+		} else {
+			$data['environment'] = 'production';
+		}
+				
+		$data['seller_nonce'] = token(50);
+		
+		$data['configure_url'] = array(
+			'production' => array(
+				'ppcp' => 'https://www.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['production']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['production']['client_id'] . '&features=PAYMENT,REFUND&product=ppcp&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce'],
+				'express_checkout' => 'https://www.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['production']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['production']['client_id'] . '&features=PAYMENT,REFUND&product=EXPRESS_CHECKOUT&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce']
+			),
+			'sandbox' => array(
+				'ppcp' => 'https://www.sandbox.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['sandbox']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['sandbox']['client_id'] . '&features=PAYMENT,REFUND&product=ppcp&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce'],
+				'express_checkout' => 'https://www.sandbox.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['sandbox']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['sandbox']['client_id'] . '&features=PAYMENT,REFUND&product=EXPRESS_CHECKOUT&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce']
+			)
+		);
+		
+		$data['help_checkout_express'] = sprintf($this->language->get('help_checkout_express'), $data['configure_url'][$data['environment']]['express_checkout']);
 		
 		if (isset($client_id)) {
 			$data['client_id'] = $client_id;
@@ -236,7 +240,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		}
 		
 		if ($data['client_id'] && $data['secret']) {										
-			require_once DIR_SYSTEM .'library/paypal/paypal.php';
+			require_once DIR_SYSTEM . 'library/paypal/paypal.php';
 			
 			$paypal_info = array(
 				'client_id' => $data['client_id'],
@@ -287,7 +291,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 	}
 		
 	public function callback() {
-		if (isset($this->request->post['authorization_code']) && isset($this->request->post['shared_id']) && isset($this->request->post['seller_nonce'])) {
+		if (isset($this->request->post['environment']) && isset($this->request->post['authorization_code']) && isset($this->request->post['shared_id']) && isset($this->request->post['seller_nonce'])) {
+			$this->session->data['environment'] = $this->request->post['environment'];
 			$this->session->data['authorization_code'] = $this->request->post['authorization_code'];
 			$this->session->data['shared_id'] = $this->request->post['shared_id'];
 			$this->session->data['seller_nonce'] = $this->request->post['seller_nonce'];
@@ -311,7 +316,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
 				
-		require_once DIR_SYSTEM .'library/paypal/paypal.php';
+		require_once DIR_SYSTEM . 'library/paypal/paypal.php';
 		
 		$paypal_info = array(
 			'client_id' => $this->request->post['payment_paypal_client_id'],

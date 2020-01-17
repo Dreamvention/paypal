@@ -264,6 +264,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$this->load->language('extension/payment/paypal');
 		
 		$this->load->model('extension/payment/paypal');
+		
+		// Setting
+		$_config = new Config();
+		$_config->load('paypal');
+			
+		$config_setting = $_config->get('paypal_setting');
+		
+		$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
 				
 		if (isset($this->request->post['order_id'])) {
 			$order_id = $this->request->post['order_id'];
@@ -289,15 +297,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			}
 		}
 					
-		if (isset($order_id) && !$this->error) {
-			// Setting
-			$_config = new Config();
-			$_config->load('paypal');
-			
-			$config_setting = $_config->get('paypal_setting');
-		
-			$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
-		
+		if (isset($order_id) && !$this->error) {		
 			$client_id = $this->config->get('payment_paypal_client_id');
 			$secret = $this->config->get('payment_paypal_secret');
 			$environment = $this->config->get('payment_paypal_environment');
