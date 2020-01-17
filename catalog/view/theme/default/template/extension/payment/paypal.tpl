@@ -4,16 +4,16 @@
 	position: relative;
 }
 
-{% if express_status %}
+<?php if ($express_status) { ?>
 #paypal_express_button {
-	text-align: {{ button_align }};
+	text-align: <?php echo $button_align; ?>;
 }
 
 #paypal_express_button_container {
-	{% if button_width %}
+	<?php if ($button_width) { ?>
 	display: inline-block;
-	width: {{ button_width }};
-	{% endif %}
+	width: <?php echo $button_width; ?>;
+	<?php } ?>
 }
 
 @media (max-width: 476px) {
@@ -21,17 +21,17 @@
 		width: 100%;
 	}
 }
-{% endif %}
-{% if card_status %}
+<?php } ?>
+<?php if ($card_status) { ?>
 #paypal_card {
-	text-align: {{ form_align }};
+	text-align: <?php echo $form_align; ?>;
 }
 
 #paypal_card_form {
-	{% if form_width %}
+	<?php if ($form_width) { ?>
 	display: inline-block;
-	width: {{ form_width }};
-	{% endif %}
+	width: <?php echo $form_width; ?>;
+	<?php } ?>
 	text-align: center;
 	transition: all 600ms cubic-bezier(0.2, 1.3, 0.7, 1);
 	-webkit-animation: cardIntro 500ms cubic-bezier(0.2, 1.3, 0.7, 1);
@@ -190,7 +190,7 @@
 	opacity: 1;
 	cursor: pointer;
 }
-{% endif %}
+<?php } ?>
 
 #paypal_form .lds-spinner {
 	display: inline-block;
@@ -291,49 +291,49 @@
 
 </style>
 <div id="paypal_form">
-	{% if express_status %}
+	<?php if ($express_status) { ?>
 	<div id="paypal_express_button" class="buttons clearfix"><div id="paypal_express_button_container"></div></div>
-	{% endif %}
-	{% if card_status %}
+	<?php } ?>
+	<?php if ($card_status) { ?>
 	<div id="paypal_card" class="hidden">
 		<form id="paypal_card_form" class="well">
 			<div class="card-info-number clearfix">
-				<label for="card_number" class="card-label">{{ entry_card_number }}</label>
+				<label for="card_number" class="card-label"><?php echo $entry_card_number; ?></label>
 				<div id="card_number" class="card-input-container"><div id="card_image"></div></div>
 				
 			</div>
 			<div class="card-info-date-cvv clearfix">
 				<div class="card-info-date">
-					<label for="expiration_date" class="card-label">{{ entry_expiration_date }}</label>
+					<label for="expiration_date" class="card-label"><?php echo $entry_expiration_date; ?></label>
 					<div id="expiration_date" class="card-input-container"></div>
 				</div>
 				<div class="card-info-cvv">
-					<label for="cvv" class="card-label">{{ entry_cvv }}</label>
+					<label for="cvv" class="card-label"><?php echo $entry_cvv; ?></label>
 					<div id="cvv" class="card-input-container"></div>
 				</div>
 			</div>
-			<button id="paypal_button_submit" class="btn" value="submit">{{ button_pay }}</button>
+			<button id="paypal_button_submit" class="btn" value="submit"><?php echo $button_pay; ?></button>
 		</form>
 	</div>
-	{% endif %}
+	<?php } ?>
 	<div class="lds-spinner hidden"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 </div>
 <script type="text/javascript">
 
 function setupPayPal() {
 	
-	{% if express_status %}
+	<?php if ($express_status) { ?>
 	try {				
 		// Render the PayPal button into #paypal_express_button_container
 		paypal.Buttons({
-			env: '{{ environment }}',
-			locale: '{{ locale }}',
+			env: '<?php echo $environment; ?>',
+			locale: '<?php echo $locale; ?>',
 			style: {
 				layout: 'vertical',
-				size: '{{ button_size }}',
-				color: '{{ button_color }}',
-				shape: '{{ button_shape }}',
-				label: '{{ button_label }}'
+				size: '<?php echo $button_size; ?>',
+				color: '<?php echo $button_color; ?>',
+				shape: '<?php echo $button_shape; ?>',
+				label: '<?php echo $button_label; ?>'
 			},
 			// Set up the transaction
 			createOrder: function(data, actions) {
@@ -392,9 +392,9 @@ function setupPayPal() {
 	} catch (error) {
 		console.error('PayPal Express failed during startup', error);
 	}
-	{% endif %}
+	<?php } ?>
 	
-	{% if card_status %}	
+	<?php if ($card_status) { ?>	
 	try {
 		// Check if card fields are eligible to render for the buyer's country. The card fields are not eligible in all countries where buyers are located.
 		if (paypal.HostedFields.isEligible() === true) {
@@ -534,9 +534,9 @@ function setupPayPal() {
 					
 						hostedFieldsInstance.submit({
 							// Need to specify when triggering 3D Secure authentication
-							{% if secure_status %}
+							<?php if ($secure_status) { ?>
 							contingencies: ['3D_SECURE']
-							{% endif %}
+							<?php } ?>
 						
 						}).then(function (payload) {
 							console.log(payload);
@@ -569,7 +569,7 @@ function setupPayPal() {
 	} catch (error) {
 		console.error('PayPal Card failed during startup', error);
 	}
-	{% endif %}
+	<?php } ?>
 }
 
 function showPayPalAlert(json) {
@@ -597,9 +597,9 @@ function paypalReady() {
 
 var script = document.createElement('script');
 script.type = 'text/javascript';
-script.src = 'https://www.paypal.com/sdk/js?components=buttons,hosted-fields&client-id={{ client_id }}&merchant-id={{ merchant_id }}&currency={{ currency_code }}&intent={{ transaction_method }}{% if (environment == 'sandbox') %}&buyer-country=NL{% endif %}';
-script.setAttribute('data-partner-attribution-id', '{{ partner_id }}');
-script.setAttribute('data-client-token', '{{ client_token }}');
+script.src = 'https://www.paypal.com/sdk/js?components=buttons,hosted-fields&client-id=<?php echo $client_id; ?>&merchant-id=<?php echo $merchant_id; ?>&currency=<?php echo $currency_code; ?>&intent=<?php echo $transaction_method; ?><?php if ($environment == 'sandbox') { ?>&buyer-country=NL<?php } ?>';
+script.setAttribute('data-partner-attribution-id', '<?php echo $partner_id; ?>');
+script.setAttribute('data-client-token', '<?php echo $client_token; ?>');
 script.async = false;
 script.onload = paypalReady();
 	

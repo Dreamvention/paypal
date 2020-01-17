@@ -20,7 +20,7 @@ class ModelExtensionModulePayPalSmartButton extends Model {
 	}
 	
 	public function log($data, $title = null) {
-		if ($this->config->get('payment_paypal_debug')) {
+		if ($this->config->get('paypal_debug')) {
 			$log = new Log('paypal.log');
 			$log->write('PayPal debug (' . $title . '): ' . json_encode($data));
 		}

@@ -1,219 +1,219 @@
-{{ header }}
+<?php echo $header; ?>
 <div class="container">
 	<ul class="breadcrumb">
-		{% for breadcrumb in breadcrumbs %}
-		<li><a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a></li>
-		{% endfor %}
+		<?php foreach ($breadcrumbs as $breadcrumb) { ?>
+		<li><a href="<?php echo $breadcrumb['href']; ?>"><?php echo $breadcrumb['text']; ?></a></li>
+		<?php } ?>
 	</ul>
-	{% if attention %}
-	<div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ attention }}
+	<?php if ($attention) { ?>
+	<div class="alert alert-info"><i class="fa fa-info-circle"></i> <?php echo $attention; ?>
 		<button type="button" class="close" data-dismiss="alert">&times;</button>
 	</div>
-	{% endif %}
-	{% if success %}
-    <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}
+	<?php } ?>
+	<?php if ($success) { ?>
+    <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> <?php echo $success; ?>
 		<button type="button" class="close" data-dismiss="alert">&times;</button>
     </div>
-	{% endif %}
-	{% if error_warning %}
-    <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+	<?php } ?>
+	<?php if ($error_warning) { ?>
+    <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> <?php echo $error_warning; ?>
 		<button type="button" class="close" data-dismiss="alert">&times;</button>
     </div>
-	{% endif %}
-	<div class="row">{{ column_left }}
-		{% if column_left and column_right %}
-		{% set class = 'col-sm-6' %}
-		{% elseif column_left or column_right %}
-		{% set class = 'col-sm-9' %}
-		{% else %}
-		{% set class = 'col-sm-12' %}
-		{% endif %}
-		<div id="content" class="{{ class }}">{{ content_top }}
-			<h1>{{ heading_title }}</h1>
+	<?php } ?>
+	<div class="row"><?php echo $column_left; ?>
+		<?php if ($column_left && $column_right) { ?>
+		<?php $class = 'col-sm-6'; ?>
+		<?php } elseif ($column_left || $column_right) { ?>
+		<?php $class = 'col-sm-9'; ?>
+		<?php } else { ?>
+		<?php $class = 'col-sm-12'; ?>
+		<?php } ?>
+		<div id="content" class="<?php echo $class; ?>"><?php echo $content_top; ?>
+			<h1><?php echo $heading_title; ?></h1>
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h4 class="panel-title">{{ text_checkout_payment_address }}<div class="button-payment-address pull-right" role="button"><i class="fa fa-pencil"></i></div></h4>
+					<h4 class="panel-title"><?php echo $text_checkout_payment_address; ?><div class="button-payment-address pull-right" role="button"><i class="fa fa-pencil"></i></div></h4>
 				</div>
 				<div class="panel-body">
 					<div class="row">
 						<div class="col-sm-6">
 							<fieldset id="account">
-								<legend>{{ text_your_details }}</legend>
+								<legend><?php echo $text_your_details; ?></legend>
 								<table class="table table-bordered">
-									{% if guest['firstname'] %}<tr><td><b>{{ entry_firstname }}</b></td><td>{{ guest['firstname'] }}</td></tr>{% endif %}
-									{% if guest['lastname'] %}<tr><td><b>{{ entry_lastname }}</b></td><td>{{ guest['lastname'] }}</td></tr>{% endif %}
-									{% if guest['email'] %}<tr><td><b>{{ entry_email }}</b></td><td>{{ guest['email'] }}</td></tr>{% endif %}
-									{% if guest['telephone'] %}<tr><td><b>{{ entry_telephone }}</b></td><td>{{ guest['telephone'] }}</td></tr>{% endif %}
-									{% for custom_field in custom_fields %}
-									{% if custom_field['location'] == 'account' %}
-									<tr><td><b>{{ custom_field['name'] }}</b></td><td>{{ custom_field['value'] }}</td></tr>
-									{% endif %}
-									{% endfor %}
+									<?php if ($guest['firstname']) { ?><tr><td><b><?php echo $entry_firstname; ?></b></td><td><?php echo $guest['firstname']; ?></td></tr><?php } ?>
+									<?php if ($guest['lastname']) { ?><tr><td><b><?php echo $entry_lastname; ?></b></td><td><?php echo $guest['lastname']; ?></td></tr><?php } ?>
+									<?php if ($guest['email']) { ?><tr><td><b><?php echo $entry_email; ?></b></td><td><?php echo $guest['email']; ?></td></tr><?php } ?>
+									<?php if ($guest['telephone']) { ?><tr><td><b><?php echo $entry_telephone; ?></b></td><td><?php echo $guest['telephone']; ?></td></tr><?php } ?>
+									<?php foreach ($custom_fields as $custom_field) { ?>
+									<?php if ($custom_field['location'] == 'account') { ?>
+									<tr><td><b><?php echo $custom_field['name']; ?></b></td><td><?php echo $custom_field['value']; ?></td></tr>
+									<?php } ?>
+									<?php } ?>
 								</table>
 							</fieldset>
 						</div>
 						<div class="col-sm-6">
 							<fieldset id="address">
-								<legend>{{ text_your_address }}</legend>
+								<legend><?php echo $text_your_address; ?></legend>
 								<table class="table table-bordered">
-									{% if payment_address['company'] %}<tr><td><b>{{ entry_company }}</b></td><td>{{ payment_address['company'] }}</td></tr>{% endif %}
-									{% if payment_address['address_1'] %}<tr><td><b>{{ entry_address_1 }}</b></td><td>{{ payment_address['address_1'] }}</td></tr>{% endif %}
-									{% if payment_address['address_2'] %}<tr><td><b>{{ entry_address_2 }}</b></td><td>{{ payment_address['address_2'] }}</td></tr>{% endif %}
-									{% if payment_address['city'] %}<tr><td><b>{{ entry_city }}</b></td><td>{{ payment_address['city'] }}</td></tr>{% endif %}
-									{% if payment_address['postcode'] %}<tr><td><b>{{ entry_postcode }}</b></td><td>{{ payment_address['postcode'] }}</td></tr>{% endif %}
-									{% if payment_address['country'] %}<tr><td><b>{{ entry_country }}</b></td><td>{{ payment_address['country'] }}</td></tr>{% endif %}
-									{% if payment_address['zone'] %}<tr><td><b>{{ entry_zone }}</b></td><td>{{ payment_address['zone'] }}</td></tr>{% endif %}
-									{% for custom_field in custom_fields %}
-									{% if custom_field['location'] == 'address' %}
-									<tr><td><b>{{ custom_field['name'] }}</b></td><td>{{ custom_field['value'] }}</td></tr>
-									{% endif %}
-									{% endfor %}
+									<?php if ($payment_address['company']) { ?><tr><td><b><?php echo $entry_company; ?></b></td><td><?php echo $payment_address['company']; ?></td></tr><?php } ?>
+									<?php if ($payment_address['address_1']) { ?><tr><td><b><?php echo $entry_address_1; ?></b></td><td><?php echo $payment_address['address_1']; ?></td></tr><?php } ?>
+									<?php if ($payment_address['address_2']) { ?><tr><td><b><?php echo $entry_address_2; ?></b></td><td><?php echo $payment_address['address_2']; ?></td></tr><?php } ?>
+									<?php if ($payment_address['city']) { ?><tr><td><b><?php echo $entry_city; ?></b></td><td><?php echo $payment_address['city']; ?></td></tr><?php } ?>
+									<?php if ($payment_address['postcode']) { ?><tr><td><b><?php echo $entry_postcode; ?></b></td><td><?php echo $payment_address['postcode']; ?></td></tr><?php } ?>
+									<?php if ($payment_address['country']) { ?><tr><td><b><?php echo $entry_country; ?></b></td><td><?php echo $payment_address['country']; ?></td></tr><?php } ?>
+									<?php if ($payment_address['zone']) { ?><tr><td><b><?php echo $entry_zone; ?></b></td><td><?php echo $payment_address['zone']; ?></td></tr><?php } ?>
+									<?php foreach ($custom_fields as $custom_field) { ?>
+									<?php if ($custom_field['location'] == 'address') { ?>
+									<tr><td><b><?php echo $custom_field['name']; ?></b></td><td><?php echo $custom_field['value']; ?></td></tr>
+									<?php } ?>
+									<?php } ?>
 								</table>
 							</fieldset>
 						</div>
 					</div>
 				</div>
 			</div>
-			{% if has_shipping %}
+			<?php if ($has_shipping) { ?>
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h4 class="panel-title">{{ text_checkout_shipping_address }}<div class="button-shipping-address pull-right" role="button"><i class="fa fa-pencil"></i></div></h4>
+					<h4 class="panel-title"><?php echo $text_checkout_shipping_address; ?><div class="button-shipping-address pull-right" role="button"><i class="fa fa-pencil"></i></div></h4>
 				</div>
 				<div class="panel-body">
 					<table class="table table-bordered">
-						{% if shipping_address['firstname'] %}<tr><td><b>{{ entry_firstname }}</b></td><td>{{ shipping_address['firstname'] }}</td></tr>{% endif %}
-						{% if shipping_address['lastname'] %}<tr><td><b>{{ entry_lastname }}</b></td><td>{{ shipping_address['lastname'] }}</td></tr>{% endif %}
-						{% if shipping_address['company'] %}<tr><td><b>{{ entry_company }}</b></td><td>{{ shipping_address['company'] }}</td></tr>{% endif %}
-						{% if shipping_address['address_1'] %}<tr><td><b>{{ entry_address_1 }}</b></td><td>{{ shipping_address['address_1'] }}</td></tr>{% endif %}
-						{% if shipping_address['address_2'] %}<tr><td><b>{{ entry_address_2 }}</b></td><td>{{ shipping_address['address_2'] }}</td></tr>{% endif %}
-						{% if shipping_address['city'] %}<tr><td><b>{{ entry_city }}</b></td><td>{{ shipping_address['city'] }}</td></tr>{% endif %}
-						{% if shipping_address['postcode'] %}<tr><td><b>{{ entry_postcode }}</b></td><td>{{ shipping_address['postcode'] }}</td></tr>{% endif %}
-						{% if shipping_address['country'] %}<tr><td><b>{{ entry_country }}</b></td><td>{{ shipping_address['country'] }}</td></tr>{% endif %}
-						{% if shipping_address['zone'] %}<tr><td><b>{{ entry_zone }}</b></td><td>{{ shipping_address['zone'] }}</td></tr>{% endif %}	
-						{% for custom_field in custom_fields %}
-						{% if custom_field['location'] == 'address' %}
-						<tr><td><b>{{ custom_field['name'] }}</b></td><td>{{ custom_field['value'] }}</td></tr>
-						{% endif %}
-						{% endfor %}
+						<?php if ($shipping_address['firstname']) { ?><tr><td><b><?php echo $entry_firstname; ?></b></td><td><?php echo $shipping_address['firstname']; ?></td></tr><?php } ?>
+						<?php if ($shipping_address['lastname']) { ?><tr><td><b><?php echo $entry_lastname; ?></b></td><td><?php echo $shipping_address['lastname']; ?></td></tr><?php } ?>
+						<?php if ($shipping_address['company']) { ?><tr><td><b><?php echo $entry_company; ?></b></td><td><?php echo $shipping_address['company']; ?></td></tr><?php } ?>
+						<?php if ($shipping_address['address_1']) { ?><tr><td><b><?php echo $entry_address_1; ?></b></td><td><?php echo $shipping_address['address_1']; ?></td></tr><?php } ?>
+						<?php if ($shipping_address['address_2']) { ?><tr><td><b><?php echo $entry_address_2; ?></b></td><td><?php echo $shipping_address['address_2']; ?></td></tr><?php } ?>
+						<?php if ($shipping_address['city']) { ?><tr><td><b><?php echo $entry_city; ?></b></td><td><?php echo $shipping_address['city']; ?></td></tr><?php } ?>
+						<?php if ($shipping_address['postcode']) { ?><tr><td><b><?php echo $entry_postcode; ?></b></td><td><?php echo $shipping_address['postcode']; ?></td></tr><?php } ?>
+						<?php if ($shipping_address['country']) { ?><tr><td><b><?php echo $entry_country; ?></b></td><td><?php echo $shipping_address['country']; ?></td></tr><?php } ?>
+						<?php if ($shipping_address['zone']) { ?><tr><td><b><?php echo $entry_zone; ?></b></td><td><?php echo $shipping_address['zone']; ?></td></tr><?php } ?>	
+						<?php foreach ($custom_fields as $custom_field) { ?>
+						<?php if ($custom_field['location'] == 'address') { ?>
+						<tr><td><b><?php echo $custom_field['name']; ?></b></td><td><?php echo $custom_field['value']; ?></td></tr>
+						<?php } ?>
+						<?php } ?>
 					</table>
 				</div>
 			</div>
-			{% endif %}
-			{% if has_shipping %}
-			{% if not shipping_methods %}
-			<div class="alert alert-warning alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_no_shipping }}</div>
-			{% else %}
-			<form action="{{ action_shipping }}" method="post" id="shipping_form">
+			<?php } ?>
+			<?php if ($has_shipping) { ?>
+			<?php if (!$shipping_methods) { ?>
+			<div class="alert alert-warning alert-dismissible"><i class="fa fa-exclamation-circle"></i> <?php echo $error_no_shipping; ?></div>
+			<?php } else { ?>
+			<form action="<?php echo $action_shipping; ?>" method="post" id="shipping_form">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h4 class="panel-title">{{ text_checkout_shipping_method }}</h4>
+						<h4 class="panel-title"><?php echo $text_checkout_shipping_method; ?></h4>
 					</div>
 					<div class="panel-body">
-						{% for shipping_method in shipping_methods %}
-						<p><strong>{{ shipping_method['title'] }}</strong></p>
-						{% if not shipping_method['error'] %}
-						{% for quote in shipping_method['quote'] %}
+						<?php foreach ($shipping_methods as $shipping_method) { ?>
+						<p><strong><?php echo $shipping_method['title']; ?></strong></p>
+						<?php if (!$shipping_method['error']) { ?>
+						<?php foreach ($shipping_method['quote'] as $quote) { ?>
 						<div class="radio">
 							<label>
-								{% if quote['code'] == code or not code %}
-								{% set code = quote['code'] %}
-								<input type="radio" name="shipping_method" value="{{ quote['code'] }}" id="{{ quote['code'] }}" checked="checked" />
-								{% else %}
-								<input type="radio" name="shipping_method" value="{{ quote['code'] }}" id="{{ quote['code'] }}" />
-								{% endif %}
-								{{ quote['title'] }} - {{ quote['text'] }}
+								<?php if (($quote['code'] == $code) || !$code) { ?>
+								<?php $code = $quote['code']; ?>
+								<input type="radio" name="shipping_method" value="<?php echo $quote['code']; ?>" id="<?php echo $quote['code']; ?>" checked="checked" />
+								<?php } else { ?>
+								<input type="radio" name="shipping_method" value="<?php echo $quote['code']; ?>" id="<?php echo $quote['code']; ?>" />
+								<?php } ?>
+								<?php echo $quote['title']; ?> - <?php echo $quote['text']; ?>
 							</label>
 						</div>
-						{% endfor %}
-						{% else %}
-						<div class="alert alert-danger alert-dismissible">{{ shipping_method['error'] }}</div>
-						{% endif %}
-						{% endfor %}
+						<?php } ?>
+						<?php } else { ?>
+						<div class="alert alert-danger alert-dismissible"><?php echo $shipping_method['error']; ?></div>
+						<?php } ?>
+						<?php } ?>
 					</div>
 				</div>
 			</form>
-			{% endif %}
-			{% endif %}
+			<?php } ?>
+			<?php } ?>
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h4 class="panel-title">{{ text_checkout_payment_method }}</h4>
+					<h4 class="panel-title"><?php echo $text_checkout_payment_method; ?></h4>
 				</div>
 				<div class="panel-body">
-					{% for payment_method in payment_methods %}
-					{% if payment_method['code'] == 'paypal' %}
+					<?php foreach ($payment_methods as $payment_method) { ?>
+					<?php if ($payment_method['code'] == 'paypal') { ?>
 					<div class="radio">
 						<label>
-							<input type="radio" name="payment_method" value="{{ payment_method['code'] }}" checked="checked" />
-							{{ payment_method['title'] }}
+							<input type="radio" name="payment_method" value="<?php echo $payment_method['code']; ?>" checked="checked" />
+							<?php echo $payment_method['title']; ?>
 						</label>
 					</div>
-					{% endif %}
-					{% endfor %}
+					<?php } ?>
+					<?php } ?>
 				</div>
 			</div>
 			<div class="table-responsive">
 				<table class="table table-bordered">
 					<thead>
 						<tr>
-							<td class="text-left">{{ column_name }}</td>
-							<td class="text-left">{{ column_model }}</td>
-							<td class="text-center">{{ column_quantity }}</td>
-							<td class="text-right">{{ column_price }}</td>
-							<td class="text-right">{{ column_total }}</td>
+							<td class="text-left"><?php echo $column_name; ?></td>
+							<td class="text-left"><?php echo $column_model; ?></td>
+							<td class="text-center"><?php echo $column_quantity; ?></td>
+							<td class="text-right"><?php echo $column_price; ?></td>
+							<td class="text-right"><?php echo $column_total; ?></td>
 						</tr>
 					</thead>
 					<tbody>
-						{% for product in products %}
+						<?php foreach ($products as $product) { ?>
 						<tr>
 							<td class="text-left">
-								<a href="{{ product.href }}">{{ product['name'] }}</a>
-								{% for option in product['option'] %} <br />
-								<small> - {{ option['name'] }}: {{ option['value'] }}</small>
-								{% endfor %}
-								{% if product['recurring'] %}
-								<br /><span class="label label-info">{{ text_recurring_item }}</span> <small>{{ product['recurring_description'] }}</small>
-								{% endif %}
+								<a href="<?php echo $product['href']; ?>"><?php echo $product['name']; ?></a>
+								<?php foreach ($product['option'] as $option) { ?> <br />
+								<small> - <?php echo $option['name']; ?>: <?php echo $option['value']; ?></small>
+								<?php } ?>
+								<?php if ($product['recurring']) { ?>
+								<br /><span class="label label-info"><?php echo $text_recurring_item; ?></span> <small><?php echo $product['recurring_description']; ?></small>
+								<?php } ?>
 							</td>
-							<td class="text-left">{{ product['model'] }}</td>
-							<td class="text-center">{{ product['quantity'] }}</td>
-							<td class="text-right">{{ product['price'] }}</td>
-							<td class="text-right">{{ product['total'] }}</td>
+							<td class="text-left"><?php echo $product['model']; ?></td>
+							<td class="text-center"><?php echo $product['quantity']; ?></td>
+							<td class="text-right"><?php echo $product['price']; ?></td>
+							<td class="text-right"><?php echo $product['total']; ?></td>
 						</tr>
-						{% endfor %}
-						{% for voucher in vouchers %}
+						<?php } ?>
+						<?php foreach ($vouchers as $voucher) { ?>
 						<tr>
-							<td class="text-left">{{ voucher['description'] }}</td>
+							<td class="text-left"><?php echo $voucher['description']; ?></td>
 							<td class="text-left"></td>
 							<td class="text-center">1</td>
-							<td class="text-right">{{ voucher['amount'] }}</td>
-							<td class="text-right">{{ voucher['amount'] }}</td>
+							<td class="text-right"><?php echo $voucher['amount']; ?></td>
+							<td class="text-right"><?php echo $voucher['amount']; ?></td>
 						</tr>
-						{% endfor %}
+						<?php } ?>
 					</tbody>
 				</table>
 			</div>
 			<br />
-			{% if coupon or voucher or reward %}
-			<div class="panel-group" id="accordion">{{ coupon }}{{ voucher }}{{ reward }}</div><br />
-			{% endif %}
+			<?php if ($coupon || $voucher || $reward) { ?>
+			<div class="panel-group" id="accordion"><?php echo $coupon; ?><?php echo $voucher; ?><?php echo $reward; ?></div><br />
+			<?php } ?>
 			<div class="row">
 				<div class="col-sm-4 col-sm-offset-8">
 					<table class="table table-bordered">
-						{% for total in totals %}
+						<?php foreach ($totals as $total) { ?>
 						<tr>
-							<td class="text-right"><strong>{{ total['title'] }}:</strong></td>
-							<td class="text-right">{{ total['text'] }}</td>
+							<td class="text-right"><strong><?php echo $total['title']; ?>:</strong></td>
+							<td class="text-right"><?php echo $total['text']; ?></td>
 						</tr>
-						{% endfor %}
+						<?php } ?>
 					</table>
 				</div>
 			</div>
 			<div class="buttons">
-				<div class="pull-right"><a href="{{ action_confirm }}" class="btn btn-primary" id="paypal_confirm">{{ button_confirm }}</a></div>
+				<div class="pull-right"><a href="<?php echo $action_confirm; ?>" class="btn btn-primary" id="paypal_confirm"><?php echo $button_confirm; ?></a></div>
 			</div>
-			{{ content_bottom }}
+			<?php echo $content_bottom; ?>
 		</div>
-		{{ column_right }}
+		<?php echo $column_right; ?>
 	</div>
 </div>
 <script type="text/javascript">
@@ -301,20 +301,20 @@ function onLoadPaymentAddress() {
 					$('#payment_address input[name=\'postcode\']').parent().parent().removeClass('required');
 				}
 
-				html = '<option value="">{{ text_select }}</option>';
+				html = '<option value=""><?php echo $text_select; ?></option>';
 
 				if (json['zone'] && json['zone'] != '') {
 					for (i = 0; i < json['zone'].length; i++) {
 						html += '<option value="' + json['zone'][i]['zone_id'] + '"';
 
-						if (json['zone'][i]['zone_id'] == '{{ payment_address['zone_id'] }}') {
+						if (json['zone'][i]['zone_id'] == '<?php echo $payment_address['zone_id']; ?>') {
 							html += ' selected="selected"';
 						}
 
 						html += '>' + json['zone'][i]['name'] + '</option>';
 					}
 				} else {
-					html += '<option value="0" selected="selected">{{ text_none }}</option>';
+					html += '<option value="0" selected="selected"><?php echo $text_none; ?></option>';
 				}
 
 				$('#payment_address select[name=\'zone_id\']').html(html);
@@ -328,17 +328,14 @@ function onLoadPaymentAddress() {
 	$('#payment_address select[name=\'country_id\']').trigger('change');
 	
 	$('.date').datetimepicker({
-		language: '{{ datepicker }}',
 		pickTime: false
 	});
 
 	$('.time').datetimepicker({
-		language: '{{ datepicker }}',
 		pickDate: false
 	});
 
 	$('.datetime').datetimepicker({
-		language: '{{ datepicker }}',
 		pickDate: true,
 		pickTime: true
 	});
@@ -467,20 +464,20 @@ function onLoadShippingAddress() {
 					$('#shipping_address input[name=\'postcode\']').parent().parent().removeClass('required');
 				}
 
-				html = '<option value="">{{ text_select }}</option>';
+				html = '<option value=""><?php echo $text_select; ?></option>';
 
 				if (json['zone'] && json['zone'] != '') {
 					for (i = 0; i < json['zone'].length; i++) {
 						html += '<option value="' + json['zone'][i]['zone_id'] + '"';
 
-						if (json['zone'][i]['zone_id'] == '{{ shipping_address['zone_id'] }}') {
+						if (json['zone'][i]['zone_id'] == '<?php echo $shipping_address['zone_id']; ?>') {
 							html += ' selected="selected"';
 						}
 
 						html += '>' + json['zone'][i]['name'] + '</option>';
 					}
 				} else {
-					html += '<option value="0" selected="selected">{{ text_none }}</option>';
+					html += '<option value="0" selected="selected"><?php echo $text_none; ?></option>';
 				}
 
 				$('#shipping_address select[name=\'zone_id\']').html(html);
@@ -494,17 +491,14 @@ function onLoadShippingAddress() {
 	$('#shipping_address select[name=\'country_id\']').trigger('change');
 	
 	$('.date').datetimepicker({
-		language: '{{ datepicker }}',
 		pickTime: false
 	});
 
 	$('.time').datetimepicker({
-		language: '{{ datepicker }}',
 		pickDate: false
 	});
 
 	$('.datetime').datetimepicker({
-		language: '{{ datepicker }}',
 		pickDate: true,
 		pickTime: true
 	});
@@ -597,4 +591,4 @@ function onLoadShippingAddress() {
 }
 
 </script>
-{{ footer }}
+<?php echo $footer; ?>

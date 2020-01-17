@@ -1,18 +1,18 @@
 <style type="text/css">
 
 #paypal_smart_button {
-	text-align: {{ button_align }};
+	text-align: <?php echo $button_align; ?>;
 }
 
 #paypal_smart_button_container {
-	{% if button_width %}
+	<?php if ($button_width) { ?>
 	display: inline-block;
-	width: {{ button_width }};
-	{% endif %}
+	width: <?php echo $button_width; ?>;
+	<?php } ?>
 }
 
 </style>
-<script type="text/javascript" src="https://www.paypal.com/sdk/js?components=buttons&client-id={{ client_id }}&merchant-id={{ merchant_id }}&currency={{ currency_code }}&intent={{ transaction_method }}&commit=false{% if (environment == 'sandbox') %}&buyer-country=NL{% endif %}" data-partner-attribution-id="{{ partner_id }}"></script>
+<script type="text/javascript" src="https://www.paypal.com/sdk/js?components=buttons&client-id=<?php echo $client_id; ?>&merchant-id=<?php echo $merchant_id; ?>&currency=<?php echo $currency_code; ?>&intent=<?php echo $transaction_method; ?>&commit=false<?php if ($environment == 'sandbox') { ?>&buyer-country=NL<?php } ?>" data-partner-attribution-id="<?php echo $partner_id; ?>"></script>
 <script type="text/javascript">
 
 window.onload = function() {
@@ -20,21 +20,21 @@ window.onload = function() {
 };
 
 function setupPayPalSmartButton() {
-	if ($('{{ insert_tag}}').length) {
-		$('{{ insert_tag}}').{{ insert_type }}('<div id="paypal_smart_button" class="buttons clearfix"><div id="paypal_smart_button_container"></div></div>');
+	if ($('<?php echo $insert_tag; ?>').length) {
+		$('<?php echo $insert_tag; ?>').<?php echo $insert_type; ?>('<div id="paypal_smart_button" class="buttons clearfix"><div id="paypal_smart_button_container"></div></div>');
 			
 		try {		
 			// Render the PayPal button into #paypal_smart_button_container
 			paypal.Buttons({
-				env: '{{ environment }}',
-				locale: '{{ locale }}',
+				env: '<?php echo $environment; ?>',
+				locale: '<?php echo $locale; ?>',
 				style: {
 					layout: 'horizontal',
-					size: '{{ button_size }}',
-					color: '{{ button_color }}',
-					shape: '{{ button_shape }}',
-					label: '{{ button_label }}',
-					tagline: '{{ button_tagline }}'
+					size: '<?php echo $button_size; ?>',
+					color: '<?php echo $button_color; ?>',
+					shape: '<?php echo $button_shape; ?>',
+					label: '<?php echo $button_label; ?>',
+					tagline: '<?php echo $button_tagline; ?>'
 				},
 				// Set up the transaction
 				createOrder: function(data, actions) {

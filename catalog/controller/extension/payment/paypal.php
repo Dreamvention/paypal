@@ -16,14 +16,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			
 		$config_setting = $_config->get('paypal_setting');
 		
-		$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
+		$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('paypal_setting'));
 						
-		$data['client_id'] = $this->config->get('payment_paypal_client_id');
-		$data['secret'] = $this->config->get('payment_paypal_secret');
-		$data['merchant_id'] = $this->config->get('payment_paypal_merchant_id');
-		$data['environment'] = $this->config->get('payment_paypal_environment');
+		$data['client_id'] = $this->config->get('paypal_client_id');
+		$data['secret'] = $this->config->get('paypal_secret');
+		$data['merchant_id'] = $this->config->get('paypal_merchant_id');
+		$data['environment'] = $this->config->get('paypal_environment');
 		$data['partner_id'] = $setting['partner'][$data['environment']]['partner_id'];
-		$data['transaction_method'] = $this->config->get('payment_paypal_transaction_method');
+		$data['transaction_method'] = $this->config->get('paypal_transaction_method');
 		$data['locale'] = preg_replace('/-(.+?)+/', '', $this->config->get('config_language')) . '_' . $country['iso_code_2'];
 		$data['currency_code'] = $this->session->data['currency'];
 		
@@ -43,6 +43,12 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['secure_status'] = $setting['checkout']['card']['secure_status'];
 				
 		$data['order_id'] = $this->session->data['order_id'];
+		
+		$data['entry_card_number'] = $this->language->get('entry_card_number');
+		$data['entry_expiration_date'] = $this->language->get('entry_expiration_date');
+		$data['entry_cvv'] = $this->language->get('entry_cvv');
+		
+		$data['button_pay'] = $this->language->get('button_pay');
 										
 		require_once DIR_SYSTEM .'library/paypal/paypal.php';
 		
@@ -98,14 +104,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			
 		$config_setting = $_config->get('paypal_setting');
 		
-		$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
+		$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('paypal_setting'));
 		
-		$client_id = $this->config->get('payment_paypal_client_id');
-		$secret = $this->config->get('payment_paypal_secret');
-		$merchant_id = $this->config->get('payment_paypal_merchant_id');
-		$environment = $this->config->get('payment_paypal_environment');
+		$client_id = $this->config->get('paypal_client_id');
+		$secret = $this->config->get('paypal_secret');
+		$merchant_id = $this->config->get('paypal_merchant_id');
+		$environment = $this->config->get('paypal_environment');
 		$partner_id = $setting['partner'][$environment]['partner_id'];
-		$transaction_method = $this->config->get('payment_paypal_transaction_method');	
+		$transaction_method = $this->config->get('paypal_transaction_method');	
 		
 		require_once DIR_SYSTEM . 'library/paypal/paypal.php';
 		
@@ -264,6 +270,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$this->load->language('extension/payment/paypal');
 		
 		$this->load->model('extension/payment/paypal');
+		
+		// Setting
+		$_config = new Config();
+		$_config->load('paypal');
+			
+		$config_setting = $_config->get('paypal_setting');
+		
+		$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('paypal_setting'));
 				
 		if (isset($this->request->post['order_id'])) {
 			$order_id = $this->request->post['order_id'];
@@ -289,20 +303,12 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			}
 		}
 					
-		if (isset($order_id) && !$this->error) {
-			// Setting
-			$_config = new Config();
-			$_config->load('paypal');
-			
-			$config_setting = $_config->get('paypal_setting');
-		
-			$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
-		
-			$client_id = $this->config->get('payment_paypal_client_id');
-			$secret = $this->config->get('payment_paypal_secret');
-			$environment = $this->config->get('payment_paypal_environment');
+		if (isset($order_id) && !$this->error) {		
+			$client_id = $this->config->get('paypal_client_id');
+			$secret = $this->config->get('paypal_secret');
+			$environment = $this->config->get('paypal_environment');
 			$partner_id = $setting['partner'][$environment]['partner_id'];
-			$transaction_method = $this->config->get('payment_paypal_transaction_method');
+			$transaction_method = $this->config->get('paypal_transaction_method');
 			
 			require_once DIR_SYSTEM .'library/paypal/paypal.php';
 		
@@ -392,7 +398,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			
 			$config_setting = $_config->get('paypal_setting');
 		
-			$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
+			$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('paypal_setting'));
 			
 			$order_id = $webhook_data['resource']['invoice_id'];
 									
