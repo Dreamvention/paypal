@@ -18,8 +18,8 @@ $_['paypal_smart_button_setting'] = array(
 			'code' => 'cart',
 			'name' => 'text_cart_page',
 			'status' => true,
-			'insert_tag' => '#content',
-			'insert_type' => 'append',
+			'insert_tag' => '#content .buttons',
+			'insert_type' => 'before',
 			'button_align' => 'right',
 			'button_size' => 'large',
 			'button_color' => 'gold',
@@ -41,7 +41,7 @@ $_['paypal_smart_button_setting'] = array(
 			'code'	=> 'before',
 			'name'	=> 'text_insert_before'
 		),
-		'into_after' => array(
+		'after' => array(
 			'code'	=> 'after',
 			'name'	=> 'text_insert_after'
 		)
