@@ -232,6 +232,20 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		} else {
 			$data['sort_order'] = $this->config->get('payment_paypal_sort_order');
 		}
+		
+		if (isset($this->request->post['payment_paypal_currency_code'])) {
+			$data['currency_code'] = $this->request->post['payment_paypal_currency_code'];
+		} else {
+			$data['currency_code'] = $this->config->get('payment_paypal_currency_code');
+		}
+		
+		if (isset($this->request->post['payment_paypal_currency_value'])) {
+			$data['currency_value'] = $this->request->post['payment_paypal_currency_value'];
+		} elseif ($this->config->get('payment_paypal_currency_value')) {
+			$data['currency_value'] = $this->config->get('payment_paypal_currency_value');
+		} else {
+			$data['currency_value'] = '1';
+		}
 						
 		if (isset($this->request->post['payment_paypal_setting'])) {
 			$data['setting'] = array_replace_recursive((array)$data['setting'], (array)$this->request->post['payment_paypal_setting']);
