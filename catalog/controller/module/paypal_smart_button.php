@@ -56,12 +56,7 @@ class ControllerModulePayPalSmartButton extends Controller {
 				$data['partner_id'] = $paypal_setting['partner'][$data['environment']]['partner_id'];
 				$data['transaction_method'] = $this->config->get('paypal_transaction_method');					
 				$data['locale'] = preg_replace('/-(.+?)+/', '', $this->config->get('config_language')) . '_' . $country['iso_code_2'];
-				
-				if (VERSION >= '2.2.0.0') {
-					$data['currency_code'] = $this->session->data['currency'];
-				} else {
-					$data['currency_code'] = $this->currency->getCode();
-				}
+				$data['currency_code'] = $this->config->get('paypal_currency_code');
 				
 				$data['button_width'] = $setting['button_width'][$data['button_size']];
 								
@@ -161,14 +156,8 @@ class ControllerModulePayPalSmartButton extends Controller {
 			$environment = $this->config->get('paypal_environment');
 			$partner_id = $setting['partner'][$environment]['partner_id'];
 			$transaction_method = $this->config->get('paypal_transaction_method');	
-			
-			if (VERSION >= '2.2.0.0') {
-				$currency_code = $this->session->data['currency'];
-				$currency_value = $this->currency->getValue($this->session->data['currency']);
-			} else {
-				$currency_code = $this->currency->getCode();
-				$currency_value = $this->currency->getValue($this->currency->getCode());
-			}
+			$currency_code = $this->config->get('paypal_currency_code');
+			$currency_value = $this->config->get('paypal_currency_value');
 
 			require_once DIR_SYSTEM . 'library/paypal/paypal.php';
 		
@@ -1243,6 +1232,8 @@ class ControllerModulePayPalSmartButton extends Controller {
 			$environment = $this->config->get('paypal_environment');
 			$partner_id = $setting['partner'][$environment]['partner_id'];
 			$transaction_method = $this->config->get('paypal_transaction_method');
+			$currency_code = $this->config->get('paypal_currency_code');
+			$currency_value = $this->config->get('paypal_currency_value');
 
 			require_once DIR_SYSTEM . 'library/paypal/paypal.php';
 		
@@ -1332,28 +1323,28 @@ class ControllerModulePayPalSmartButton extends Controller {
 			}
 
 			$amount_info = array(
-				'currency_code' => $order_data['currency_code'],
-				'value' => $this->currency->format($order_data['total'], $order_data['currency_code'], $order_data['currency_value'], false),
+				'currency_code' => $currency_code,
+				'value' => $this->currency->format($order_data['total'], $currency_code, $currency_value, false),
 				'breakdown' => array(
 					'item_total' => array(
-						'currency_code' => $order_data['currency_code'],
-						'value' => $this->currency->format($sub_total, $order_data['currency_code'], $order_data['currency_value'], false)
+						'currency_code' => $currency_code,
+						'value' => $this->currency->format($sub_total, $currency_code, $currency_value, false)
 					),
 					'tax_total' => array(
-						'currency_code' => $order_data['currency_code'],
-						'value' => $this->currency->format($tax_total, $order_data['currency_code'], $order_data['currency_value'], false)
+						'currency_code' => $currency_code,
+						'value' => $this->currency->format($tax_total, $currency_code, $currency_value, false)
 					),
 					'shipping' => array(
-						'currency_code' => $order_data['currency_code'],
-						'value' => $this->currency->format($shipping_total, $order_data['currency_code'], $order_data['currency_value'], false)
+						'currency_code' => $currency_code,
+						'value' => $this->currency->format($shipping_total, $currency_code, $currency_value, false)
 					),
 					'handling' => array(
-						'currency_code' => $order_data['currency_code'],
-						'value' => $this->currency->format($handling_total, $order_data['currency_code'], $order_data['currency_value'], false)
+						'currency_code' => $currency_code,
+						'value' => $this->currency->format($handling_total, $currency_code, $currency_value, false)
 					),
 					'discount' => array(
-						'currency_code' => $order_data['currency_code'],
-						'value' => $this->currency->format($discount_total, $order_data['currency_code'], $order_data['currency_value'], false)
+						'currency_code' => $currency_code,
+						'value' => $this->currency->format($discount_total, $currency_code, $currency_value, false)
 					)
 				)
 			);

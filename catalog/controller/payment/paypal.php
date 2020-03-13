@@ -25,12 +25,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['partner_id'] = $setting['partner'][$data['environment']]['partner_id'];
 		$data['transaction_method'] = $this->config->get('paypal_transaction_method');
 		$data['locale'] = preg_replace('/-(.+?)+/', '', $this->config->get('config_language')) . '_' . $country['iso_code_2'];
-		
-		if (VERSION >= '2.2.0.0') {
-			$data['currency_code'] = $this->session->data['currency'];
-		} else {
-			$data['currency_code'] = $this->currency->getCode();
-		}
+		$data['currency_code'] = $this->config->get('paypal_currency_code');
 		
 		$data['express_status'] = $setting['checkout']['express']['status'];		
 		$data['button_align'] = $setting['checkout']['express']['button_align'];
@@ -122,7 +117,9 @@ class ControllerPaymentPayPal extends Controller {
 		$merchant_id = $this->config->get('paypal_merchant_id');
 		$environment = $this->config->get('paypal_environment');
 		$partner_id = $setting['partner'][$environment]['partner_id'];
-		$transaction_method = $this->config->get('paypal_transaction_method');	
+		$transaction_method = $this->config->get('paypal_transaction_method');
+		$currency_code = $this->config->get('paypal_currency_code');
+		$currency_value = $this->config->get('paypal_currency_value');
 		
 		require_once DIR_SYSTEM . 'library/paypal/paypal.php';
 		
@@ -176,8 +173,8 @@ class ControllerPaymentPayPal extends Controller {
 				'url' => $this->url->link('product/product', 'product_id=' . $product['product_id']),
 				'quantity' => $product['quantity'],
 				'unit_amount' => array(
-					'currency_code' => $order_info['currency_code'],
-					'value' => $this->currency->format($product['price'], $order_info['currency_code'], $order_info['currency_value'], false)
+					'currency_code' => $currency_code,
+					'value' => $this->currency->format($product['price'], $currency_code, $currency_value, false)
 				)
 			);
 		}
@@ -203,28 +200,28 @@ class ControllerPaymentPayPal extends Controller {
 		}
 
 		$amount_info = array(
-			'currency_code' => $order_info['currency_code'],
-			'value' => $this->currency->format($order_info['total'], $order_info['currency_code'], $order_info['currency_value'], false),
+			'currency_code' => $currency_code,
+			'value' => $this->currency->format($order_info['total'], $currency_code, $currency_value, false),
 			'breakdown' => array(
 				'item_total' => array(
-					'currency_code' => $order_info['currency_code'],
-					'value' => $this->currency->format($sub_total, $order_info['currency_code'], $order_info['currency_value'], false)
+					'currency_code' => $currency_code,
+					'value' => $this->currency->format($sub_total, $currency_code, $currency_value, false)
 				),
 				'tax_total' => array(
-					'currency_code' => $order_info['currency_code'],
-					'value' => $this->currency->format($tax_total, $order_info['currency_code'], $order_info['currency_value'], false)
+					'currency_code' => $currency_code,
+					'value' => $this->currency->format($tax_total, $currency_code, $currency_value, false)
 				),
 				'shipping' => array(
-					'currency_code' => $order_info['currency_code'],
-					'value' => $this->currency->format($shipping_total, $order_info['currency_code'], $order_info['currency_value'], false)
+					'currency_code' => $currency_code,
+					'value' => $this->currency->format($shipping_total, $currency_code, $currency_value, false)
 				),
 				'handling' => array(
-					'currency_code' => $order_info['currency_code'],
-					'value' => $this->currency->format($handling_total, $order_info['currency_code'], $order_info['currency_value'], false)
+					'currency_code' => $currency_code,
+					'value' => $this->currency->format($handling_total, $currency_code, $currency_value, false)
 				),
 				'discount' => array(
-					'currency_code' => $order_info['currency_code'],
-					'value' => $this->currency->format($discount_total, $order_info['currency_code'], $order_info['currency_value'], false)
+					'currency_code' => $currency_code,
+					'value' => $this->currency->format($discount_total, $currency_code, $currency_value, false)
 				)
 			)
 		);

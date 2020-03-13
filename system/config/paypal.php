@@ -73,6 +73,72 @@ $_['paypal_setting'] = array(
 			)
 		)
 	),
+	'currency' => array(
+		'AUD' => array(
+			'code' => 'AUD',
+			'name' => 'text_currency_aud'
+		),
+		'CAD' => array(
+			'code' => 'CAD',
+			'name' => 'text_currency_cad'
+		),
+		'CHF' => array(
+			'code' => 'CHF',
+			'name' => 'text_currency_chf'
+		),
+		'CZK' => array(
+			'code' => 'CZK',
+			'name' => 'text_currency_czk'
+		),
+		'DKK' => array(
+			'code' => 'DKK',
+			'name' => 'text_currency_dkk'
+		),
+		'EUR' => array(
+			'code' => 'EUR',
+			'name' => 'text_currency_eur'
+		),
+		'GBP' => array(
+			'code' => 'GBP',
+			'name' => 'text_currency_gbp'
+		),
+		'HKD' => array(
+			'code' => 'HKD',
+			'name' => 'text_currency_hkd'
+		),
+		'HUF' => array(
+			'code' => 'HUF',
+			'name' => 'text_currency_huf'
+		),
+		'JPY' => array(
+			'code' => 'JPY',
+			'name' => 'text_currency_jpy'
+		),
+		'NOK' => array(
+			'code' => 'NOK',
+			'name' => 'text_currency_nok'
+		),
+		'NZD' => array(
+			'code' => 'NZD',
+			'name' => 'text_currency_nzd'
+		),
+		'PLN' => array(
+			'code' => 'PLN',
+			'name' => 'text_currency_pln'
+		),
+		'SEK' => array(
+			'code' => 'SEK',
+			'name' => 'text_currency_sek'
+		),
+		'SGD' => array(
+			'code' => 'SGD',
+			'name' => 'text_currency_sgd'
+		),
+		'USD' => array(
+			'code' => 'USD',
+			'name' => 'text_currency_usd'
+		)
+	),
 	'button_align' => array(
 		'left' => array(
 			'code' => 'left',
