@@ -35,6 +35,22 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['text_authorization'] = $this->language->get('text_authorization');
 		$data['text_sale'] = $this->language->get('text_sale');
 		$data['text_connect'] = $this->language->get('text_connect');
+		$data['text_currency_aud'] = $this->language->get('text_currency_aud');
+		$data['text_currency_cad'] = $this->language->get('text_currency_cad');
+		$data['text_currency_chf'] = $this->language->get('text_currency_chf');
+		$data['text_currency_czk'] = $this->language->get('text_currency_czk');
+		$data['text_currency_dkk'] = $this->language->get('text_currency_dkk');
+		$data['text_currency_eur'] = $this->language->get('text_currency_eur');
+		$data['text_currency_gbp'] = $this->language->get('text_currency_gbp');
+		$data['text_currency_hkd'] = $this->language->get('text_currency_hkd');
+		$data['text_currency_huf'] = $this->language->get('text_currency_huf');
+		$data['text_currency_jpy'] = $this->language->get('text_currency_jpy');
+		$data['text_currency_nok'] = $this->language->get('text_currency_nok');
+		$data['text_currency_nzd'] = $this->language->get('text_currency_nzd');
+		$data['text_currency_pln'] = $this->language->get('text_currency_pln');
+		$data['text_currency_sek'] = $this->language->get('text_currency_sek');
+		$data['text_currency_sgd'] = $this->language->get('text_currency_sgd');
+		$data['text_currency_usd'] = $this->language->get('text_currency_usd');
 		$data['text_completed_status'] = $this->language->get('text_completed_status');
 		$data['text_denied_status'] = $this->language->get('text_denied_status');
 		$data['text_failed_status'] = $this->language->get('text_failed_status');
@@ -85,6 +101,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['entry_geo_zone'] = $this->language->get('entry_geo_zone');
 		$data['entry_status'] = $this->language->get('entry_status');
 		$data['entry_sort_order'] = $this->language->get('entry_sort_order');
+		$data['entry_currency_code'] = $this->language->get('entry_currency_code');
+		$data['entry_currency_value'] = $this->language->get('entry_currency_value');
 		$data['entry_smart_button'] = $this->language->get('entry_smart_button');
 		$data['entry_button_align'] = $this->language->get('entry_button_align');
 		$data['entry_button_size'] = $this->language->get('entry_button_size');
@@ -100,6 +118,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['help_checkout_express_status'] = $this->language->get('help_checkout_express_status');
 		$data['help_checkout_card_status'] = $this->language->get('help_checkout_card_status');
 		$data['help_total'] = $this->language->get('help_total');
+		$data['help_currency_code'] = $this->language->get('help_currency_code');
+		$data['help_currency_value'] = $this->language->get('help_currency_value');
 		$data['help_secure_status'] = $this->language->get('help_secure_status');
 		$data['help_secure_scenario'] = $this->language->get('help_secure_scenario');
 				
@@ -322,6 +342,20 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$data['sort_order'] = $this->request->post['paypal_sort_order'];
 		} else {
 			$data['sort_order'] = $this->config->get('paypal_sort_order');
+		}
+		
+		if (isset($this->request->post['paypal_currency_code'])) {
+			$data['currency_code'] = $this->request->post['paypal_currency_code'];
+		} else {
+			$data['currency_code'] = $this->config->get('paypal_currency_code');
+		}
+		
+		if (isset($this->request->post['paypal_currency_value'])) {
+			$data['currency_value'] = $this->request->post['paypal_currency_value'];
+		} elseif ($this->config->get('paypal_currency_value')) {
+			$data['currency_value'] = $this->config->get('paypal_currency_value');
+		} else {
+			$data['currency_value'] = '1';
 		}
 						
 		if (isset($this->request->post['paypal_setting'])) {

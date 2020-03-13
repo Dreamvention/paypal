@@ -186,6 +186,26 @@
 								</div>
 							</div>
 							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input_currency_code"><span data-toggle="tooltip" title="<?php echo $help_currency_code; ?>"><?php echo $entry_currency_code; ?></span></label>
+								<div class="col-sm-10">
+									<select name="paypal_currency_code" id="input_currency_code" class="form-control">
+										<?php foreach ($setting['currency'] as $currency) { ?>
+										<?php if ($currency['code'] == $currency_code) { ?>
+										<option value="<?php echo $currency['code']; ?>" selected="selected"><?php echo ${$currency['name']}; ?></option>
+										<?php } else { ?>
+										<option value="<?php echo $currency['code']; ?>"><?php echo ${$currency['name']}; ?></option>
+										<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input_currency_code"><span data-toggle="tooltip" title="<?php echo $help_currency_value; ?>"><?php echo $entry_currency_value; ?></span></label>
+								<div class="col-sm-10">
+									<input type="text" name="paypal_currency_value" value="<?php echo $currency_value; ?>" placeholder="<?php echo $entry_currency_value; ?>" id="input_currency_value" class="form-control" />
+								</div>
+							</div>
+							<div class="form-group">
 								<label class="col-sm-2 control-label" for="input_smart_button"><?php echo $entry_smart_button; ?></label>
 								<div class="col-sm-2">
 									<a href="<?php echo $configure_smart_button_url; ?>" target="_blank" class="btn btn-primary"><?php echo $button_smart_button; ?></a>
