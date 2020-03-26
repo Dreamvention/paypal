@@ -595,15 +595,19 @@ function paypalReady() {
 	}
 }
 
-var script = document.createElement('script');
-script.type = 'text/javascript';
-script.src = 'https://www.paypal.com/sdk/js?components=buttons,hosted-fields&client-id=<?php echo $client_id; ?>&merchant-id=<?php echo $merchant_id; ?>&currency=<?php echo $currency_code; ?>&intent=<?php echo $transaction_method; ?><?php if ($environment == 'sandbox') { ?>&buyer-country=NL<?php } ?>';
-script.setAttribute('data-partner-attribution-id', '<?php echo $partner_id; ?>');
-script.setAttribute('data-client-token', '<?php echo $client_token; ?>');
-script.async = false;
-script.onload = paypalReady();
+if (typeof paypal === 'undefined') {
+	var script = document.createElement('script');
+	script.type = 'text/javascript';
+	script.src = 'https://www.paypal.com/sdk/js?components=buttons,hosted-fields&client-id=<?php echo $client_id; ?>&merchant-id=<?php echo $merchant_id; ?>&currency=<?php echo $currency_code; ?>&intent=<?php echo $transaction_method; ?><?php if ($environment == 'sandbox') { ?>&buyer-country=NL<?php } ?>';
+	script.setAttribute('data-partner-attribution-id', '<?php echo $partner_id; ?>');
+	script.setAttribute('data-client-token', '<?php echo $client_token; ?>');
+	script.async = false;
+	script.onload = paypalReady();
 	
-var paypal_form = document.querySelector('#paypal_form');
-paypal_form.appendChild(script);
+	var paypal_form = document.querySelector('#paypal_form');
+	paypal_form.appendChild(script);
+} else {
+	setupPayPal();
+}
 
 </script>
