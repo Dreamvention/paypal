@@ -280,6 +280,10 @@
 	animation-delay: 0s;
 }
 
+#paypal_form .hidden {
+	display: none;
+}
+
 @keyframes lds-spinner {
 	0% {
 		opacity: 1;
