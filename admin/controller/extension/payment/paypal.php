@@ -250,7 +250,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$data['environment'] = 'production';
 		}
 				
-		$data['seller_nonce'] = token(50);
+		$data['seller_nonce'] = $this->token(50);
 		
 		$data['configure_url'] = array(
 			'production' => array(
@@ -475,5 +475,20 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		}
 		
 		return !$this->error;
+	}
+	
+	private function token($length = 32) {
+		// Create random token
+		$string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	
+		$max = strlen($string) - 1;
+	
+		$token = '';
+	
+		for ($i = 0; $i < $length; $i++) {
+			$token .= $string[mt_rand(0, $max)];
+		}	
+	
+		return $token;
 	}
 }
