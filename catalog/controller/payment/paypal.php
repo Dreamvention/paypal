@@ -174,7 +174,7 @@ class ControllerPaymentPayPal extends Controller {
 			$item_info[] = array(
 				'name' => $product['name'],
 				'sku' => $product['model'],
-				'url' => $this->url->link('product/product', 'product_id=' . $product['product_id']),
+				'url' => $this->url->link('product/product', 'product_id=' . $product['product_id'], 'SSL'),
 				'quantity' => $product['quantity'],
 				'unit_amount' => array(
 					'currency_code' => $currency_code,
@@ -314,7 +314,7 @@ class ControllerPaymentPayPal extends Controller {
 				}
 		
 				if ($this->error && isset($this->error['warning'])) {
-					$this->error['warning'] .= ' ' . sprintf($this->language->get('error_payment'), $this->url->link('information/contact'));
+					$this->error['warning'] .= ' ' . sprintf($this->language->get('error_payment'), $this->url->link('information/contact', '', 'SSL'));
 				}
 			}
 		}
@@ -390,7 +390,7 @@ class ControllerPaymentPayPal extends Controller {
 				
 				$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $this->config->get('config_order_status_id'), $message);
 				
-				$data['success'] = $this->url->link('checkout/success');
+				$data['success'] = $this->url->link('checkout/success', '', 'SSL');
 			}
 		}
 		

@@ -186,7 +186,7 @@ class ControllerModulePayPalSmartButton extends Controller {
 				$item_info[] = array(
 					'name' => $product['name'],
 					'sku' => $product['model'],
-					'url' => $this->url->link('product/product', 'product_id=' . $product['product_id']),
+					'url' => $this->url->link('product/product', 'product_id=' . $product['product_id'], 'SSL'),
 					'quantity' => $product['quantity'],
 					'unit_amount' => array(
 						'currency_code' => $currency_code,
@@ -279,7 +279,7 @@ class ControllerModulePayPalSmartButton extends Controller {
 		if (isset($this->request->post['order_id'])) {
 			$this->session->data['paypal_order_id'] = $this->request->post['order_id'];
 		} else {	
-			$data['url'] = $this->url->link('checkout/cart');
+			$data['url'] = $this->url->link('checkout/cart', '', 'SSL');
 			
 			$this->response->addHeader('Content-Type: application/json');
 			$this->response->setOutput(json_encode($json));
@@ -287,7 +287,7 @@ class ControllerModulePayPalSmartButton extends Controller {
 		
 		// check checkout can continue due to stock checks or vouchers
 		if ((!$this->cart->hasProducts() && empty($this->session->data['vouchers'])) || (!$this->cart->hasStock() && !$this->config->get('config_stock_checkout'))) {
-			$data['url'] = $this->url->link('checkout/cart');
+			$data['url'] = $this->url->link('checkout/cart', '', 'SSL');
 			
 			$this->response->addHeader('Content-Type: application/json');
 			$this->response->setOutput(json_encode($json));
@@ -295,7 +295,7 @@ class ControllerModulePayPalSmartButton extends Controller {
 
 		// if user not logged in check that the guest checkout is allowed
 		if (!$this->customer->isLogged() && (!$this->config->get('config_checkout_guest') || $this->config->get('config_customer_price') || $this->cart->hasDownload() || $this->cart->hasRecurringProducts())) {
-			$data['url'] = $this->url->link('checkout/cart');
+			$data['url'] = $this->url->link('checkout/cart', '', 'SSL');
 			
 			$this->response->addHeader('Content-Type: application/json');
 			$this->response->setOutput(json_encode($json));
@@ -434,7 +434,7 @@ class ControllerModulePayPalSmartButton extends Controller {
 				}
 			}
 
-			$data['url'] = $this->url->link('module/paypal_smart_button/confirmOrder');			
+			$data['url'] = $this->url->link('module/paypal_smart_button/confirmOrder', '', 'SSL');			
 		}
 		
 		$data['error'] = $this->error;
@@ -524,18 +524,18 @@ class ControllerModulePayPalSmartButton extends Controller {
 		$data['breadcrumbs'] = array();
 
 		$data['breadcrumbs'][] = array(
-			'href' => $this->url->link('common/home'),
-			'text' => $this->language->get('text_home')
+			'text' => $this->language->get('text_home'),
+			'href' => $this->url->link('common/home', '', 'SSL')
 		);
 		
 		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('text_cart'),
-			'href' => $this->url->link('checkout/cart')
+			'href' => $this->url->link('checkout/cart', '', 'SSL')
 		);
 
 		$data['breadcrumbs'][] = array(
-			'href' => $this->url->link('module/paypal_smart_button/confirmOrder'),
-			'text' => $this->language->get('text_title')
+			'text' => $this->language->get('text_title'),
+			'href' => $this->url->link('module/paypal_smart_button/confirmOrder', '', 'SSL')
 		);
 
 		$points_total = 0;
@@ -656,7 +656,7 @@ class ControllerModulePayPalSmartButton extends Controller {
 					'reward'                => ($product['reward'] ? sprintf($this->language->get('text_points'), $product['reward']) : ''),
 					'price'                 => $price,
 					'total'                 => $total,
-					'href'                  => $this->url->link('product/product', 'product_id=' . $product['product_id'])
+					'href'                  => $this->url->link('product/product', 'product_id=' . $product['product_id'], 'SSL')
 				);
 			} else {
 				$data['products'][] = array(
@@ -671,7 +671,7 @@ class ControllerModulePayPalSmartButton extends Controller {
 					'reward'                => ($product['reward'] ? sprintf($this->language->get('text_points'), $product['reward']) : ''),
 					'price'                 => $price,
 					'total'                 => $total,
-					'href'                  => $this->url->link('product/product', 'product_id=' . $product['product_id'])
+					'href'                  => $this->url->link('product/product', 'product_id=' . $product['product_id'], 'SSL')
 				);
 			}
 		}
@@ -685,7 +685,7 @@ class ControllerModulePayPalSmartButton extends Controller {
 					'key'         => $key,
 					'description' => $voucher['description'],
 					'amount'      => $this->currency->format($voucher['amount'], $currency_code),
-					'remove'      => $this->url->link('checkout/cart', 'remove=' . $key)
+					'remove'      => $this->url->link('checkout/cart', 'remove=' . $key, 'SSL')
 				);
 			}
 		}
@@ -1527,7 +1527,7 @@ class ControllerModulePayPalSmartButton extends Controller {
 	public function confirmShipping() {
 		$this->validateShipping($this->request->post['shipping_method']);
 
-		$this->response->redirect($this->url->link('module/paypal_smart_button/confirmOrder'));
+		$this->response->redirect($this->url->link('module/paypal_smart_button/confirmOrder', '', 'SSL'));
 	}
 	
 	public function confirmPaymentAddress() {
@@ -1591,7 +1591,7 @@ class ControllerModulePayPalSmartButton extends Controller {
 				$this->session->data['payment_address']['zone_code'] = '';
 			}
 			
-			$data['url'] = $this->url->link('module/paypal_smart_button/confirmOrder');
+			$data['url'] = $this->url->link('module/paypal_smart_button/confirmOrder', '', 'SSL');
 		}
 
 		$data['error'] = $this->error;
@@ -1648,7 +1648,7 @@ class ControllerModulePayPalSmartButton extends Controller {
 				$this->session->data['shipping_address']['custom_field'] = array();
 			}
 			
-			$data['url'] = $this->url->link('module/paypal_smart_button/confirmOrder');
+			$data['url'] = $this->url->link('module/paypal_smart_button/confirmOrder', '', 'SSL');
 		}
 		
 		$data['error'] = $this->error;
