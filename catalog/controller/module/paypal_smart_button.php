@@ -2,6 +2,15 @@
 class ControllerModulePayPalSmartButton extends Controller {
 	private $error = array();
 	
+	public function __construct($registry) {
+		parent::__construct($registry);
+
+		if (version_compare(phpversion(), '7.1', '>=')) {
+			ini_set('precision', 17);
+			ini_set('serialize_precision', -1);
+		}
+	}
+	
 	public function index() {		
 		if ($this->config->get('paypal_status') && isset($this->request->get['route'])) {						
 			$status = false;
