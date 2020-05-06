@@ -88,7 +88,11 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					$error['message'] = $this->language->get('error_timeout');
 				}
 					
-				$error_messages[] = $error['message'];
+				if (isset($error['details'][0]['description'])) {
+					$error_messages[] = $error['details'][0]['description'];
+				} else {
+					$error_messages[] = $error['message'];
+				}
 					
 				$this->model_extension_payment_paypal->log($error, $error['message']);
 			}
@@ -272,7 +276,11 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					$error['message'] = $this->language->get('error_timeout');
 				}
 				
-				$error_messages[] = $error['message'];
+				if (isset($error['details'][0]['description'])) {
+					$error_messages[] = $error['details'][0]['description'];
+				} else {
+					$error_messages[] = $error['message'];
+				}
 					
 				$this->model_extension_payment_paypal->log($error, $error['message']);
 			}
@@ -378,7 +386,11 @@ class ControllerExtensionPaymentPayPal extends Controller {
 						$error['message'] = $this->language->get('error_timeout');
 					}
 					
-					$error_messages[] = $error['message'];
+					if (isset($error['details'][0]['description'])) {
+						$error_messages[] = $error['details'][0]['description'];
+					} else {
+						$error_messages[] = $error['message'];
+					}
 					
 					$this->model_extension_payment_paypal->log($error, $error['message']);
 				}
