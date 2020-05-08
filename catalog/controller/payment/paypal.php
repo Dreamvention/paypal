@@ -2,6 +2,15 @@
 class ControllerPaymentPayPal extends Controller {
 	private $error = array();
 		
+	public function __construct($registry) {
+		parent::__construct($registry);
+
+		if (version_compare(phpversion(), '7.1', '>=')) {
+			ini_set('precision', 14);
+			ini_set('serialize_precision', 14);
+		}
+	}
+	
 	public function index() {
 		$this->load->language('payment/paypal');
 		
