@@ -235,22 +235,40 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			)
 		);
 	
-		$order_info = array(
-			'intent' => strtoupper($transaction_method),
-			'purchase_units' => array(
-				array(
-					'reference_id' => 'default',
-					'description' => 'Your order ' . $order_info['order_id'],
-					'invoice_id' => $order_info['order_id'],
-					'shipping' => $shipping_info,
-					'items' => $item_info,
-					'amount' => $amount_info
+		if ($this->cart->hasShipping()) {
+			$order_info = array(
+				'intent' => strtoupper($transaction_method),
+				'purchase_units' => array(
+					array(
+						'reference_id' => 'default',
+						'description' => 'Your order ' . $order_info['order_id'],
+						'invoice_id' => $order_info['order_id'],
+						'shipping' => $shipping_info,
+						'items' => $item_info,
+						'amount' => $amount_info
+					)
+				),
+				'application_context' => array(
+					'shipping_preference' => $shipping_preference
 				)
-			),
-			'application_context' => array(
-				'shipping_preference' => $shipping_preference
-			)
-		);
+			);
+		} else {
+			$order_info = array(
+				'intent' => strtoupper($transaction_method),
+				'purchase_units' => array(
+					array(
+						'reference_id' => 'default',
+						'description' => 'Your order ' . $order_info['order_id'],
+						'invoice_id' => $order_info['order_id'],
+						'items' => $item_info,
+						'amount' => $amount_info
+					)
+				),
+				'application_context' => array(
+					'shipping_preference' => $shipping_preference
+				)
+			);
+		}
 
 		$result = $paypal->createOrder($order_info);
 			
