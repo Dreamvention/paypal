@@ -200,7 +200,7 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label" for="input_currency_code"><span data-toggle="tooltip" title="<?php echo $help_currency_value; ?>"><?php echo $entry_currency_value; ?></span></label>
+								<label class="col-sm-2 control-label" for="input_currency_value"><span data-toggle="tooltip" title="<?php echo $help_currency_value; ?>"><?php echo $entry_currency_value; ?></span></label>
 								<div class="col-sm-10">
 									<input type="text" name="paypal_currency_value" value="<?php echo $currency_value; ?>" placeholder="<?php echo $entry_currency_value; ?>" id="input_currency_value" class="form-control" />
 								</div>
