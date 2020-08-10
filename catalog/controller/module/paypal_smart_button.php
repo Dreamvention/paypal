@@ -296,7 +296,7 @@ class ControllerModulePayPalSmartButton extends Controller {
 			$data['url'] = $this->url->link('checkout/cart', '', 'SSL');
 			
 			$this->response->addHeader('Content-Type: application/json');
-			$this->response->setOutput(json_encode($json));
+			$this->response->setOutput(json_encode($data));
 		}
 		
 		// check checkout can continue due to stock checks or vouchers
@@ -304,7 +304,7 @@ class ControllerModulePayPalSmartButton extends Controller {
 			$data['url'] = $this->url->link('checkout/cart', '', 'SSL');
 			
 			$this->response->addHeader('Content-Type: application/json');
-			$this->response->setOutput(json_encode($json));
+			$this->response->setOutput(json_encode($data));
 		}
 
 		// if user not logged in check that the guest checkout is allowed
@@ -312,7 +312,7 @@ class ControllerModulePayPalSmartButton extends Controller {
 			$data['url'] = $this->url->link('checkout/cart', '', 'SSL');
 			
 			$this->response->addHeader('Content-Type: application/json');
-			$this->response->setOutput(json_encode($json));
+			$this->response->setOutput(json_encode($data));
 		}
 		
 		// Setting
