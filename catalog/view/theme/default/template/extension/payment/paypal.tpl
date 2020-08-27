@@ -329,7 +329,7 @@ function setupPayPal() {
 	<?php if ($express_status) { ?>
 	try {				
 		// Render the PayPal button into #paypal_express_button_container
-		paypal.Buttons({
+		paypal_sdk.Buttons({
 			env: '<?php echo $environment; ?>',
 			locale: '<?php echo $locale; ?>',
 			style: {
@@ -401,13 +401,13 @@ function setupPayPal() {
 	<?php if ($card_status) { ?>	
 	try {
 		// Check if card fields are eligible to render for the buyer's country. The card fields are not eligible in all countries where buyers are located.
-		if (paypal.HostedFields.isEligible() === true) {
+		if (paypal_sdk.HostedFields.isEligible() === true) {
 			$('#paypal_card').removeClass('hidden');
 			
 			var paypal_card_form = document.querySelector('#paypal_card_form');
 			var paypal_button_submit = document.querySelector('#paypal_button_submit');
 			
-			paypal.HostedFields.render({
+			paypal_sdk.HostedFields.render({
 				styles: {
 					'input': {
 						'color': '#282c37',
@@ -592,19 +592,20 @@ function showPayPalAlert(json) {
 }
 
 function paypalReady() {
-	if (typeof paypal === 'undefined') {
+	if (typeof paypal_sdk === 'undefined') {
 		setTimeout(paypalReady, 100);
 	} else {
 		setupPayPal();
 	}
 }
 
-if (typeof paypal === 'undefined') {
+if (typeof paypal_sdk === 'undefined') {
 	var script = document.createElement('script');
 	script.type = 'text/javascript';
 	script.src = 'https://www.paypal.com/sdk/js?components=buttons,hosted-fields&client-id=<?php echo $client_id; ?>&merchant-id=<?php echo $merchant_id; ?>&currency=<?php echo $currency_code; ?>&intent=<?php echo $transaction_method; ?><?php if ($environment == 'sandbox') { ?>&buyer-country=NL<?php } ?>';
 	script.setAttribute('data-partner-attribution-id', '<?php echo $partner_id; ?>');
 	script.setAttribute('data-client-token', '<?php echo $client_token; ?>');
+	script.setAttribute('data-namespace', 'paypal_sdk');
 	script.async = false;
 	script.onload = paypalReady();
 	

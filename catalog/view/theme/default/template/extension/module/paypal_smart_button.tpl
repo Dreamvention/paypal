@@ -12,7 +12,7 @@
 }
 
 </style>
-<script type="text/javascript" src="https://www.paypal.com/sdk/js?components=buttons&client-id=<?php echo $client_id; ?>&merchant-id=<?php echo $merchant_id; ?>&currency=<?php echo $currency_code; ?>&intent=<?php echo $transaction_method; ?>&commit=false<?php if ($environment == 'sandbox') { ?>&buyer-country=NL<?php } ?>" data-partner-attribution-id="<?php echo $partner_id; ?>"></script>
+<script type="text/javascript" src="https://www.paypal.com/sdk/js?components=buttons&client-id=<?php echo $client_id; ?>&merchant-id=<?php echo $merchant_id; ?>&currency=<?php echo $currency_code; ?>&intent=<?php echo $transaction_method; ?>&commit=false<?php if ($environment == 'sandbox') { ?>&buyer-country=NL<?php } ?>" data-partner-attribution-id="<?php echo $partner_id; ?>" data-namespace="paypal_sdk"></script>
 <script type="text/javascript">
 
 window.onload = function() {
@@ -25,7 +25,7 @@ function setupPayPalSmartButton() {
 			
 		try {		
 			// Render the PayPal button into #paypal_smart_button_container
-			paypal.Buttons({
+			paypal_sdk.Buttons({
 				env: '<?php echo $environment; ?>',
 				locale: '<?php echo $locale; ?>',
 				style: {
