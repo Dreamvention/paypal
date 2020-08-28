@@ -186,6 +186,13 @@ $_['paypal_setting'] = array(
 			'express_status' => true,
 			'card_status' => true
 		),
+		'PHP' => array(
+			'code' => 'PHP',
+			'name' => 'text_currency_php',
+			'decimal_place' => 2,
+			'express_status' => true,
+			'card_status' => false
+		),
 		'PLN' => array(
 			'code' => 'PLN',
 			'name' => 'text_currency_pln',
