@@ -31,6 +31,7 @@ $_['text_currency_mxn']					= 'Mexican Peso';
 $_['text_currency_twd']					= 'New Taiwan Dollar';
 $_['text_currency_nzd']					= 'New Zealand Dollar';
 $_['text_currency_nok']					= 'Norwegian Krone';
+$_['text_currency_php']					= 'Philippine peso';
 $_['text_currency_pln']					= 'Polish Zloty';
 $_['text_currency_gbp']					= 'Pound Sterling';
 $_['text_currency_rub']					= 'Russian Ruble';
