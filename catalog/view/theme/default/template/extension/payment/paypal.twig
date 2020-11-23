@@ -192,6 +192,17 @@
 }
 {% endif %}
 
+#paypal_message {
+	text-align: {{ message_align }};
+}
+
+#paypal_message_container {
+	{% if message_width %}
+	display: inline-block;
+	width: {{ message_width }};
+	{% endif %}
+}
+
 #paypal_form .lds-spinner {
 	display: inline-block;
 	position: absolute;
@@ -319,6 +330,9 @@
 			<button id="paypal_button_submit" class="btn" value="submit">{{ button_pay }}</button>
 		</form>
 	</div>
+	{% endif %}
+	{% if message_status %}
+	<div id="paypal_message"><div id="paypal_message_container"><div data-pp-message data-pp-placement="{{ message_placement }}" data-pp-amount="{{ message_amount }}" data-pp-style-layout="{{ message_layout }}" {% if (message_layout == 'text') %}data-pp-style-text-color="{{ message_text_color }}" data-pp-style-text-size="{{ message_text_size }}"{% else %}data-pp-style-color="{{ message_flex_color }}" data-pp-style-ratio="{{ message_flex_ratio }}"{% endif %}></div></div></div>
 	{% endif %}
 	<div class="lds-spinner hidden"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 </div>
@@ -602,7 +616,7 @@ function paypalReady() {
 if (typeof paypal_sdk === 'undefined') {
 	var script = document.createElement('script');
 	script.type = 'text/javascript';
-	script.src = 'https://www.paypal.com/sdk/js?components=buttons,hosted-fields&client-id={{ client_id }}&merchant-id={{ merchant_id }}&currency={{ currency_code }}&intent={{ transaction_method }}{% if (environment == 'sandbox') %}&buyer-country=NL{% endif %}';
+	script.src = 'https://www.paypal.com/sdk/js?components=buttons,hosted-fields,messages&client-id={{ client_id }}&merchant-id={{ merchant_id }}&currency={{ currency_code }}&intent={{ transaction_method }}{% if (environment == 'sandbox') %}&buyer-country=NL{% endif %}';
 	script.setAttribute('data-partner-attribution-id', '{{ partner_id }}');
 	script.setAttribute('data-client-token', '{{ client_token }}');
 	script.setAttribute('data-namespace', 'paypal_sdk');

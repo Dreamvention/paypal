@@ -28,6 +28,10 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 		
 			$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('module_paypal_smart_button_setting'));
 			
+			$currency_code = $this->config->get('payment_paypal_currency_code');
+			$currency_value = $this->config->get('payment_paypal_currency_value');
+			$decimal_place = $paypal_setting['currency'][$currency_code]['decimal_place'];
+			
 			if ($setting['page']['product']['status'] && ($this->request->get['route'] == 'product/product') && isset($this->request->get['product_id'])) {
 				$data['insert_tag'] = html_entity_decode($setting['page']['product']['insert_tag']);
 				$data['insert_type'] = $setting['page']['product']['insert_type'];
@@ -36,8 +40,36 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 				$data['button_color'] = $setting['page']['product']['button_color'];
 				$data['button_shape'] = $setting['page']['product']['button_shape'];
 				$data['button_label'] = $setting['page']['product']['button_label'];
-				$data['button_tagline'] = $setting['page']['product']['button_tagline'];
-					
+				$data['button_tagline'] = $setting['page']['product']['button_tagline'];	
+				
+				$data['message_status'] = $setting['page']['product']['message_status'];
+				$data['message_align'] = $setting['page']['product']['message_align'];
+				$data['message_size'] = $setting['page']['product']['message_size'];
+				$data['message_layout'] = $setting['page']['product']['message_layout'];
+				$data['message_text_color'] = $setting['page']['product']['message_text_color'];
+				$data['message_text_size'] = $setting['page']['product']['message_text_size'];
+				$data['message_flex_color'] = $setting['page']['product']['message_flex_color'];
+				$data['message_flex_ratio'] = $setting['page']['product']['message_flex_ratio'];
+				$data['message_placement'] = 'product';
+				
+				$product_id = (int)$this->request->get['product_id'];
+		
+				$this->load->model('catalog/product');
+
+				$product_info = $this->model_catalog_product->getProduct($product_id);
+
+				if ($product_info) {
+					if ($this->customer->isLogged() || !$this->config->get('config_customer_price')) {
+						if ((float)$product_info['special']) {
+							$product_price = $this->tax->calculate($product_info['special'], $product_info['tax_class_id'], $this->config->get('config_tax'));
+						} else {
+							$product_price = $this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax'));
+						}
+						
+						$data['message_amount'] = number_format($product_price * $currency_value, $decimal_place, '.', '');
+					} 			
+				}
+				
 				$status = true;
 			}
 			
@@ -50,6 +82,30 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 				$data['button_shape'] = $setting['page']['cart']['button_shape'];
 				$data['button_label'] = $setting['page']['cart']['button_label'];
 				$data['button_tagline'] = $setting['page']['cart']['button_tagline'];
+				
+				$data['message_status'] = $setting['page']['cart']['message_status'];
+				$data['message_align'] = $setting['page']['cart']['message_align'];
+				$data['message_size'] = $setting['page']['cart']['message_size'];
+				$data['message_layout'] = $setting['page']['cart']['message_layout'];
+				$data['message_text_color'] = $setting['page']['cart']['message_text_color'];
+				$data['message_text_size'] = $setting['page']['cart']['message_text_size'];
+				$data['message_flex_color'] = $setting['page']['cart']['message_flex_color'];
+				$data['message_flex_ratio'] = $setting['page']['cart']['message_flex_ratio'];
+				$data['message_placement'] = 'cart';
+				
+				$item_total = 0;
+				
+				foreach ($this->cart->getProducts() as $product) {
+					$product_price = number_format($product['price'] * $currency_value, $decimal_place, '.', '');
+				
+					$item_total += $product_price * $product['quantity'];
+				}
+			
+				$item_total = number_format($item_total, $decimal_place, '.', '');
+				$sub_total = $this->cart->getSubTotal();
+				$total = $this->cart->getTotal();
+				$tax_total = number_format(($total - $sub_total) * $currency_value, $decimal_place, '.', '');
+				$data['message_amount'] = number_format($item_total + $tax_total, $decimal_place, '.', '');
 					
 				$status = true;
 			}
@@ -66,9 +122,10 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 				$data['transaction_method'] = $this->config->get('payment_paypal_transaction_method');					
 				$data['locale'] = preg_replace('/-(.+?)+/', '', $this->config->get('config_language')) . '_' . $country['iso_code_2'];
 				$data['currency_code'] = $this->config->get('payment_paypal_currency_code');
-				
+						
 				$data['button_width'] = $setting['button_width'][$data['button_size']];
-								
+				$data['message_width'] = $setting['message_width'][$data['message_size']];
+												
 				return $this->load->view('extension/module/paypal_smart_button', $data);
 			}
 		}
@@ -1270,7 +1327,7 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 				$shipping_total = number_format($shipping_total * $currency_value, $decimal_place, '.', '');
 			}
 		
-			$order_total = number_format($order_info['total'] * $currency_value, $decimal_place, '.', '');
+			$order_total = number_format($order_data['total'] * $currency_value, $decimal_place, '.', '');
 		
 			$rebate = number_format($item_total + $tax_total + $shipping_total - $order_total, $decimal_place, '.', '');
 		
@@ -1306,7 +1363,7 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 					)
 				)
 			);
-					
+			
 			$order_info[] = array(
 				'op' => 'replace',
 				'path' => '/purchase_units/@reference_id==\'default\'/amount',
