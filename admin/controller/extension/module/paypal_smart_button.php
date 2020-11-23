@@ -58,6 +58,8 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 		$data['text_buy_now'] = $this->language->get('text_buy_now');
 		$data['text_pay_pal'] = $this->language->get('text_pay_pal');
 		$data['text_installment'] = $this->language->get('text_installment');
+		$data['text_text'] = $this->language->get('text_text');
+		$data['text_flex'] = $this->language->get('text_flex');
 		$data['text_yes'] = $this->language->get('text_yes');
 		$data['text_no'] = $this->language->get('text_no');
 		
@@ -72,6 +74,16 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 		$data['entry_button_shape'] = $this->language->get('entry_button_shape');
 		$data['entry_button_label'] = $this->language->get('entry_button_label');
 		$data['entry_button_tagline'] = $this->language->get('entry_button_tagline');
+		$data['entry_message_status'] = $this->language->get('entry_message_status');
+		$data['entry_message_align'] = $this->language->get('entry_message_align');
+		$data['entry_message_size'] = $this->language->get('entry_message_size');
+		$data['entry_message_layout'] = $this->language->get('entry_message_layout');
+		$data['entry_message_text_color'] = $this->language->get('entry_message_text_color');
+		$data['entry_message_text_size'] = $this->language->get('entry_message_text_size');
+		$data['entry_message_flex_color'] = $this->language->get('entry_message_flex_color');
+		$data['entry_message_flex_ratio'] = $this->language->get('entry_message_flex_ratio');
+		
+		$data['help_checkout_message_status'] = $this->language->get('help_checkout_message_status');
 		
 		$data['button_save'] = $this->language->get('button_save');
 		$data['button_cancel'] = $this->language->get('button_cancel');

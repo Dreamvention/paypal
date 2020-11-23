@@ -16,6 +16,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		
 		$this->load->model('extension/payment/paypal');
 		$this->load->model('localisation/country');
+		$this->load->model('checkout/order');
 				
 		$country = $this->model_localisation_country->getCountry($this->config->get('config_country_id'));
 				
@@ -35,6 +36,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['transaction_method'] = $this->config->get('paypal_transaction_method');
 		$data['locale'] = preg_replace('/-(.+?)+/', '', $this->config->get('config_language')) . '_' . $country['iso_code_2'];
 		$data['currency_code'] = $this->config->get('paypal_currency_code');
+		$data['currency_value'] = $this->config->get('paypal_currency_value');
+		$data['decimal_place'] = $setting['currency'][$data['currency_code']]['decimal_place'];
 		
 		$data['express_status'] = $setting['checkout']['express']['status'];
 
@@ -61,7 +64,22 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['form_width'] = $setting['form_width'][$data['form_size']];
 		$data['secure_status'] = $setting['checkout']['card']['secure_status'];
 				
+		$data['message_status'] = $setting['checkout']['message']['status'];
+		$data['message_align'] = $setting['checkout']['message']['message_align'];
+		$data['message_size'] = $setting['checkout']['message']['message_size'];
+		$data['message_width'] = $setting['message_width'][$data['message_size']];
+		$data['message_layout'] = $setting['checkout']['message']['message_layout'];
+		$data['message_text_color'] = $setting['checkout']['message']['message_text_color'];
+		$data['message_text_size'] = $setting['checkout']['message']['message_text_size'];
+		$data['message_flex_color'] = $setting['checkout']['message']['message_flex_color'];
+		$data['message_flex_ratio'] = $setting['checkout']['message']['message_flex_ratio'];
+		$data['message_placement'] = 'payment';
+				
 		$data['order_id'] = $this->session->data['order_id'];
+		
+		$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
+		
+		$data['message_amount'] = number_format($order_info['total'] * $data['currency_value'], $data['decimal_place'], '.', '');
 		
 		$data['entry_card_number'] = $this->language->get('entry_card_number');
 		$data['entry_expiration_date'] = $this->language->get('entry_expiration_date');

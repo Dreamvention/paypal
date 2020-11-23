@@ -31,6 +31,7 @@
 						<li class="nav-tab"><a href="#tab_order_status" data-toggle="tab"><?php echo $text_order_status; ?></a></li>
 						<li class="nav-tab"><a href="#tab_checkout_express" data-toggle="tab"><?php echo $text_checkout_express; ?></a></li>
 						<li class="nav-tab hidden"><a href="#tab_checkout_card" data-toggle="tab"><?php echo $text_checkout_card; ?></a></li>
+						<li class="nav-tab"><a href="#tab_checkout_message" data-toggle="tab"><?php echo $text_checkout_message; ?></a></li>
 					</ul>
 		  
 					<div class="tab-content">
@@ -113,6 +114,20 @@
 									<div class="alert alert-warning alert-dismissible hidden"><i class="fa fa-exclamation-circle"></i> <?php echo $help_checkout_card_status; ?>
 										<button type="button" class="close" data-dismiss="alert">&times;</button>
 									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input_checkout_message_status"><span data-toggle="tooltip" title="<?php echo $help_checkout_message_status; ?>"><?php echo $entry_checkout_message_status; ?></span></label>
+								<div class="col-sm-10">
+									<select name="paypal_setting[checkout][message][status]" id="input_checkout_message_status" class="form-control">
+										<?php if ($setting['checkout']['message']['status']) { ?>
+										<option value="1" selected="selected"><?php echo $text_enabled; ?></option>
+										<option value="0"><?php echo $text_disabled; ?></option>
+										<?php } else { ?>
+										<option value="1"><?php echo $text_enabled; ?></option>
+										<option value="0" selected="selected"><?php echo $text_disabled; ?></option>
+										<?php } ?>
+									</select>
 								</div>
 							</div>
 							<?php } ?>
@@ -365,6 +380,169 @@
 								</div>
 							</div>
 						</div>
+						<div class="tab-pane hidden" id="tab_checkout_card">
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input_checkout_card_form_align"><?php echo $entry_form_align; ?></label>
+								<div class="col-sm-10">
+									<select name="paypal_setting[checkout][card][form_align]" id="input_checkout_card_form_align" class="form-control">
+										<?php foreach ($setting['form_align'] as $form_align) { ?>
+										<?php if ($form_align['code'] == $setting['checkout']['card']['form_align']) { ?>
+										<option value="<?php echo $form_align['code']; ?>" selected="selected"><?php echo ${$form_align['name']}; ?></option>
+										<?php } else { ?>
+										<option value="<?php echo $form_align['code']; ?>"><?php echo ${$form_align['name']}; ?></option>
+										<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input_checkout_card_form_size"><?php echo $entry_form_size; ?></label>
+								<div class="col-sm-10">
+									<select name="paypal_setting[checkout][card][form_size]" id="input_checkout_card_form_size" class="form-control">
+										<?php foreach ($setting['form_size'] as $form_size) { ?>
+										<?php if ($form_size['code'] == $setting['checkout']['card']['form_size']) { ?>
+										<option value="<?php echo $form_size['code']; ?>" selected="selected"><?php echo ${$form_size['name']}; ?></option>
+										<?php } else { ?>
+										<option value="<?php echo $form_size['code']; ?>"><?php echo ${$form_size['name']}; ?></option>
+										<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input_checkout_card_secure_status"><span data-toggle="tooltip" title="<?php echo $help_secure_status; ?>"><?php echo $entry_secure_status; ?></span></label>
+								<div class="col-sm-10">
+									<select name="paypal_setting[checkout][card][secure_status]" id="input_checkout_card_secure_status" class="form-control">
+										<?php if ($setting['checkout']['card']['secure_status']) { ?>
+										<option value="1" selected="selected"><?php echo $text_enabled; ?></option>
+										<option value="0"><?php echo $text_disabled; ?></option>
+										<?php } else { ?>
+										<option value="1"><?php echo $text_enabled; ?></option>
+										<option value="0" selected="selected"><?php echo $text_disabled; ?></option>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input_checkout_card_secure_scenario"><span data-toggle="tooltip" title="<?php echo $help_secure_scenario; ?>"><?php echo $entry_secure_scenario; ?></span></label>
+								<div class="col-sm-10">
+									<?php foreach ($setting['secure_scenario'] as $secure_scenario) { ?>
+									<div class="row">
+										<div class="col-sm-8">
+											<label class="control-label" for="input_checkout_card_secure_scenario"><?php echo ${$secure_scenario['name']}; ?></label>
+										</div>
+										<div class="col-sm-4">										
+											<select name="paypal_setting[checkout][card][secure_scenario][<?php echo $secure_scenario['code']; ?>]" class="form-control">
+												<option value="1" <?php if ($setting['checkout']['card']['secure_scenario'][$secure_scenario['code']]) { ?>selected="selected"<?php } ?>><?php echo $text_accept; ?><?php if ($secure_scenario['recommended']) { ?> <?php echo $text_recommended; ?><?php } ?></option>
+												<option value="0" <?php if (!$setting['checkout']['card']['secure_scenario'][$secure_scenario['code']]) { ?>selected="selected"<?php } ?>><?php echo $text_decline; ?><?php if (!$secure_scenario['recommended']) { ?> <?php echo $text_recommended; ?><?php } ?></option>
+											</select>
+										</div>
+									</div>
+									<br />
+									<?php } ?>
+								</div>
+							</div>
+						</div>
+						<div class="tab-pane" id="tab_checkout_message">
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input_checkout_message_align"><?php echo $entry_message_align; ?></label>
+								<div class="col-sm-10">
+									<select name="paypal_setting[checkout][message][message_align]" id="input_checkout_message_align" class="form-control">
+										<?php foreach ($setting['message_align'] as $message_align) { ?>
+										<?php if ($message_align['code'] == $setting['checkout']['message']['message_align']) { ?>
+										<option value="<?php echo $message_align['code']; ?>" selected="selected"><?php echo ${$message_align['name']}; ?></option>
+										<?php } else { ?>
+										<option value="<?php echo $message_align['code']; ?>"><?php echo ${$message_align['name']}; ?></option>
+										<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input_checkout_message_size"><?php echo $entry_message_size; ?></label>
+								<div class="col-sm-10">
+									<select name="paypal_setting[checkout][message][message_size]" id="input_checkout_message_size" class="form-control">
+										<?php foreach ($setting['message_size'] as $message_size) { ?>
+										<?php if ($message_size['code'] == $setting['checkout']['message']['message_size']) { ?>
+										<option value="<?php echo $message_size['code']; ?>" selected="selected"><?php echo ${$message_size['name']}; ?></option>
+										<?php } else { ?>
+										<option value="<?php echo $message_size['code']; ?>"><?php echo ${$message_size['name']}; ?></option>
+										<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input_checkout_message_layout"><?php echo $entry_message_layout; ?></label>
+								<div class="col-sm-10">
+									<select name="paypal_setting[checkout][message][message_layout]" id="input_checkout_message_layout" class="form-control">
+										<?php foreach ($setting['message_layout'] as $message_layout) { ?>
+										<?php if ($message_layout['code'] == $setting['checkout']['message']['message_layout']) { ?>
+										<option value="<?php echo $message_layout['code']; ?>" selected="selected"><?php echo ${$message_layout['name']}; ?></option>
+										<?php } else { ?>
+										<option value="<?php echo $message_layout['code']; ?>"><?php echo ${$message_layout['name']}; ?></option>
+										<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group <?php if ($setting['checkout']['message']['message_layout'] == 'flex') { ?>hidden<?php } ?>">
+								<label class="col-sm-2 control-label" for="input_checkout_message_text_color"><?php echo $entry_message_text_color; ?></label>
+								<div class="col-sm-10">
+									<select name="paypal_setting[checkout][message][message_text_color]" id="input_checkout_message_text_color" class="form-control">
+										<?php foreach ($setting['message_text_color'] as $message_text_color) { ?>
+										<?php if ($message_text_color['code'] == $setting['checkout']['message']['message_text_color']) { ?>
+										<option value="<?php echo $message_text_color['code']; ?>" selected="selected"><?php echo ${$message_text_color['name']}; ?></option>
+										<?php } else { ?>
+										<option value="<?php echo $message_text_color['code']; ?>"><?php echo ${$message_text_color['name']}; ?></option>
+										<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group <?php if ($setting['checkout']['message']['message_layout'] == 'flex') { ?>hidden<?php } ?>">
+								<label class="col-sm-2 control-label" for="input_checkout_message_text_size"><?php echo $entry_message_text_size; ?></label>
+								<div class="col-sm-10">
+									<select name="paypal_setting[checkout][message][message_text_size]" id="input_checkout_message_text_size" class="form-control">
+										<?php foreach ($setting['message_text_size'] as $message_text_size) { ?>
+										<?php if ($message_text_size == $setting['checkout']['message']['message_text_size']) { ?>
+										<option value="<?php echo $message_text_size; ?>" selected="selected"><?php echo $message_text_size; ?></option>
+										<?php } else { ?>
+										<option value="<?php echo $message_text_size; ?>"><?php echo $message_text_size; ?></option>
+										<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group <?php if ($setting['checkout']['message']['message_layout'] == 'text') { ?>hidden<?php } ?>">
+								<label class="col-sm-2 control-label" for="input_checkout_message_flex_color"><?php echo $entry_message_flex_color; ?></label>
+								<div class="col-sm-10">
+									<select name="paypal_setting[checkout][message][message_flex_color]" id="input_checkout_message_flex_color" class="form-control">
+										<?php foreach ($setting['message_flex_color'] as $message_flex_color) { ?>
+										<?php if ($message_flex_color['code'] == $setting['checkout']['message']['message_flex_color']) { ?>
+										<option value="<?php echo $message_flex_color['code']; ?>" selected="selected"><?php echo ${$message_flex_color['name']}; ?></option>
+										<?php } else { ?>
+										<option value="<?php echo $message_flex_color['code']; ?>"><?php echo ${$message_flex_color['name']}; ?></option>
+										<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group <?php if ($setting['checkout']['message']['message_layout'] == 'text') { ?>hidden<?php } ?>">
+								<label class="col-sm-2 control-label" for="input_checkout_message_flex_ratio"><?php echo $entry_message_flex_ratio; ?></label>
+								<div class="col-sm-10">
+									<select name="paypal_setting[checkout][message][message_flex_ratio]" id="input_checkout_message_flex_ratio" class="form-control">
+										<?php foreach ($setting['message_flex_ratio'] as $message_flex_ratio) { ?>
+										<?php if ($message_flex_ratio == $setting['checkout']['message']['message_flex_ratio']) { ?>
+										<option value="<?php echo $message_flex_ratio; ?>" selected="selected"><?php echo $message_flex_ratio; ?></option>
+										<?php } else { ?>
+										<option value="<?php echo $message_flex_ratio; ?>"><?php echo $message_flex_ratio; ?></option>
+										<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+						</div>
 					</div>
 				</form>
 			</div>
@@ -437,6 +615,22 @@ $('#input_environment').on('change', function() {
 	$('#input_merchant_id').val('');
 	$('#section_connect').removeClass('hidden');
 	$('#section_disconnect').addClass('hidden');
+});
+
+$('#input_checkout_message_layout').on('change', function() {
+	var layout = $(this).val();
+	
+	if (layout == 'text') {
+		$('#input_checkout_message_flex_color').parents('.form-group').addClass('hidden');
+		$('#input_checkout_message_flex_ratio').parents('.form-group').addClass('hidden');
+		$('#input_checkout_message_text_color').parents('.form-group').removeClass('hidden');
+		$('#input_checkout_message_text_size').parents('.form-group').removeClass('hidden');
+	} else {
+		$('#input_checkout_message_text_color').parents('.form-group').addClass('hidden');
+		$('#input_checkout_message_text_size').parents('.form-group').addClass('hidden');
+		$('#input_checkout_message_flex_color').parents('.form-group').removeClass('hidden');
+		$('#input_checkout_message_flex_ratio').parents('.form-group').removeClass('hidden');
+	}
 });
 
 </script>
