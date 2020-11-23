@@ -172,6 +172,118 @@
 									</select>
 								</div>
 							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input_page_<?php echo $page['code']; ?>_message_status"><span data-toggle="tooltip" title="<?php echo $help_message_status; ?>"><?php echo $entry_message_status; ?></span></label>
+								<div class="col-sm-10">
+									<select name="paypal_smart_button_setting[page][<?php echo $page['code']; ?>][message_status]" id="input_page_<?php echo $page['code']; ?>_message_status" class="form-control">
+										<?php if ($page['message_status']) { ?>
+										<option value="1" selected="selected"><?php echo $text_enabled; ?></option>
+										<option value="0"><?php echo $text_disabled; ?></option>
+										<?php } else { ?>
+										<option value="1"><?php echo $text_enabled; ?></option>
+										<option value="0" selected="selected"><?php echo $text_disabled; ?></option>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input_page_<?php echo $page['code']; ?>_message_align"><?php echo $entry_message_align; ?></label>
+								<div class="col-sm-10">
+									<select name="paypal_smart_button_setting[page][<?php echo $page['code']; ?>][message_align]" id="input_page_<?php echo $page['code']; ?>_message_align" class="form-control">
+										<?php foreach ($setting['message_align'] as $message_align) { ?>
+										<?php if ($message_align['code'] == $page['message_align']) { ?>
+										<option value="<?php echo $message_align['code']; ?>" selected="selected"><?php echo ${$message_align['name']}; ?></option>
+										<?php } else { ?>
+										<option value="<?php echo $message_align['code']; ?>"><?php echo ${$message_align['name']}; ?></option>
+										<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input_page_<?php echo $page['code']; ?>_message_size"><?php echo $entry_message_size; ?></label>
+								<div class="col-sm-10">
+									<select name="paypal_smart_button_setting[page][<?php echo $page['code']; ?>][message_size]" id="input_page_<?php echo $page['code']; ?>_message_size" class="form-control">
+										<?php foreach ($setting['message_size'] as $message_size) { ?>
+										<?php if ($message_size['code'] == $page['message_size']) { ?>
+										<option value="<?php echo $message_size['code']; ?>" selected="selected"><?php echo ${$message_size['name']}; ?></option>
+										<?php } else { ?>
+										<option value="<?php echo $message_size['code']; ?>"><?php echo ${$message_size['name']}; ?></option>
+										<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input_page_<?php echo $page['code']; ?>_message_layout"><?php echo $entry_message_layout; ?></label>
+								<div class="col-sm-10">
+									<select name="paypal_smart_button_setting[page][<?php echo $page['code']; ?>][message_layout]" id="input_page_<?php echo $page['code']; ?>_message_layout" class="form-control">
+										<?php foreach ($setting['message_layout'] as $message_layout) { ?>
+										<?php if ($message_layout['code'] == $page['message_layout']) { ?>
+										<option value="<?php echo $message_layout['code']; ?>" selected="selected"><?php echo ${$message_layout['name']}; ?></option>
+										<?php } else { ?>
+										<option value="<?php echo $message_layout['code']; ?>"><?php echo ${$message_layout['name']}; ?></option>
+										<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group <?php if ($page['message_layout'] == 'flex') { ?>hidden<?php } ?>">
+								<label class="col-sm-2 control-label" for="input_page_<?php echo $page['code']; ?>_message_text_color"><?php echo $entry_message_text_color; ?></label>
+								<div class="col-sm-10">
+									<select name="paypal_smart_button_setting[page][<?php echo $page['code']; ?>][message_text_color]" id="input_page_<?php echo $page['code']; ?>_message_text_color" class="form-control">
+										<?php foreach ($setting['message_text_color'] as $message_text_color) { ?>
+										<?php if ($message_text_color['code'] == $page['message_text_color']) { ?>
+										<option value="<?php echo $message_text_color['code']; ?>" selected="selected"><?php echo ${$message_text_color['name']}; ?></option>
+										<?php } else { ?>
+										<option value="<?php echo $message_text_color['code']; ?>"><?php echo ${$message_text_color['name']}; ?></option>
+										<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group <?php if ($page['message_layout'] == 'flex') { ?>hidden<?php } ?>">
+								<label class="col-sm-2 control-label" for="input_page_<?php echo $page['code']; ?>_message_text_size"><?php echo $entry_message_text_size; ?></label>
+								<div class="col-sm-10">
+									<select name="paypal_smart_button_setting[page][<?php echo $page['code']; ?>][message_text_size]" id="input_page_<?php echo $page['code']; ?>_message_text_size" class="form-control">
+										<?php foreach ($setting['message_text_size'] as $message_text_size) { ?>
+										<?php if ($message_text_size == $page['message_text_size']) { ?>
+										<option value="<?php echo $message_text_size; ?>" selected="selected"><?php echo $message_text_size; ?></option>
+										<?php } else { ?>
+										<option value="<?php echo $message_text_size; ?>"><?php echo $message_text_size; ?></option>
+										<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group <?php if ($page['message_layout'] == 'text') { ?>hidden<?php } ?>">
+								<label class="col-sm-2 control-label" for="input_page_<?php echo $page['code']; ?>_message_flex_color"><?php echo $entry_message_flex_color; ?></label>
+								<div class="col-sm-10">
+									<select name="paypal_smart_button_setting[page][<?php echo $page['code']; ?>][message_flex_color]" id="input_page_<?php echo $page['code']; ?>_message_flex_color" class="form-control">
+										<?php foreach ($setting['message_flex_color'] as $message_flex_color) { ?>
+										<?php if ($message_flex_color['code'] == $page['message_flex_color']) { ?>
+										<option value="<?php echo $message_flex_color['code']; ?>" selected="selected"><?php echo ${$message_flex_color['name']}; ?></option>
+										<?php } else { ?>
+										<option value="<?php echo $message_flex_color['code']; ?>"><?php echo ${$message_flex_color['name']}; ?></option>
+										<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group <?php if ($page['message_layout'] == 'text') { ?>hidden<?php } ?>">
+								<label class="col-sm-2 control-label" for="input_page_<?php echo $page['code']; ?>_message_flex_ratio"><?php echo $entry_message_flex_ratio; ?></label>
+								<div class="col-sm-10">
+									<select name="paypal_smart_button_setting[page][<?php echo $page['code']; ?>][message_flex_ratio]" id="input_page_<?php echo $page['code']; ?>_message_flex_ratio" class="form-control">
+										<?php foreach ($setting['message_flex_ratio'] as $message_flex_ratio) { ?>
+										<?php if ($message_flex_ratio == $page['message_flex_ratio']) { ?>
+										<option value="<?php echo $message_flex_ratio; ?>" selected="selected"><?php echo $message_flex_ratio; ?></option>
+										<?php } else { ?>
+										<option value="<?php echo $message_flex_ratio; ?>"><?php echo $message_flex_ratio; ?></option>
+										<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
 						</div>
 						<?php } ?>
 					</div>
@@ -180,4 +292,39 @@
 		</div>
 	</div>
 </div>
+<script type="text/javascript">
+
+$('#input_page_product_message_layout').on('change', function() {
+	var layout = $(this).val();
+	
+	if (layout == 'text') {
+		$('#input_page_product_message_flex_color').parents('.form-group').addClass('hidden');
+		$('#input_page_product_message_flex_ratio').parents('.form-group').addClass('hidden');
+		$('#input_page_product_message_text_color').parents('.form-group').removeClass('hidden');
+		$('#input_page_product_message_text_size').parents('.form-group').removeClass('hidden');
+	} else {
+		$('#input_page_product_message_text_color').parents('.form-group').addClass('hidden');
+		$('#input_page_product_message_text_size').parents('.form-group').addClass('hidden');
+		$('#input_page_product_message_flex_color').parents('.form-group').removeClass('hidden');
+		$('#input_page_product_message_flex_ratio').parents('.form-group').removeClass('hidden');
+	}
+});
+
+$('#input_page_cart_message_layout').on('change', function() {
+	var layout = $(this).val();
+	
+	if (layout == 'text') {
+		$('#input_page_cart_message_flex_color').parents('.form-group').addClass('hidden');
+		$('#input_page_cart_message_flex_ratio').parents('.form-group').addClass('hidden');
+		$('#input_page_cart_message_text_color').parents('.form-group').removeClass('hidden');
+		$('#input_page_cart_message_text_size').parents('.form-group').removeClass('hidden');
+	} else {
+		$('#input_page_cart_message_text_color').parents('.form-group').addClass('hidden');
+		$('#input_page_cart_message_text_size').parents('.form-group').addClass('hidden');
+		$('#input_page_cart_message_flex_color').parents('.form-group').removeClass('hidden');
+		$('#input_page_cart_message_flex_ratio').parents('.form-group').removeClass('hidden');
+	}
+});
+
+</script>
 <?php echo $footer; ?>

@@ -192,6 +192,17 @@
 }
 <?php } ?>
 
+#paypal_message {
+	text-align: <?php echo $message_align; ?>;
+}
+
+#paypal_message_container {
+	<?php if ($message_width) { ?>
+	display: inline-block;
+	width: <?php echo $message_width; ?>;
+	<?php } ?>
+}
+
 #paypal_form .lds-spinner {
 	display: inline-block;
 	position: absolute;
@@ -319,6 +330,9 @@
 			<button id="paypal_button_submit" class="btn" value="submit"><?php echo $button_pay; ?></button>
 		</form>
 	</div>
+	<?php } ?>
+	<?php if ($message_status) { ?>
+	<div id="paypal_message"><div id="paypal_message_container"><div data-pp-message data-pp-placement="<?php echo $message_placement; ?>" data-pp-amount="<?php echo $message_amount; ?>" data-pp-style-layout="<?php echo $message_layout; ?>" <?php if ($message_layout == 'text') { ?>data-pp-style-text-color="<?php echo $message_text_color; ?>" data-pp-style-text-size="<?php echo $message_text_size; ?>"<?php } else { ?>data-pp-style-color="<?php echo $message_flex_color; ?>" data-pp-style-ratio="<?php echo $message_flex_ratio; ?>"<?php } ?>></div></div></div>
 	<?php } ?>
 	<div class="lds-spinner hidden"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 </div>
@@ -602,7 +616,7 @@ function paypalReady() {
 if (typeof paypal_sdk === 'undefined') {
 	var script = document.createElement('script');
 	script.type = 'text/javascript';
-	script.src = 'https://www.paypal.com/sdk/js?components=buttons,hosted-fields&client-id=<?php echo $client_id; ?>&merchant-id=<?php echo $merchant_id; ?>&currency=<?php echo $currency_code; ?>&intent=<?php echo $transaction_method; ?><?php if ($environment == 'sandbox') { ?>&buyer-country=NL<?php } ?>';
+	script.src = 'https://www.paypal.com/sdk/js?components=buttons,hosted-fields,messages&client-id=<?php echo $client_id; ?>&merchant-id=<?php echo $merchant_id; ?>&currency=<?php echo $currency_code; ?>&intent=<?php echo $transaction_method; ?><?php if ($environment == 'sandbox') { ?>&buyer-country=NL<?php } ?>';
 	script.setAttribute('data-partner-attribution-id', '<?php echo $partner_id; ?>');
 	script.setAttribute('data-client-token', '<?php echo $client_token; ?>');
 	script.setAttribute('data-namespace', 'paypal_sdk');

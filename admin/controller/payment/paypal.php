@@ -30,6 +30,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['text_order_status'] = $this->language->get('text_order_status');
 		$data['text_checkout_express'] = $this->language->get('text_checkout_express');
 		$data['text_checkout_card'] = $this->language->get('text_checkout_card');
+		$data['text_checkout_message'] = $this->language->get('text_checkout_message');
 		$data['text_production'] = $this->language->get('text_production');
 		$data['text_sandbox'] = $this->language->get('text_sandbox');
 		$data['text_authorization'] = $this->language->get('text_authorization');
@@ -85,6 +86,8 @@ class ControllerPaymentPayPal extends Controller {
 		$data['text_buy_now'] = $this->language->get('text_buy_now');
 		$data['text_pay_pal'] = $this->language->get('text_pay_pal');
 		$data['text_installment'] = $this->language->get('text_installment');
+		$data['text_text'] = $this->language->get('text_text');
+		$data['text_flex'] = $this->language->get('text_flex');
 		$data['text_accept'] = $this->language->get('text_accept');
 		$data['text_decline'] = $this->language->get('text_decline');
 		$data['text_recommended'] = $this->language->get('text_recommended');
@@ -101,6 +104,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['entry_connect'] = $this->language->get('entry_connect');
 		$data['entry_checkout_express_status'] = $this->language->get('entry_checkout_express_status');
 		$data['entry_checkout_card_status'] = $this->language->get('entry_checkout_card_status');
+		$data['entry_checkout_message_status'] = $this->language->get('entry_checkout_message_status');
 		$data['entry_environment'] = $this->language->get('entry_environment');
 		$data['entry_debug'] = $this->language->get('entry_debug');
 		$data['entry_transaction_method'] = $this->language->get('entry_transaction_method');
@@ -120,10 +124,18 @@ class ControllerPaymentPayPal extends Controller {
 		$data['entry_form_size'] = $this->language->get('entry_form_size');
 		$data['entry_secure_status'] = $this->language->get('entry_secure_status');
 		$data['entry_secure_scenario'] = $this->language->get('entry_secure_scenario');
+		$data['entry_message_align'] = $this->language->get('entry_message_align');
+		$data['entry_message_size'] = $this->language->get('entry_message_size');
+		$data['entry_message_layout'] = $this->language->get('entry_message_layout');
+		$data['entry_message_text_color'] = $this->language->get('entry_message_text_color');
+		$data['entry_message_text_size'] = $this->language->get('entry_message_text_size');
+		$data['entry_message_flex_color'] = $this->language->get('entry_message_flex_color');
+		$data['entry_message_flex_ratio'] = $this->language->get('entry_message_flex_ratio');
 		
 		$data['help_checkout_express'] = $this->language->get('help_checkout_express');
 		$data['help_checkout_express_status'] = $this->language->get('help_checkout_express_status');
 		$data['help_checkout_card_status'] = $this->language->get('help_checkout_card_status');
+		$data['help_checkout_message_status'] = $this->language->get('help_checkout_message_status');
 		$data['help_total'] = $this->language->get('help_total');
 		$data['help_currency_code'] = $this->language->get('help_currency_code');
 		$data['help_currency_value'] = $this->language->get('help_currency_value');
