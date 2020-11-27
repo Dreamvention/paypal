@@ -306,6 +306,9 @@
 
 </style>
 <div id="paypal_form">
+	<?php if ($message_status) { ?>
+	<div id="paypal_message"><div id="paypal_message_container"><div data-pp-message data-pp-placement="<?php echo $message_placement; ?>" data-pp-amount="<?php echo $message_amount; ?>" data-pp-style-layout="<?php echo $message_layout; ?>" <?php if ($message_layout == 'text') { ?>data-pp-style-text-color="<?php echo $message_text_color; ?>" data-pp-style-text-size="<?php echo $message_text_size; ?>"<?php } else { ?>data-pp-style-color="<?php echo $message_flex_color; ?>" data-pp-style-ratio="<?php echo $message_flex_ratio; ?>"<?php } ?>></div></div></div>
+	<?php } ?>
 	<?php if ($express_status) { ?>
 	<div id="paypal_express_button" class="buttons clearfix"><div id="paypal_express_button_container"></div></div>
 	<?php } ?>
@@ -330,9 +333,6 @@
 			<button id="paypal_button_submit" class="btn" value="submit"><?php echo $button_pay; ?></button>
 		</form>
 	</div>
-	<?php } ?>
-	<?php if ($message_status) { ?>
-	<div id="paypal_message"><div id="paypal_message_container"><div data-pp-message data-pp-placement="<?php echo $message_placement; ?>" data-pp-amount="<?php echo $message_amount; ?>" data-pp-style-layout="<?php echo $message_layout; ?>" <?php if ($message_layout == 'text') { ?>data-pp-style-text-color="<?php echo $message_text_color; ?>" data-pp-style-text-size="<?php echo $message_text_size; ?>"<?php } else { ?>data-pp-style-color="<?php echo $message_flex_color; ?>" data-pp-style-ratio="<?php echo $message_flex_ratio; ?>"<?php } ?>></div></div></div>
 	<?php } ?>
 	<div class="lds-spinner hidden"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 </div>
