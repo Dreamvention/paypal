@@ -184,7 +184,7 @@ class ControllerPaymentPayPal extends Controller {
 
 		if ($this->cart->hasShipping()) {
 			$shipping_info['name']['full_name'] = $order_info['shipping_firstname'];
-			$shipping_info['name']['full_name'] .= $order_info['shipping_lastname'];			
+			$shipping_info['name']['full_name'] .= ($order_info['shipping_lastname'] ? (' ' . $order_info['shipping_lastname']) : '');			
 			$shipping_info['address']['address_line_1'] = $order_info['shipping_address_1'];
 			$shipping_info['address']['address_line_2'] = $order_info['shipping_address_2'];			
 			$shipping_info['address']['admin_area_1'] = $order_info['shipping_zone'];
