@@ -128,6 +128,7 @@
 										<option value="0" selected="selected"><?php echo $text_disabled; ?></option>
 										<?php } ?>
 									</select>
+									<p class="alert alert-info" style="margin: 15px 0px 0px 0px"><?php echo $text_message; ?></p>
 								</div>
 							</div>
 							<?php } ?>

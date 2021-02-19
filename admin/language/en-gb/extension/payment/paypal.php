@@ -16,6 +16,7 @@ $_['text_sandbox']			 			= 'Sandbox';
 $_['text_authorization']			 	= 'Authorization';
 $_['text_sale']			 	 			= 'Sale';
 $_['text_connect']						= 'Your seller account has been connected.<br />Client ID = %s<br />Secret = %s<br />Merchant ID = %s<br />If you would like to connect another account, please, disconnect.';
+$_['text_message']						= 'Display pay later messaging on your site for offers like Pay in 3, which lets customers pay with 3 interest-free monthly payments. We\'ll show messages on your site to promote this feature for you. You may not promote pay later offers with any other content, marketing, or materials.';
 $_['text_currency_aud']					= 'Australian Dollar';
 $_['text_currency_brl']					= 'Brazilian Real';
 $_['text_currency_cad']					= 'Canadian Dollar';

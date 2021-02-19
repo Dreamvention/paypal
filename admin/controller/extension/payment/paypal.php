@@ -36,6 +36,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['text_authorization'] = $this->language->get('text_authorization');
 		$data['text_sale'] = $this->language->get('text_sale');
 		$data['text_connect'] = $this->language->get('text_connect');
+		$data['text_message'] = $this->language->get('text_message');
 		$data['text_currency_aud'] = $this->language->get('text_currency_aud');
 		$data['text_currency_brl'] = $this->language->get('text_currency_brl');
 		$data['text_currency_cad'] = $this->language->get('text_currency_cad');
