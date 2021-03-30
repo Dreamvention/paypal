@@ -355,25 +355,25 @@ function setupPayPal() {
 			},
 			// Set up the transaction
 			createOrder: function(data, actions) {
-				order_id = false;
+				paypal_order_id = false;
 				
 				$.ajax({
 					method: 'post',
 					url: 'index.php?route=extension/payment/paypal/createOrder',
-					data: '',
+					data: {'checkout': 'express'},
 					dataType: 'json',
 					async: false,
 					success: function(json) {						
 						showPayPalAlert(json);
 							
-						order_id = json['order_id'];
+						paypal_order_id = json['paypal_order_id'];
 					},
 					error: function(xhr, ajaxOptions, thrownError) {
 						console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
 					}
 				});
 					
-				return order_id;	
+				return paypal_order_id;	
 			},
 			// Finalize the transaction
 			onApprove: function(data, actions) {			
@@ -383,7 +383,7 @@ function setupPayPal() {
 				$.ajax({
 					method: 'post',
 					url: 'index.php?route=extension/payment/paypal/approveOrder',
-					data: {'order_id': data.orderID},
+					data: {'checkout': 'express', 'paypal_order_id': data.orderID},
 					dataType: 'json',
 					async: false,
 					success: function(json) {							
@@ -453,25 +453,25 @@ function setupPayPal() {
 					}
 				},
 				createOrder: function(data, actions) {
-					order_id = false;
+					paypal_order_id = false;
 					
 					$.ajax({
 						method: 'post',
 						url: 'index.php?route=extension/payment/paypal/createOrder',
-						data: '',
+						data: {'checkout': 'card'},
 						dataType: 'json',
 						async: false,
 						success: function(json) {							
 							showPayPalAlert(json);
 							
-							order_id = json['order_id'];
+							paypal_order_id = json['paypal_order_id'];
 						},
 						error: function(xhr, ajaxOptions, thrownError) {
 							console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
 						}
 					});
 					
-					return order_id;
+					return paypal_order_id;
 				}
 			}).then(function(hostedFieldsInstance) {
 				hostedFieldsInstance.on('blur', function (event) {
@@ -563,7 +563,7 @@ function setupPayPal() {
 							$.ajax({
 								method: 'post',
 								url: 'index.php?route=extension/payment/paypal/approveOrder',
-								data: {'payload': JSON.stringify(payload)},
+								data: {'checkout': 'card', 'payload': JSON.stringify(payload)},
 								dataType: 'json',
 								async: false,
 								success: function(json) {					

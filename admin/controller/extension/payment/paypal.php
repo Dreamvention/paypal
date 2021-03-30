@@ -53,6 +53,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['text_currency_twd'] = $this->language->get('text_currency_twd');
 		$data['text_currency_nzd'] = $this->language->get('text_currency_nzd');
 		$data['text_currency_nok'] = $this->language->get('text_currency_nok');
+		$data['text_currency_php'] = $this->language->get('text_currency_php');
 		$data['text_currency_pln'] = $this->language->get('text_currency_pln');
 		$data['text_currency_gbp'] = $this->language->get('text_currency_gbp');
 		$data['text_currency_rub'] = $this->language->get('text_currency_rub');
@@ -92,14 +93,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['text_accept'] = $this->language->get('text_accept');
 		$data['text_decline'] = $this->language->get('text_decline');
 		$data['text_recommended'] = $this->language->get('text_recommended');
-		$data['text_3ds_undefined'] = $this->language->get('text_3ds_undefined');
-		$data['text_3ds_error'] = $this->language->get('text_3ds_error');
-		$data['text_3ds_skipped_by_buyer'] = $this->language->get('text_3ds_skipped_by_buyer');
-		$data['text_3ds_failure'] = $this->language->get('text_3ds_failure');
-		$data['text_3ds_bypassed'] = $this->language->get('text_3ds_bypassed');
-		$data['text_3ds_attempted'] = $this->language->get('text_3ds_attempted');
-		$data['text_3ds_unavailable'] = $this->language->get('text_3ds_unavailable');
+		$data['text_3ds_failed_authentication'] = $this->language->get('text_3ds_failed_authentication');
+		$data['text_3ds_rejected_authentication'] = $this->language->get('text_3ds_rejected_authentication');
+		$data['text_3ds_attempted_authentication'] = $this->language->get('text_3ds_attempted_authentication');
+		$data['text_3ds_unable_authentication'] = $this->language->get('text_3ds_unable_authentication');
+		$data['text_3ds_challenge_authentication'] = $this->language->get('text_3ds_challenge_authentication');
 		$data['text_3ds_card_ineligible'] = $this->language->get('text_3ds_card_ineligible');
+		$data['text_3ds_system_unavailable'] = $this->language->get('text_3ds_system_unavailable');
+		$data['text_3ds_system_bypassed'] = $this->language->get('text_3ds_system_bypassed');
 		$data['text_confirm'] = $this->language->get('text_confirm');
 		
 		$data['entry_connect'] = $this->language->get('entry_connect');
@@ -115,6 +116,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['entry_sort_order'] = $this->language->get('entry_sort_order');
 		$data['entry_currency_code'] = $this->language->get('entry_currency_code');
 		$data['entry_currency_value'] = $this->language->get('entry_currency_value');
+		$data['entry_card_currency_code'] = $this->language->get('entry_card_currency_code');
+		$data['entry_card_currency_value'] = $this->language->get('entry_card_currency_value');
 		$data['entry_smart_button'] = $this->language->get('entry_smart_button');
 		$data['entry_button_align'] = $this->language->get('entry_button_align');
 		$data['entry_button_size'] = $this->language->get('entry_button_size');
@@ -140,6 +143,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['help_total'] = $this->language->get('help_total');
 		$data['help_currency_code'] = $this->language->get('help_currency_code');
 		$data['help_currency_value'] = $this->language->get('help_currency_value');
+		$data['help_card_currency_code'] = $this->language->get('help_card_currency_code');
+		$data['help_card_currency_value'] = $this->language->get('help_card_currency_value');
 		$data['help_secure_status'] = $this->language->get('help_secure_status');
 		$data['help_secure_scenario'] = $this->language->get('help_secure_scenario');
 				
@@ -223,8 +228,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					array('name' => 'PAYMENT.CAPTURE.PENDING'),
 					array('name' => 'PAYMENT.CAPTURE.REFUNDED'),
 					array('name' => 'PAYMENT.CAPTURE.REVERSED'),
-					array('name' => 'CHECKOUT.ORDER.COMPLETED'),
-					array('name' => 'CHECKOUT.ORDER.APPROVED')
+					array('name' => 'CHECKOUT.ORDER.COMPLETED')
 				)
 			);
 			
@@ -367,11 +371,13 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		} else {
 			$data['sort_order'] = $this->config->get('paypal_sort_order');
 		}
-		
+				
 		if (isset($this->request->post['paypal_currency_code'])) {
 			$data['currency_code'] = $this->request->post['paypal_currency_code'];
-		} else {
+		} elseif ($this->config->get('paypal_currency_value')) {
 			$data['currency_code'] = $this->config->get('paypal_currency_code');
+		} else {
+			$data['currency_code'] = 'USD';
 		}
 		
 		if (isset($this->request->post['paypal_currency_value'])) {
@@ -380,6 +386,22 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$data['currency_value'] = $this->config->get('paypal_currency_value');
 		} else {
 			$data['currency_value'] = '1';
+		}
+		
+		if (isset($this->request->post['paypal_card_currency_code'])) {
+			$data['card_currency_code'] = $this->request->post['paypal_card_currency_code'];
+		} elseif ($this->config->get('paypal_card_currency_value')) {
+			$data['card_currency_code'] = $this->config->get('paypal_card_currency_code');
+		} else {
+			$data['card_currency_code'] = 'USD';
+		}
+		
+		if (isset($this->request->post['paypal_card_currency_value'])) {
+			$data['card_currency_value'] = $this->request->post['paypal_card_currency_value'];
+		} elseif ($this->config->get('paypal_card_currency_value')) {
+			$data['card_currency_value'] = $this->config->get('paypal_card_currency_value');
+		} else {
+			$data['card_currency_value'] = '1';
 		}
 						
 		if (isset($this->request->post['paypal_setting'])) {

@@ -206,10 +206,12 @@
 								<div class="col-sm-10">
 									<select name="paypal_currency_code" id="input_currency_code" class="form-control">
 										<?php foreach ($setting['currency'] as $currency) { ?>
+										<?php if ($currency['express_status']) { ?>
 										<?php if ($currency['code'] == $currency_code) { ?>
 										<option value="<?php echo $currency['code']; ?>" selected="selected"><?php echo ${$currency['name']}; ?></option>
 										<?php } else { ?>
 										<option value="<?php echo $currency['code']; ?>"><?php echo ${$currency['name']}; ?></option>
+										<?php } ?>
 										<?php } ?>
 										<?php } ?>
 									</select>
@@ -219,6 +221,28 @@
 								<label class="col-sm-2 control-label" for="input_currency_value"><span data-toggle="tooltip" title="<?php echo $help_currency_value; ?>"><?php echo $entry_currency_value; ?></span></label>
 								<div class="col-sm-10">
 									<input type="text" name="paypal_currency_value" value="<?php echo $currency_value; ?>" placeholder="<?php echo $entry_currency_value; ?>" id="input_currency_value" class="form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input_card_currency_code"><span data-toggle="tooltip" title="<?php echo $help_card_currency_code; ?>"><?php echo $entry_card_currency_code; ?></span></label>
+								<div class="col-sm-10">
+									<select name="paypal_card_currency_code" id="input_card_currency_code" class="form-control">
+										<?php foreach ($setting['currency'] as $currency) { ?>
+										<?php if ($currency['card_status']) { ?>
+										<?php if ($currency['code'] == $card_currency_code) { ?>
+										<option value="<?php echo $currency['code']; ?>" selected="selected"><?php echo ${$currency['name']}; ?></option>
+										<?php } else { ?>
+										<option value="<?php echo $currency['code']; ?>"><?php echo ${$currency['name']}; ?></option>
+										<?php } ?>
+										<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input_card_currency_value"><span data-toggle="tooltip" title="<?php echo $help_card_currency_value; ?>"><?php echo $entry_card_currency_value; ?></span></label>
+								<div class="col-sm-10">
+									<input type="text" name="paypal_card_currency_value" value="<?php echo $card_currency_value; ?>" placeholder="<?php echo $entry_card_currency_value; ?>" id="input_card_currency_value" class="form-control" />
 								</div>
 							</div>
 							<div class="form-group">
