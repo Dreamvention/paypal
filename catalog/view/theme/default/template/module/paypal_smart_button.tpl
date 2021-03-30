@@ -45,7 +45,7 @@ function setupPayPalSmartButton() {
 			},
 			// Set up the transaction
 			createOrder: function(data, actions) {
-				order_id = false;
+				paypal_order_id = false;
 					
 				$.ajax({
 					method: 'post',
@@ -56,14 +56,14 @@ function setupPayPalSmartButton() {
 					success: function(json) {							
 						showPayPalSmartButtonAlert(json);
 							
-						order_id = json['order_id'];
+						paypal_order_id = json['paypal_order_id'];
 					},
 					error: function(xhr, ajaxOptions, thrownError) {
 						console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
 					}
 				});
 					
-				return order_id;	
+				return paypal_order_id;	
 			},
 			// Finalize the transaction
 			onApprove: function(data, actions) {						
@@ -71,7 +71,7 @@ function setupPayPalSmartButton() {
 				$.ajax({
 					method: 'post',
 					url: 'index.php?route=module/paypal_smart_button/approveOrder',
-					data: {'order_id': data.orderID},
+					data: {'paypal_order_id': data.orderID},
 					dataType: 'json',
 					async: false,
 					success: function(json) {							
