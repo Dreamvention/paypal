@@ -92,8 +92,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					array('name' => 'PAYMENT.CAPTURE.PENDING'),
 					array('name' => 'PAYMENT.CAPTURE.REFUNDED'),
 					array('name' => 'PAYMENT.CAPTURE.REVERSED'),
-					array('name' => 'CHECKOUT.ORDER.COMPLETED'),
-					array('name' => 'CHECKOUT.ORDER.APPROVED')
+					array('name' => 'CHECKOUT.ORDER.COMPLETED')
 				)
 			);
 			
@@ -239,8 +238,10 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		
 		if (isset($this->request->post['payment_paypal_currency_code'])) {
 			$data['currency_code'] = $this->request->post['payment_paypal_currency_code'];
-		} else {
+		} elseif ($this->config->get('payment_paypal_currency_value')) {
 			$data['currency_code'] = $this->config->get('payment_paypal_currency_code');
+		} else {
+			$data['currency_code'] = 'USD';
 		}
 		
 		if (isset($this->request->post['payment_paypal_currency_value'])) {
@@ -249,6 +250,22 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$data['currency_value'] = $this->config->get('payment_paypal_currency_value');
 		} else {
 			$data['currency_value'] = '1';
+		}
+		
+		if (isset($this->request->post['payment_paypal_card_currency_code'])) {
+			$data['card_currency_code'] = $this->request->post['payment_paypal_card_currency_code'];
+		} elseif ($this->config->get('payment_paypal_card_currency_value')) {
+			$data['card_currency_code'] = $this->config->get('payment_paypal_card_currency_code');
+		} else {
+			$data['card_currency_code'] = 'USD';
+		}
+		
+		if (isset($this->request->post['payment_paypal_card_currency_value'])) {
+			$data['card_currency_value'] = $this->request->post['payment_paypal_card_currency_value'];
+		} elseif ($this->config->get('payment_paypal_card_currency_value')) {
+			$data['card_currency_value'] = $this->config->get('payment_paypal_card_currency_value');
+		} else {
+			$data['card_currency_value'] = '1';
 		}
 						
 		if (isset($this->request->post['payment_paypal_setting'])) {

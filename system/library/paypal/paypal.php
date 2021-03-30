@@ -162,6 +162,37 @@ class PayPal {
 		}
 	}
 	
+	//IN:  webhook event id
+	//OUT: webhook event info, if no return - check errors
+	public function getWebhookEvent($webhook_event_id) {
+		$command = '/v1/notifications/webhooks-events/' . $webhook_event_id;
+				
+		$result = $this->execute('GET', $command);
+		
+		if (isset($result['id']) && $result['id']) {
+			return $result;
+		} else {
+			$this->errors[] = $result;
+			
+			return false;
+		}
+	}
+	
+	//OUT: webhook events info, if no return - check errors
+	public function getWebhookEvents() {
+		$command = '/v1/notifications/webhooks-events';
+				
+		$result = $this->execute('GET', $command);
+		
+		if (isset($result['events']) && $result['events']) {
+			return $result['events'];
+		} else {
+			$this->errors[] = $result;
+			
+			return false;
+		}
+	}
+	
 	//IN:  order info
 	public function createOrder($order_info) {
 		$command = '/v2/checkout/orders';
