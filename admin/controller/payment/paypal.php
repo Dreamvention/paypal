@@ -182,6 +182,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['cancel'] = $this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL');
 		$data['partner_url'] = str_replace('&amp;', '%26', $this->url->link('payment/paypal', 'token=' . $this->session->data['token'], 'SSL'));
 		$data['callback_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/callback', 'token=' . $this->session->data['token'], 'SSL'));
+		$data['disconnect_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/disconnect', 'token=' . $this->session->data['token'], 'SSL'));
 		$data['configure_smart_button_url'] = $this->url->link('payment/paypal/configureSmartButton', 'token=' . $this->session->data['token'], 'SSL');
 		
 		if (isset($this->request->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1'))) {
@@ -219,6 +220,9 @@ class ControllerPaymentPayPal extends Controller {
 			$paypal->setAccessToken($token_info);
 											
 			$result = $paypal->getSellerCredentials($data['setting']['partner'][$environment]['partner_id']);
+			
+			$client_id = '';
+			$secret = '';
 			
 			if (isset($result['client_id']) && isset($result['client_secret'])) {
 				$client_id = $result['client_id'];
@@ -270,6 +274,16 @@ class ControllerPaymentPayPal extends Controller {
 			}
    			
 			$merchant_id = $this->request->get['merchantIdInPayPal'];
+			
+			$setting = $this->model_setting_setting->getSetting('paypal');
+						
+			$setting['paypal_environment'] = $environment;
+			$setting['paypal_client_id'] = $client_id;
+			$setting['paypal_secret'] = $secret;
+			$setting['paypal_merchant_id'] = $merchant_id;
+			$setting['paypal_webhook_id'] = $webhook_id;
+
+			$this->model_setting_setting->editSetting('paypal', $setting);
 						
 			unset($this->session->data['authorization_code']);
 			unset($this->session->data['shared_id']);
@@ -474,6 +488,23 @@ class ControllerPaymentPayPal extends Controller {
 		} else {
 			$this->response->setOutput($this->load->view('payment/paypal.tpl', $data));
 		}
+	}
+	
+	public function disconnect() {
+		$this->load->model('setting/setting');
+		
+		$setting = $this->model_setting_setting->getSetting('paypal');
+						
+		$setting['paypal_client_id'] = '';
+		$setting['paypal_secret'] = '';
+		$setting['paypal_merchant_id'] = '';
+		$setting['paypal_webhook_id'] = '';
+		
+		$this->model_setting_setting->editSetting('paypal', $setting);
+		
+		$data['error'] = $this->error;
+		
+		$this->response->setOutput(json_encode($data));
 	}
 		
 	public function callback() {

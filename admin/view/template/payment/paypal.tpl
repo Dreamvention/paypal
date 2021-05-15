@@ -558,6 +558,19 @@ $('#button_disconnect').on('click', function() {
 		$('#input_merchant_id').val('');
 		$('#section_connect').removeClass('hidden');
 		$('#section_disconnect').addClass('hidden');
+		
+		$.ajax({
+			type: 'post',
+			url: '<?php echo $disconnect_url; ?>',
+			data: '',
+			dataType: 'json',
+			success: function(json) {
+				
+			},
+			error: function(xhr, ajaxOptions, thrownError) {
+				console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
 	}
 });
 
@@ -577,6 +590,19 @@ $('#input_environment').on('change', function() {
 	$('#input_merchant_id').val('');
 	$('#section_connect').removeClass('hidden');
 	$('#section_disconnect').addClass('hidden');
+	
+	$.ajax({
+		type: 'post',
+		url: '<?php echo $disconnect_url; ?>',
+		data: '',
+		dataType: 'json',
+		success: function(json) {
+				
+		},
+		error: function(xhr, ajaxOptions, thrownError) {
+			console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+		}
+	});
 });
 
 $('#input_checkout_message_layout').on('change', function() {
