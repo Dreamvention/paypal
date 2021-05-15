@@ -39,6 +39,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['cancel'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment', true);
 		$data['partner_url'] = str_replace('&amp;', '%26', $this->url->link('extension/payment/paypal', 'user_token=' . $this->session->data['user_token'], true));
 		$data['callback_url'] = str_replace('&amp;', '&', $this->url->link('extension/payment/paypal/callback', 'user_token=' . $this->session->data['user_token'], true));
+		$data['disconnect_url'] =  str_replace('&amp;', '&', $this->url->link('extension/payment/paypal/disconnect', 'user_token=' . $this->session->data['user_token'], true));
 		$data['configure_smart_button_url'] = $this->url->link('extension/payment/paypal/configureSmartButton', 'user_token=' . $this->session->data['user_token'], true);
 		
 		if (isset($this->request->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1'))) {
@@ -76,6 +77,9 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$paypal->setAccessToken($token_info);
 											
 			$result = $paypal->getSellerCredentials($data['setting']['partner'][$environment]['partner_id']);
+			
+			$client_id = '';
+			$secret = '';
 			
 			if (isset($result['client_id']) && isset($result['client_secret'])) {
 				$client_id = $result['client_id'];
@@ -127,6 +131,16 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			}
    			
 			$merchant_id = $this->request->get['merchantIdInPayPal'];
+			
+			$setting = $this->model_setting_setting->getSetting('payment_paypal');
+						
+			$setting['payment_paypal_environment'] = $environment;
+			$setting['payment_paypal_client_id'] = $client_id;
+			$setting['payment_paypal_secret'] = $secret;
+			$setting['payment_paypal_merchant_id'] = $merchant_id;
+			$setting['payment_paypal_webhook_id'] = $webhook_id;
+
+			$this->model_setting_setting->editSetting('payment_paypal', $setting);
 						
 			unset($this->session->data['authorization_code']);
 			unset($this->session->data['shared_id']);
@@ -327,6 +341,23 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['footer'] = $this->load->controller('common/footer');
 
 		$this->response->setOutput($this->load->view('extension/payment/paypal', $data));
+	}
+	
+	public function disconnect() {
+		$this->load->model('setting/setting');
+		
+		$setting = $this->model_setting_setting->getSetting('payment_paypal');
+						
+		$setting['payment_paypal_client_id'] = '';
+		$setting['payment_paypal_secret'] = '';
+		$setting['payment_paypal_merchant_id'] = '';
+		$setting['payment_paypal_webhook_id'] = '';
+		
+		$this->model_setting_setting->editSetting('payment_paypal', $setting);
+		
+		$data['error'] = $this->error;
+		
+		$this->response->setOutput(json_encode($data));
 	}
 		
 	public function callback() {

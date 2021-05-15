@@ -219,13 +219,7 @@ class PayPal {
 				
 		$result = $this->execute('PATCH', $command, $params, true);
 		
-		if (isset($result['id']) && $result['id']) {
-			return $result;
-		} else {
-			$this->errors[] = $result;
-			
-			return false;
-		}
+		return true;
 	}
 	
 	//IN:  order id
