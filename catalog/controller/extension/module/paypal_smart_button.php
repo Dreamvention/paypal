@@ -12,7 +12,7 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 	}
 	
 	public function index() {		
-		if ($this->config->get('paypal_status') && isset($this->request->get['route'])) {						
+		if ($this->config->get('paypal_status') && $this->config->get('paypal_client_id') && $this->config->get('paypal_secret') && isset($this->request->get['route'])) {						
 			$status = false;
 			
 			// Setting
@@ -314,10 +314,6 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 					
 			$result = $paypal->createOrder($paypal_order_info);
 						
-			if (isset($result['id'])) {
-				$data['paypal_order_id'] = $result['id'];
-			}
-			
 			if ($paypal->hasErrors()) {
 				$error_messages = array();
 				
@@ -327,7 +323,7 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 					if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
 						$error['message'] = $this->language->get('error_timeout');
 					}
-					
+				
 					if (isset($error['details'][0]['description'])) {
 						$error_messages[] = $error['details'][0]['description'];
 					} else {
@@ -338,6 +334,28 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 				}
 				
 				$this->error['warning'] = implode(' ', $error_messages);
+			}
+		
+			if ($this->error && isset($this->error['warning'])) {
+				$this->error['warning'] .= ' ' . sprintf($this->language->get('error_payment'), $this->url->link('information/contact', '', true));
+			}
+						
+			$data['paypal_order_id'] = '';
+		
+			if (isset($result['id']) && isset($result['status']) && !$this->error) {
+				$this->model_extension_module_paypal_smart_button->log($result, 'Create Order');
+			
+				if ($result['status'] == 'VOIDED') {
+					$this->error['warning'] = sprintf($this->language->get('error_order_voided'), $this->url->link('information/contact', '', true));
+				}
+			
+				if ($result['status'] == 'COMPLETED') {
+					$this->error['warning'] = sprintf($this->language->get('error_order_completed'), $this->url->link('information/contact', '', true));
+				}
+			
+				if (!$this->error) {
+					$data['paypal_order_id'] = $result['id'];
+				}
 			}
 		} else {
 			$this->error['warning'] = implode(' ', $errors);
@@ -434,6 +452,10 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 			}
 				
 			$this->error['warning'] = implode(' ', $error_messages);
+		}
+		
+		if ($this->error && isset($this->error['warning'])) {
+			$this->error['warning'] .= ' ' . sprintf($this->language->get('error_payment'), $this->url->link('information/contact', '', true));
 		}
 		
 		if ($paypal_order_info && !$this->error) {
@@ -1430,24 +1452,6 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 					
 			$result = $paypal->updateOrder($paypal_order_id, $paypal_order_info);
 			
-			if ($transaction_method == 'authorize') {
-				$result = $paypal->setOrderAuthorize($paypal_order_id);
-				
-				if (isset($result['purchase_units'][0]['payments']['authorizations'][0]['seller_protection'])) {
-					$seller_protection_status = $result['purchase_units'][0]['payments']['authorizations'][0]['seller_protection']['status'];
-				}
-			} else {
-				$result = $paypal->setOrderCapture($paypal_order_id);
-				
-				if (isset($result['purchase_units'][0]['payments']['captures'][0]['seller_protection'])) {
-					$seller_protection_status = $result['purchase_units'][0]['payments']['captures'][0]['seller_protection']['status'];
-				}
-			}
-			
-			if (!$this->cart->hasShipping()) {
-				$seller_protection_status = 'NOT_ELIGIBLE';
-			}
-			
 			if ($paypal->hasErrors()) {
 				$error_messages = array();
 				
@@ -1469,16 +1473,140 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 				
 				$this->error['warning'] = implode(' ', $error_messages);
 			}
+			
+			if ($this->error && isset($this->error['warning'])) {
+				$this->error['warning'] .= ' ' . sprintf($this->language->get('error_payment'), $this->url->link('information/contact', '', true));
+			}
+						
+			if ($paypal_order_id && !$this->error) {				
+				if ($transaction_method == 'authorize') {
+					$result = $paypal->setOrderAuthorize($paypal_order_id);
+				} else {
+					$result = $paypal->setOrderCapture($paypal_order_id);
+				}
+			
+				if ($paypal->hasErrors()) {
+					$error_messages = array();
+				
+					$errors = $paypal->getErrors();
+								
+					foreach ($errors as $error) {
+						if (isset($error['details'][0]['issue']) && ($error['details'][0]['issue'] == 'INSTRUMENT_DECLINED')) {
+							$data['restart'] = true;
+						}
+					
+						if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
+							$error['message'] = $this->language->get('error_timeout');
+						}
+					
+						if (isset($error['details'][0]['description'])) {
+							$error_messages[] = $error['details'][0]['description'];
+						} else {
+							$error_messages[] = $error['message'];
+						}
+					
+						$this->model_extension_module_paypal_smart_button->log($error, $error['message']);
+					}
+				
+					$this->error['warning'] = implode(' ', $error_messages);
+				}
+			
+				if ($this->error && isset($this->error['warning'])) {
+					$this->error['warning'] .= ' ' . sprintf($this->language->get('error_payment'), $this->url->link('information/contact', '', true));
+				}
+			
+				if (!$this->error) {				
+					if ($transaction_method == 'authorize') {
+						$this->model_extension_module_paypal_smart_button->log($result, 'Authorize Order');
+			
+						if (isset($result['purchase_units'][0]['payments']['authorizations'][0]['status']) && isset($result['purchase_units'][0]['payments']['authorizations'][0]['seller_protection']['status'])) {
+							$authorization_status = $result['purchase_units'][0]['payments']['authorizations'][0]['status'];
+							$seller_protection_status = $result['purchase_units'][0]['payments']['authorizations'][0]['seller_protection']['status'];
+							$order_status_id = 0;
+						
+							if (!$this->cart->hasShipping()) {
+								$seller_protection_status = 'NOT_ELIGIBLE';
+							}
+						
+							if ($authorization_status == 'CREATED') {
+								$order_status_id = $setting['order_status']['pending']['id'];
+							}
+
+							if ($authorization_status == 'CAPTURED') {
+								$this->error['warning'] = sprintf($this->language->get('error_authorization_captured'), $this->url->link('information/contact', '', true));
+							}
+						
+							if ($authorization_status == 'DENIED') {
+								$order_status_id = $setting['order_status']['denied']['id'];
+							
+								$this->error['warning'] = $this->language->get('error_authorization_denied');
+							}
+						
+							if ($authorization_status == 'EXPIRED') {
+								$this->error['warning'] = sprintf($this->language->get('error_authorization_expired'), $this->url->link('information/contact', '', true));
+							}
+						
+							if ($authorization_status == 'PENDING') {
+								$order_status_id = $setting['order_status']['pending']['id'];
+							}
+						
+							if (($authorization_status == 'CREATED') || ($authorization_status == 'DENIED') || ($authorization_status == 'PENDING')) {
+								$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
+				
+								$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $order_status_id, $message);
+							}
+						
+							if (($authorization_status == 'CREATED') || ($authorization_status == 'PARTIALLY_CAPTURED') || ($authorization_status == 'PARTIALLY_CREATED') || ($authorization_status == 'VOIDED') || ($authorization_status == 'PENDING')) {
+								$this->response->redirect($this->url->link('checkout/success', '', true));
+							}
+						}
+					} else {
+						$this->model_extension_module_paypal_smart_button->log($result, 'Capture Order');
+					
+						if (isset($result['purchase_units'][0]['payments']['captures'][0]['status']) && isset($result['purchase_units'][0]['payments']['captures'][0]['seller_protection']['status'])) {
+							$capture_status = $result['purchase_units'][0]['payments']['captures'][0]['status'];
+							$seller_protection_status = $result['purchase_units'][0]['payments']['captures'][0]['seller_protection']['status'];
+							$order_status_id = 0;
+
+							if (!$this->cart->hasShipping()) {
+								$seller_protection_status = 'NOT_ELIGIBLE';
+							}
+						
+							if ($capture_status == 'COMPLETED') {
+								$order_status_id = $setting['order_status']['completed']['id'];
+							}
+						
+							if ($capture_status == 'DECLINED') {
+								$order_status_id = $setting['order_status']['denied']['id'];
+							
+								$this->error['warning'] = $this->language->get('error_capture_declined');
+							}
+						
+							if ($capture_status == 'FAILED') {
+								$this->error['warning'] = sprintf($this->language->get('error_capture_failed'), $this->url->link('information/contact', '', true));
+							}
+						
+							if ($capture_status == 'PENDING') {
+								$order_status_id = $setting['order_status']['pending']['id'];
+							}
+						
+							if (($capture_status == 'COMPLETED') || ($capture_status == 'DECLINED') || ($capture_status == 'PENDING')) {
+								$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
+				
+								$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $order_status_id, $message);
+							}
+						
+							if (($capture_status == 'COMPLETED') || ($capture_status == 'PARTIALLY_REFUNDED') || ($capture_status == 'REFUNDED') || ($capture_status == 'PENDING')) {
+								$this->response->redirect($this->url->link('checkout/success', '', true));
+							}
+						}
+					}
+				}
+			}
 		
 			unset($this->session->data['paypal_order_id']);
 			
-			if (!$this->error) {								
-				$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
-				
-				$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $this->config->get('config_order_status_id'), $message);
-				
-				$this->response->redirect($this->url->link('checkout/success', '', true));
-			} else {
+			if ($this->error) {								
 				$this->session->data['error'] = $this->error['warning'];
 				
 				$this->response->redirect($this->url->link('checkout/checkout', '', true));
