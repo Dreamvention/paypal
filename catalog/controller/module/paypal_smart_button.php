@@ -978,7 +978,11 @@ class ControllerModulePayPalSmartButton extends Controller {
 					$this->load->model('total/' . $result['code']);
 
 					// We have to put the totals in an array so that they pass by reference.
-					$this->{'model_total_' . $result['code']}->getTotal($total_data);
+					if (VERSION >= '2.2.0.0') {
+						$this->{'model_total_' . $result['code']}->getTotal($total_data);
+					} else {
+						$this->{'model_total_' . $result['code']}->getTotal($total_data['totals'], $total_data['total'], $total_data['taxes']);
+					}
 				}
 			}
 
@@ -1108,7 +1112,11 @@ class ControllerModulePayPalSmartButton extends Controller {
 					$this->load->model('total/' . $result['code']);
 
 					// We have to put the totals in an array so that they pass by reference.
-					$this->{'model_total_' . $result['code']}->getTotal($total_data);
+					if (VERSION >= '2.2.0.0') {
+						$this->{'model_total_' . $result['code']}->getTotal($total_data);
+					} else {
+						$this->{'model_total_' . $result['code']}->getTotal($total_data['totals'], $total_data['total'], $total_data['taxes']);
+					}
 				}
 			}
 
