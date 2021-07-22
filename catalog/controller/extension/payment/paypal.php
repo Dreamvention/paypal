@@ -224,6 +224,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$item_info = array();
 		
 		$item_total = 0;
+		$tax_total = 0;
 				
 		foreach ($this->cart->getProducts() as $product) {
 			$product_price = number_format($product['price'] * $currency_value, $decimal_place, '.', '');
@@ -240,19 +241,25 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			);
 			
 			$item_total += $product_price * $product['quantity'];
+			
+			if ($product['tax_class_id']) {
+				$tax_rates = $this->tax->getRates($product['price'], $product['tax_class_id']);
+
+				foreach ($tax_rates as $tax_rate) {
+					$tax_total += ($tax_rate['amount'] * $product['quantity']);
+				}
+			}
 		}
 				
 		$item_total = number_format($item_total, $decimal_place, '.', '');
-		$sub_total = $this->cart->getSubTotal();
-		$total = $this->cart->getTotal();
-		$tax_total = number_format(($total - $sub_total) * $currency_value, $decimal_place, '.', '');
+		$tax_total = number_format($tax_total * $currency_value, $decimal_place, '.', '');
 						
 		$discount_total = 0;
 		$handling_total = 0;
 		$shipping_total = 0;
 		
 		if (isset($this->session->data['shipping_method'])) {
-			$shipping_total = $this->tax->calculate($this->session->data['shipping_method']['cost'], $this->session->data['shipping_method']['tax_class_id'], $this->config->get('config_tax'));
+			$shipping_total = $this->tax->calculate($this->session->data['shipping_method']['cost'], $this->session->data['shipping_method']['tax_class_id'], true);
 			$shipping_total = number_format($shipping_total * $currency_value, $decimal_place, '.', '');
 		}
 		
