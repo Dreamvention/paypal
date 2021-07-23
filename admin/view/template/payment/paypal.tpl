@@ -341,6 +341,19 @@
 									</select>
 								</div>
 							</div>
+							<div class="form-group">
+								<?php foreach ($setting['button_funding'] as $button_funding) { ?>
+								<label class="col-sm-2 control-label" for="input_checkout_express_button_funding"><?php echo ${$button_funding['name']}; ?></label>
+								<div class="col-sm-4">
+									<select name="paypal_setting[checkout][express][button_funding][<?php echo $button_funding['code']; ?>]" class="form-control">
+										<option value="0" <?php if ($setting['checkout']['express']['button_funding'][$button_funding['code']] == 0) { ?>selected="selected"<?php } ?>><?php echo $text_auto; ?></option>
+										<option value="1" <?php if ($setting['checkout']['express']['button_funding'][$button_funding['code']] == 1) { ?>selected="selected"<?php } ?>><?php echo $text_enabled; ?></option>
+										<option value="2" <?php if ($setting['checkout']['express']['button_funding'][$button_funding['code']] == 2) { ?>selected="selected"<?php } ?>><?php echo $text_disabled; ?></option>	
+									</select>
+									<br />
+								</div>
+								<?php } ?>
+							</div>
 						</div>
 						<div class="tab-pane hidden" id="tab_checkout_card">
 							<div class="form-group">

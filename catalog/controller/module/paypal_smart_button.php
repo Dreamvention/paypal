@@ -53,6 +53,19 @@ class ControllerModulePayPalSmartButton extends Controller {
 				$data['button_label'] = $setting['page']['product']['button_label'];
 				$data['button_tagline'] = $setting['page']['product']['button_tagline'];
 				
+				$data['button_enable_funding'] = array();
+				$data['button_disable_funding'] = array();
+				
+				foreach ($setting['button_funding'] as $button_funding) {
+					if ($setting['page']['product']['button_funding'][$button_funding['code']] == 1) {
+						$data['button_enable_funding'][] = $button_funding['code'];
+					} 
+				
+					if ($setting['page']['product']['button_funding'][$button_funding['code']] == 2) {
+						$data['button_disable_funding'][] = $button_funding['code'];
+					}
+				}
+				
 				$data['message_status'] = $setting['page']['product']['message_status'];
 				$data['message_align'] = $setting['page']['product']['message_align'];
 				$data['message_size'] = $setting['page']['product']['message_size'];
@@ -93,6 +106,19 @@ class ControllerModulePayPalSmartButton extends Controller {
 				$data['button_shape'] = $setting['page']['cart']['button_shape'];
 				$data['button_label'] = $setting['page']['cart']['button_label'];
 				$data['button_tagline'] = $setting['page']['cart']['button_tagline'];
+				
+				$data['button_enable_funding'] = array();
+				$data['button_disable_funding'] = array();
+				
+				foreach ($setting['button_funding'] as $button_funding) {
+					if ($setting['page']['cart']['button_funding'][$button_funding['code']] == 1) {
+						$data['button_enable_funding'][] = $button_funding['code'];
+					} 
+				
+					if ($setting['page']['cart']['button_funding'][$button_funding['code']] == 2) {
+						$data['button_disable_funding'][] = $button_funding['code'];
+					}
+				}
 				
 				$data['message_status'] = $setting['page']['cart']['message_status'];
 				$data['message_align'] = $setting['page']['cart']['message_align'];

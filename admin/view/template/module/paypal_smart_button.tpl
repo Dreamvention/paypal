@@ -159,9 +159,9 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label" for="input_button_tagline"><?php echo $entry_button_tagline; ?></label>
+								<label class="col-sm-2 control-label" for="input_page_<?php echo $page['code']; ?>_button_tagline"><?php echo $entry_button_tagline; ?></label>
 								<div class="col-sm-10">
-									<select name="paypal_smart_button_tagline" id="input_button_tagline" class="form-control">
+									<select name="paypal_smart_button_setting[page][<?php echo $page['code']; ?>][button_tagline]" id="input_page_<?php echo $page['code']; ?>_button_tagline" class="form-control">
 										<?php foreach ($setting['button_tagline'] as $button_tagline) { ?>
 										<?php if ($button_tagline['code'] == $page['button_tagline']) { ?>
 										<option value="<?php echo $button_tagline['code']; ?>" selected="selected"><?php echo ${$button_tagline['name']}; ?></option>
@@ -283,6 +283,19 @@
 										<?php } ?>
 									</select>
 								</div>
+							</div>
+							<div class="form-group">
+								<?php foreach ($setting['button_funding'] as $button_funding) { ?>
+								<label class="col-sm-2 control-label" for="input_page_<?php echo $page['code']; ?>_button_funding"><?php echo ${$button_funding['name']}; ?></label>
+								<div class="col-sm-4">
+									<select name="paypal_smart_button_setting[page][<?php echo $page['code']; ?>][button_funding][<?php echo $button_funding['code']; ?>]" class="form-control">
+										<option value="0" <?php if ($page['button_funding'][$button_funding['code']] == 0) { ?>selected="selected"<?php } ?>><?php echo $text_auto; ?></option>
+										<option value="1" <?php if ($page['button_funding'][$button_funding['code']] == 1) { ?>selected="selected"<?php } ?>><?php echo $text_enabled; ?></option>
+										<option value="2" <?php if ($page['button_funding'][$button_funding['code']] == 2) { ?>selected="selected"<?php } ?>><?php echo $text_disabled; ?></option>	
+									</select>
+									<br />
+								</div>
+								<?php } ?>
 							</div>
 						</div>
 						<?php } ?>

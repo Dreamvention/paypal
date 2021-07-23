@@ -21,6 +21,7 @@ class ControllerModulePayPalSmartButton extends Controller {
 		$data['heading_title'] = $this->language->get('heading_title');
 		
 		$data['text_edit'] = $this->language->get('text_edit');
+		$data['text_auto'] = $this->language->get('text_auto');
 		$data['text_enabled'] = $this->language->get('text_enabled');
 		$data['text_disabled'] = $this->language->get('text_disabled');
 		$data['text_all_zones'] = $this->language->get('text_all_zones');
@@ -52,6 +53,19 @@ class ControllerModulePayPalSmartButton extends Controller {
 		$data['text_buy_now'] = $this->language->get('text_buy_now');
 		$data['text_pay_pal'] = $this->language->get('text_pay_pal');
 		$data['text_installment'] = $this->language->get('text_installment');
+		$data['text_card'] = $this->language->get('text_card');
+		$data['text_credit'] = $this->language->get('text_credit');
+		$data['text_bancontact'] = $this->language->get('text_bancontact');
+		$data['text_blik'] = $this->language->get('text_blik');
+		$data['text_eps'] = $this->language->get('text_eps');
+		$data['text_giropay'] = $this->language->get('text_giropay');
+		$data['text_ideal'] = $this->language->get('text_ideal');
+		$data['text_mercadopago'] = $this->language->get('text_mercadopago');
+		$data['text_mybank'] = $this->language->get('text_mybank');
+		$data['text_p24'] = $this->language->get('text_p24');
+		$data['text_sepa'] = $this->language->get('text_sepa');
+		$data['text_sofort'] = $this->language->get('text_sofort');
+		$data['text_venmo'] = $this->language->get('text_venmo');
 		$data['text_text'] = $this->language->get('text_text');
 		$data['text_flex'] = $this->language->get('text_flex');
 		$data['text_yes'] = $this->language->get('text_yes');
