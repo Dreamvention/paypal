@@ -159,9 +159,9 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label" for="input_button_tagline">{{ entry_button_tagline }}</label>
+								<label class="col-sm-2 control-label" for="input_page_{{ page['code'] }}_button_tagline">{{ entry_button_tagline }}</label>
 								<div class="col-sm-10">
-									<select name="module_paypal_smart_button_tagline" id="input_button_tagline" class="form-control">
+									<select name="module_paypal_smart_button_setting[page][{{ page['code'] }}][button_tagline]" id="input_page_{{ page['code'] }}_button_tagline" class="form-control">
 										{% for button_tagline in setting['button_tagline'] %}
 										{% if (button_tagline['code'] == page['button_tagline']) %}
 										<option value="{{ button_tagline['code'] }}" selected="selected">{{ attribute(_context, button_tagline['name']) }}</option>
@@ -283,6 +283,19 @@
 										{% endfor %}
 									</select>
 								</div>
+							</div>
+							<div class="form-group">
+								{% for button_funding in setting['button_funding'] %}
+								<label class="col-sm-2 control-label" for="input_page_{{ page['code'] }}_button_funding">{{ attribute(_context, button_funding['name']) }}</label>
+								<div class="col-sm-4">
+									<select name="module_paypal_smart_button_setting[page][{{ page['code'] }}][button_funding][{{ button_funding['code'] }}]" class="form-control">
+										<option value="0" {% if (page['button_funding'][button_funding['code']] == 0) %}selected="selected"{% endif %}>{{ text_auto }}</option>
+										<option value="1" {% if (page['button_funding'][button_funding['code']] == 1) %}selected="selected"{% endif %}>{{ text_enabled }}</option>
+										<option value="2" {% if (page['button_funding'][button_funding['code']] == 2) %}selected="selected"{% endif %}>{{ text_disabled }}</option>	
+									</select>
+									<br />
+								</div>
+								{% endfor %}
 							</div>
 						</div>
 						{% endfor %}

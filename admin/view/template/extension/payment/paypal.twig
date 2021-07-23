@@ -341,6 +341,19 @@
 									</select>
 								</div>
 							</div>
+							<div class="form-group">
+								{% for button_funding in setting['button_funding'] %}
+								<label class="col-sm-2 control-label" for="input_checkout_express_button_funding">{{ attribute(_context, button_funding['name']) }}</label>
+								<div class="col-sm-4">
+									<select name="payment_paypal_setting[checkout][express][button_funding][{{ button_funding['code'] }}]" class="form-control">
+										<option value="0" {% if (setting['checkout']['express']['button_funding'][button_funding['code']] == 0) %}selected="selected"{% endif %}>{{ text_auto }}</option>
+										<option value="1" {% if (setting['checkout']['express']['button_funding'][button_funding['code']] == 1) %}selected="selected"{% endif %}>{{ text_enabled }}</option>
+										<option value="2" {% if (setting['checkout']['express']['button_funding'][button_funding['code']] == 2) %}selected="selected"{% endif %}>{{ text_disabled }}</option>	
+									</select>
+									<br />
+								</div>
+								{% endfor %}
+							</div>
 						</div>
 						<div class="tab-pane hidden" id="tab_checkout_card">
 							<div class="form-group">

@@ -12,7 +12,22 @@ $_['paypal_smart_button_setting'] = array(
 			'button_color' => 'gold',
 			'button_shape' => 'rect',
 			'button_label' => 'paypal',
-			'button_tagline' => false,
+			'button_tagline' => 'false',
+			'button_funding' => array(
+				'card' => 0,
+				'credit' => 0,
+				'bancontact' => 0,
+				'blik' => 0,
+				'eps' => 0,
+				'giropay' => 0,
+				'ideal' => 0,
+				'mercadopago' => 0,
+				'mybank' => 0,
+				'p24' => 0,
+				'sepa' => 0,
+				'sofort' => 0,
+				'venmo' => 0
+			),
 			'message_status' => true,
 			'message_align' => 'center',
 			'message_size' => 'responsive',
@@ -33,7 +48,22 @@ $_['paypal_smart_button_setting'] = array(
 			'button_color' => 'gold',
 			'button_shape' => 'rect',
 			'button_label' => 'paypal',
-			'button_tagline' => false,
+			'button_tagline' => 'false',
+			'button_funding' => array(
+				'card' => 0,
+				'credit' => 0,
+				'bancontact' => 0,
+				'blik' => 0,
+				'eps' => 0,
+				'giropay' => 0,
+				'ideal' => 0,
+				'mercadopago' => 0,
+				'mybank' => 0,
+				'p24' => 0,
+				'sepa' => 0,
+				'sofort' => 0,
+				'venmo' => 0
+			),
 			'message_status' => true,
 			'message_align' => 'right',
 			'message_size' => 'large',
@@ -163,6 +193,64 @@ $_['paypal_smart_button_setting'] = array(
 		'medium' => '250px',
 		'large' => '350px',
 		'responsive' => ''
+	),
+	'button_funding' => array(
+		'card' => array(
+			'code' => 'card',
+			'name' => 'text_card',
+		),
+		'credit' => array(
+			'code' => 'credit',
+			'name' => 'text_credit',
+		),
+		'bancontact' => array(
+			'code' => 'bancontact',
+			'name' => 'text_bancontact',
+		),
+		'bancontact' => array(
+			'code' => 'bancontact',
+			'name' => 'text_bancontact',
+		),
+		'blik' => array(
+			'code' => 'blik',
+			'name' => 'text_blik',
+		),
+		'eps' => array(
+			'code' => 'eps',
+			'name' => 'text_eps',
+		),
+		'giropay' => array(
+			'code' => 'giropay',
+			'name' => 'text_giropay',
+		),
+		'ideal' => array(
+			'code' => 'ideal',
+			'name' => 'text_ideal',
+		),
+		'mercadopago' => array(
+			'code' => 'mercadopago',
+			'name' => 'text_mercadopago',
+		),
+		'mybank' => array(
+			'code' => 'mybank',
+			'name' => 'text_mybank',
+		),
+		'p24' => array(
+			'code' => 'p24',
+			'name' => 'text_p24',
+		),
+		'sepa' => array(
+			'code' => 'sepa',
+			'name' => 'text_sepa',
+		),
+		'sofort' => array(
+			'code' => 'sofort',
+			'name' => 'text_sofort',
+		),
+		'venmo' => array(
+			'code' => 'venmo',
+			'name' => 'text_venmo',
+		)
 	),
 	'message_align' => array(
 		'left' => array(
