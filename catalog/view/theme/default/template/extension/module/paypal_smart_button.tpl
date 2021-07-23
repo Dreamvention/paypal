@@ -123,7 +123,7 @@ window.addEventListener('load', function () {
 		if (typeof paypal_sdk === 'undefined') {
 			var script = document.createElement('script');
 			script.type = 'text/javascript';
-			script.src = 'https://www.paypal.com/sdk/js?components=buttons,messages&client-id=<?php echo $client_id; ?>&merchant-id=<?php echo $merchant_id; ?>&currency=<?php echo $currency_code; ?>&intent=<?php echo $transaction_method; ?>&commit=false';
+			script.src = 'https://www.paypal.com/sdk/js?components=buttons,messages&client-id=<?php echo $client_id; ?>&merchant-id=<?php echo $merchant_id; ?>&currency=<?php echo $currency_code; ?>&intent=<?php echo $transaction_method; ?>&commit=false<?php if ($button_enable_funding) { ?>&enable-funding=<?php echo implode(',', $button_enable_funding); ?><?php } ?><?php if ($button_disable_funding) { ?>&disable-funding=<?php echo implode(',', $button_disable_funding); ?><?php } ?>';
 			script.setAttribute('data-partner-attribution-id', '<?php echo $partner_id; ?>');
 			script.setAttribute('data-namespace', 'paypal_sdk');
 			script.async = false;

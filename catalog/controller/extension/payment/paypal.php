@@ -54,9 +54,21 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$data['button_color'] = $setting['checkout']['express']['button_color'];
 			$data['button_shape'] = $setting['checkout']['express']['button_shape'];
 			$data['button_label'] = $setting['checkout']['express']['button_label'];
-
 			$data['button_width'] = $setting['button_width'][$data['button_size']];
-						
+			
+			$data['button_enable_funding'] = array();
+			$data['button_disable_funding'] = array();
+			
+			foreach ($setting['button_funding'] as $button_funding) {
+				if ($setting['checkout']['express']['button_funding'][$button_funding['code']] == 1) {
+					$data['button_enable_funding'][] = $button_funding['code'];
+				} 
+				
+				if ($setting['checkout']['express']['button_funding'][$button_funding['code']] == 2) {
+					$data['button_disable_funding'][] = $button_funding['code'];
+				}
+			}
+				
 			$data['card_status'] = $setting['checkout']['card']['status'];	
 		
 			$data['form_align'] = $setting['checkout']['card']['form_align'];
