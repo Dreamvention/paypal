@@ -309,8 +309,6 @@ class ControllerModulePayPalSmartButton extends Controller {
 				
 				$item_total += $product_price * $product['quantity'];
 				
-				$item_total += $product_price * $product['quantity'];
-				
 				if ($product['tax_class_id']) {
 					$tax_rates = $this->tax->getRates($product['price'], $product['tax_class_id']);
 

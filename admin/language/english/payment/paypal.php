@@ -132,7 +132,7 @@ $_['entry_message_flex_color'] 			= 'Message Banner Color';
 $_['entry_message_flex_ratio'] 			= 'Message Banner Ratio';
 
 // Help
-$_['help_checkout_express']				= 'If your country is not available in the list when going through the PayPal onboarding experience please <a id="button_connect_express_checkout" href="%s" target="_blank" data-paypal-onboard-complete="onBoardedCallback">click here</a>.';
+$_['help_checkout_express']				= 'If your country is not available in the list when going through the PayPal onboarding experience please <a id="button_connect_express_checkout" href="%s" target="_blank" data-paypal-button="PPLtBlue" data-paypal-onboard-complete="onBoardedCallback">click here</a>.';
 $_['help_checkout_express_status']		= 'When activated PayPal will display personalized Smart Buttons avalible to your customers based on their location.';
 $_['help_checkout_card_status']			= 'PayPal verifies if you are eligible for advanced card payment and will display this option on the checkout step if available.';
 $_['help_checkout_message_status']		= 'Add pay later messaging to your site.';

@@ -55,7 +55,7 @@
 								<div class="col-sm-10">
 									<div id="section_connect" <?php if ($client_id && $secret && $merchant_id) { ?> class="hidden"<?php } ?>>
 										<style type="text/css">
-											a[data-paypal-button="PPLtBlue"]::before {
+											#button_connect_ppcp::before {
 												content: "";
 												background: url(https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-200px.png) 11px no-repeat #fff;
 												background-size: 80px;
@@ -67,6 +67,19 @@
 												border-bottom-left-radius: 5px;
 												border-top-left-radius: 5px;
 												margin-top: -12px;
+											}
+											#button_connect_express_checkout {
+												display: inline;
+												padding: 0px 0px;
+												vertical-align: top;
+												font-family: 'Open Sans', sans-serif;
+												font-size: 12px;
+												color: #1e91cf;
+												background: none;
+												border: none;
+											}
+											#button_connect_express_checkout::before {
+												display:none;
 											}
 										</style>
 										<a id="button_connect_ppcp" href="<?php echo $configure_url[$environment]['ppcp']; ?>" target="_blank" data-paypal-button="PPLtBlue" data-paypal-onboard-complete="onBoardedCallback"><?php echo $button_connect; ?></a><br />
