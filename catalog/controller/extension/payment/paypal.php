@@ -34,6 +34,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$data['merchant_id'] = $this->config->get('payment_paypal_merchant_id');
 			$data['environment'] = $this->config->get('payment_paypal_environment');
 			$data['partner_id'] = $setting['partner'][$data['environment']]['partner_id'];
+			$data['partner_attribution_id'] = $setting['partner'][$data['environment']]['partner_attribution_id'];
 			$data['transaction_method'] = $this->config->get('payment_paypal_transaction_method');
 			$data['locale'] = preg_replace('/-(.+?)+/', '', $this->config->get('config_language')) . '_' . $country['iso_code_2'];
 				
@@ -99,7 +100,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				'partner_id' => $data['partner_id'],
 				'client_id' => $data['client_id'],
 				'secret' => $data['secret'],
-				'environment' => $data['environment']
+				'environment' => $data['environment'],
+				'partner_attribution_id' => $data['partner_attribution_id']
 			);
 		
 			$paypal = new PayPal($paypal_info);
@@ -163,6 +165,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$merchant_id = $this->config->get('payment_paypal_merchant_id');
 		$environment = $this->config->get('payment_paypal_environment');
 		$partner_id = $setting['partner'][$environment]['partner_id'];
+		$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
 		$transaction_method = $this->config->get('payment_paypal_transaction_method');
 		
 		$currency_code = $this->session->data['currency'];
@@ -190,7 +193,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			'partner_id' => $partner_id,
 			'client_id' => $client_id,
 			'secret' => $secret,
-			'environment' => $environment
+			'environment' => $environment,
+			'partner_attribution_id' => $partner_attribution_id
 		);
 		
 		$paypal = new PayPal($paypal_info);
@@ -410,6 +414,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$secret = $this->config->get('payment_paypal_secret');
 		$environment = $this->config->get('payment_paypal_environment');
 		$partner_id = $setting['partner'][$environment]['partner_id'];
+		$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
 		$transaction_method = $this->config->get('payment_paypal_transaction_method');
 			
 		require_once DIR_SYSTEM . 'library/paypal/paypal.php';
@@ -418,7 +423,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			'partner_id' => $partner_id,
 			'client_id' => $client_id,
 			'secret' => $secret,
-			'environment' => $environment
+			'environment' => $environment,
+			'partner_attribution_id' => $partner_attribution_id
 		);
 		
 		$paypal = new PayPal($paypal_info);
@@ -512,7 +518,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				}
 			}
 		}
-					
+				
 		if (isset($paypal_order_id) && !$this->error) {				
 			if ($transaction_method == 'authorize') {
 				$result = $paypal->setOrderAuthorize($paypal_order_id);
@@ -550,7 +556,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				$this->error['warning'] .= ' ' . sprintf($this->language->get('error_payment'), $this->url->link('information/contact', '', true));
 			}
 			
-			if (!$this->error) {				
+			if (!$this->error) {	
 				if ($transaction_method == 'authorize') {
 					$this->model_extension_payment_paypal->log($result, 'Authorize Order');
 					
@@ -667,6 +673,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$secret = $this->config->get('payment_paypal_secret');
 			$environment = $this->config->get('payment_paypal_environment');
 			$partner_id = $setting['partner'][$environment]['partner_id'];
+			$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
 			$transaction_method = $this->config->get('payment_paypal_transaction_method');
 			
 			require_once DIR_SYSTEM .'library/paypal/paypal.php';
@@ -675,7 +682,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				'partner_id' => $partner_id,
 				'client_id' => $client_id,
 				'secret' => $secret,
-				'environment' => $environment
+				'environment' => $environment,
+				'partner_attribution_id' => $partner_attribution_id
 			);
 		
 			$paypal = new PayPal($paypal_info);

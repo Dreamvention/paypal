@@ -8,26 +8,31 @@ class PayPal {
 	private $partner_id = '';
 	private $client_id = '';
 	private $secret = '';
+	private $partner_attribution_id = '';
 	private $access_token = '';
 	private $errors = array();
 	private $last_response = array();
 		
 	//IN:  paypal info
 	public function __construct($paypal_info) {
-		if (isset($paypal_info['partner_id']) && $paypal_info['partner_id']) {
+		if (!empty($paypal_info['partner_id'])) {
 			$this->partner_id = $paypal_info['partner_id'];
 		}
 		
-		if (isset($paypal_info['client_id']) && $paypal_info['client_id']) {
+		if (!empty($paypal_info['client_id'])) {
 			$this->client_id = $paypal_info['client_id'];
 		}
 		
-		if (isset($paypal_info['secret']) && $paypal_info['secret']) {
+		if (!empty($paypal_info['secret'])) {
 			$this->secret = $paypal_info['secret'];
 		}
-
-		if (isset($paypal_info['environment']) && (($paypal_info['environment'] == 'production') || ($paypal_info['environment'] == 'sandbox'))) {
+		
+		if (!empty($paypal_info['environment']) && (($paypal_info['environment'] == 'production') || ($paypal_info['environment'] == 'sandbox'))) {
 			$this->environment = $paypal_info['environment'];
+		}
+		
+		if (!empty($paypal_info['partner_attribution_id'])) {
+			$this->partner_attribution_id = $paypal_info['partner_attribution_id'];
 		}
 	}
 	
@@ -40,7 +45,7 @@ class PayPal {
 								
 		$result = $this->execute('POST', $command, $params);
 		
-		if (isset($result['access_token']) && $result['access_token']) {
+		if (!empty($result['access_token'])) {
 			$this->access_token = $result['access_token'];
 			
 			return $this->access_token;
@@ -62,7 +67,7 @@ class PayPal {
 										
 		$result = $this->execute('POST', $command);
 		
-		if (isset($result['client_token']) && $result['client_token']) {
+		if (!empty($result['client_token'])) {
 			return $result['client_token'];
 		} else {
 			$this->errors[] = $result;
@@ -78,7 +83,7 @@ class PayPal {
 				
 		$result = $this->execute('GET', $command);
 		
-		if (isset($result['client_id']) && $result['client_id']) {
+		if (!empty($result['client_id'])) {
 			return $result;
 		} else {
 			$this->errors[] = $result;
@@ -95,7 +100,7 @@ class PayPal {
 				
 		$result = $this->execute('POST', $command, $params, true);
 		
-		if (isset($result['id']) && $result['id']) {
+		if (!empty($result['id'])) {
 			return $result;
 		} else {
 			$this->errors[] = $result;
@@ -113,7 +118,7 @@ class PayPal {
 				
 		$result = $this->execute('PATCH', $command, $params, true);
 		
-		if (isset($result['id']) && $result['id']) {
+		if (!empty($result['id'])) {
 			return $result;
 		} else {
 			$this->errors[] = $result;
@@ -138,7 +143,7 @@ class PayPal {
 				
 		$result = $this->execute('GET', $command);
 		
-		if (isset($result['id']) && $result['id']) {
+		if (!empty($result['id'])) {
 			return $result;
 		} else {
 			$this->errors[] = $result;
@@ -153,7 +158,7 @@ class PayPal {
 				
 		$result = $this->execute('GET', $command);
 		
-		if (isset($result['webhooks']) && $result['webhooks']) {
+		if (!empty($result['webhooks'])) {
 			return $result['webhooks'];
 		} else {
 			$this->errors[] = $result;
@@ -169,7 +174,7 @@ class PayPal {
 				
 		$result = $this->execute('GET', $command);
 		
-		if (isset($result['id']) && $result['id']) {
+		if (!empty($result['id'])) {
 			return $result;
 		} else {
 			$this->errors[] = $result;
@@ -184,7 +189,7 @@ class PayPal {
 				
 		$result = $this->execute('GET', $command);
 		
-		if (isset($result['events']) && $result['events']) {
+		if (!empty($result['events'])) {
 			return $result['events'];
 		} else {
 			$this->errors[] = $result;
@@ -201,7 +206,7 @@ class PayPal {
 				
 		$result = $this->execute('POST', $command, $params, true);
 		
-		if (isset($result['id']) && $result['id']) {
+		if (!empty($result['id'])) {
 			return $result;
 		} else {
 			$this->errors[] = $result;
@@ -229,7 +234,7 @@ class PayPal {
 				
 		$result = $this->execute('GET', $command);
 		
-		if (isset($result['id']) && $result['id']) {
+		if (!empty($result['id'])) {
 			return $result;
 		} else {
 			$this->errors[] = $result;
@@ -244,7 +249,7 @@ class PayPal {
 						
 		$result = $this->execute('POST', $command);
 		
-		if (isset($result['id']) && $result['id']) {
+		if (!empty($result['id'])) {
 			return $result;
 		} else {
 			$this->errors[] = $result;
@@ -259,7 +264,7 @@ class PayPal {
 						
 		$result = $this->execute('POST', $command);
 		
-		if (isset($result['id']) && $result['id']) {
+		if (!empty($result['id'])) {
 			return $result;
 		} else {
 			$this->errors[] = $result;
@@ -302,7 +307,7 @@ class PayPal {
 			$curl_options[CURLOPT_HTTPHEADER][] = 'Accept-Language: en_US';
 			$curl_options[CURLOPT_HTTPHEADER][] = 'Content-Type: application/json';
 			$curl_options[CURLOPT_HTTPHEADER][] = 'PayPal-Request-Id: ' . $this->token(50);
-			$curl_options[CURLOPT_HTTPHEADER][] = 'PayPal-Partner-Attribution-Id: OPENCARTLIMITED_Cart_OpenCartPCP';
+			$curl_options[CURLOPT_HTTPHEADER][] = 'PayPal-Partner-Attribution-Id: ' . $this->partner_attribution_id;
 			
 			if ($this->access_token) {
 				$curl_options[CURLOPT_HTTPHEADER][] = 'Authorization: Bearer ' . $this->access_token;

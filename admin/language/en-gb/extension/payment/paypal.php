@@ -81,6 +81,7 @@ $_['text_p24']							= 'Przelewy24';
 $_['text_sepa']							= 'SEPA-Lastschrift';
 $_['text_sofort']						= 'Sofort';
 $_['text_venmo']						= 'Venmo';
+$_['text_paylater']						= 'Pay Later';
 $_['text_auto']							= 'Auto';
 $_['text_text']							= 'Text Message';
 $_['text_flex']							= 'Flexible Banner';

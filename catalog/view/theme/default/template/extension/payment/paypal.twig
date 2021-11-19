@@ -616,7 +616,7 @@ if (typeof paypal_sdk === 'undefined') {
 	var script = document.createElement('script');
 	script.type = 'text/javascript';
 	script.src = 'https://www.paypal.com/sdk/js?components=buttons,hosted-fields,messages&client-id={{ client_id }}&merchant-id={{ merchant_id }}&currency={{ currency_code }}&intent={{ transaction_method }}{% if button_enable_funding %}&enable-funding={{ button_enable_funding|join(',') }}{% endif %}{% if button_disable_funding %}&disable-funding={{ button_disable_funding|join(',') }}{% endif %}';
-	script.setAttribute('data-partner-attribution-id', '{{ partner_id }}');
+	script.setAttribute('data-partner-attribution-id', '{{ partner_attribution_id }}');
 	script.setAttribute('data-client-token', '{{ client_token }}');
 	script.setAttribute('data-namespace', 'paypal_sdk');
 	script.async = false;

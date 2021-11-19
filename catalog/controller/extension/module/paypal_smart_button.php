@@ -147,6 +147,7 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 				$data['merchant_id'] = $this->config->get('payment_paypal_merchant_id');
 				$data['environment'] = $this->config->get('payment_paypal_environment');
 				$data['partner_id'] = $paypal_setting['partner'][$data['environment']]['partner_id'];
+				$data['partner_attribution_id'] = $paypal_setting['partner'][$data['environment']]['partner_attribution_id'];
 				$data['transaction_method'] = $this->config->get('payment_paypal_transaction_method');					
 				$data['locale'] = preg_replace('/-(.+?)+/', '', $this->config->get('config_language')) . '_' . $country['iso_code_2'];
 				$data['currency_code'] = $currency_code;
@@ -243,6 +244,7 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 			$secret = $this->config->get('payment_paypal_secret');
 			$environment = $this->config->get('payment_paypal_environment');
 			$partner_id = $setting['partner'][$environment]['partner_id'];
+			$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
 			$transaction_method = $this->config->get('payment_paypal_transaction_method');	
 						
 			$currency_code = $this->session->data['currency'];
@@ -261,7 +263,8 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 				'partner_id' => $partner_id,
 				'client_id' => $client_id,
 				'secret' => $secret,
-				'environment' => $environment
+				'environment' => $environment,
+				'partner_attribution_id' => $partner_attribution_id
 			);
 		
 			$paypal = new PayPal($paypal_info);
@@ -438,6 +441,7 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 		$secret = $this->config->get('payment_paypal_secret');
 		$environment = $this->config->get('payment_paypal_environment');
 		$partner_id = $setting['partner'][$environment]['partner_id'];
+		$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
 		$transaction_method = $this->config->get('payment_paypal_transaction_method');
 
 		$paypal_order_id = $this->session->data['paypal_order_id'];
@@ -448,7 +452,8 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 			'partner_id' => $partner_id,
 			'client_id' => $client_id,
 			'secret' => $secret,
-			'environment' => $environment
+			'environment' => $environment,
+			'partner_attribution_id' => $partner_attribution_id
 		);
 		
 		$paypal = new PayPal($paypal_info);
@@ -1292,6 +1297,7 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 			$secret = $this->config->get('payment_paypal_secret');
 			$environment = $this->config->get('payment_paypal_environment');
 			$partner_id = $setting['partner'][$environment]['partner_id'];
+			$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
 			$transaction_method = $this->config->get('payment_paypal_transaction_method');
 			
 			$currency_code = $this->session->data['currency'];
@@ -1310,7 +1316,8 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 				'partner_id' => $partner_id,
 				'client_id' => $client_id,
 				'secret' => $secret,
-				'environment' => $environment
+				'environment' => $environment,
+				'partner_attribution_id' => $partner_attribution_id
 			);
 		
 			$paypal = new PayPal($paypal_info);

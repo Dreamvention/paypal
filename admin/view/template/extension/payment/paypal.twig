@@ -538,7 +538,7 @@
 	</div>
 </div>
 {% if client_id and secret and merchant_id %}
-<script type="text/javascript" src = "https://www.paypal.com/sdk/js?components=hosted-fields&client-id={{ client_id }}&merchant-id={{ merchant_id }}" data-partner-attribution-id="{{ setting['partner'][environment]['partner_id'] }}" data-client-token="{{ client_token }}"></script>
+<script type="text/javascript" src = "https://www.paypal.com/sdk/js?components=hosted-fields&client-id={{ client_id }}&merchant-id={{ merchant_id }}" data-partner-attribution-id="{{ setting['partner'][environment]['partner_attribution_id'] }}" data-client-token="{{ client_token }}"></script>
 <script type="text/javascript">
 
 try {
