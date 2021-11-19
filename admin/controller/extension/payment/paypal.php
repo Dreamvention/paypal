@@ -102,6 +102,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['text_sepa'] = $this->language->get('text_sepa');
 		$data['text_sofort'] = $this->language->get('text_sofort');
 		$data['text_venmo'] = $this->language->get('text_venmo');
+		$data['text_paylater'] = $this->language->get('text_paylater');
 		$data['text_text'] = $this->language->get('text_text');
 		$data['text_flex'] = $this->language->get('text_flex');
 		$data['text_accept'] = $this->language->get('text_accept');
@@ -213,7 +214,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			
 			$paypal_info = array(
 				'client_id' => $this->session->data['shared_id'],
-				'environment' => $environment
+				'environment' => $environment,
+				'partner_attribution_id' => $data['setting']['partner'][$environment]['partner_attribution_id']
 			);
 					
 			$paypal = new PayPal($paypal_info);
@@ -235,6 +237,22 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				$client_id = $result['client_id'];
 				$secret = $result['client_secret'];
 			}
+			
+			$paypal_info = array(
+				'partner_id' => $data['setting']['partner'][$environment]['partner_id'],
+				'client_id' => $client_id,
+				'secret' => $secret,
+				'environment' => $environment,
+				'partner_attribution_id' => $data['setting']['partner'][$environment]['partner_attribution_id']
+			);
+		
+			$paypal = new PayPal($paypal_info);
+			
+			$token_info = array(
+				'grant_type' => 'client_credentials'
+			);	
+		
+			$paypal->setAccessToken($token_info);
 						
 			$webhook_info = array(
 				'url' => $data['catalog'] . 'index.php?route=extension/payment/paypal/webhook',
@@ -444,7 +462,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$paypal_info = array(
 				'client_id' => $data['client_id'],
 				'secret' => $data['secret'],
-				'environment' => $data['environment']
+				'environment' => $data['environment'],
+				'partner_attribution_id' => $data['setting']['partner'][$data['environment']]['partner_attribution_id']
 			);
 		
 			$paypal = new PayPal($paypal_info);
@@ -535,13 +554,20 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		if (!$this->user->hasPermission('modify', 'extension/payment/paypal')) {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
+		
+		// Setting 		
+		$_config = new Config();
+		$_config->load('paypal');
+		
+		$setting = $_config->get('paypal_setting');
 				
 		require_once DIR_SYSTEM . 'library/paypal/paypal.php';
-		
+				
 		$paypal_info = array(
 			'client_id' => $this->request->post['paypal_client_id'],
 			'secret' => $this->request->post['paypal_secret'],
-			'environment' => $this->request->post['paypal_environment']
+			'environment' => $this->request->post['paypal_environment'],
+			'partner_attribution_id' => $setting['partner'][$this->request->post['paypal_environment']]['partner_attribution_id']
 		);
 		
 		$paypal = new PayPal($paypal_info);

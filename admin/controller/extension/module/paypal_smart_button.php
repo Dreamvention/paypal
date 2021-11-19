@@ -72,6 +72,7 @@ class ControllerExtensionModulePayPalSmartButton extends Controller {
 		$data['text_sepa'] = $this->language->get('text_sepa');
 		$data['text_sofort'] = $this->language->get('text_sofort');
 		$data['text_venmo'] = $this->language->get('text_venmo');
+		$data['text_paylater'] = $this->language->get('text_paylater');
 		$data['text_text'] = $this->language->get('text_text');
 		$data['text_flex'] = $this->language->get('text_flex');
 		$data['text_yes'] = $this->language->get('text_yes');

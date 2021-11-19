@@ -601,7 +601,7 @@
 	</div>
 </div>
 <?php if ($client_id && $secret && $merchant_id) { ?>
-<script type="text/javascript" src = "https://www.paypal.com/sdk/js?components=hosted-fields&client-id=<?php echo $client_id; ?>&merchant-id=<?php echo $merchant_id; ?>" data-partner-attribution-id="<?php echo $setting['partner'][$environment]['partner_id']; ?>" data-client-token="<?php echo $client_token; ?>"></script>
+<script type="text/javascript" src = "https://www.paypal.com/sdk/js?components=hosted-fields&client-id=<?php echo $client_id; ?>&merchant-id=<?php echo $merchant_id; ?>" data-partner-attribution-id="<?php echo $setting['partner'][$environment]['partner_attribution_id']; ?>" data-client-token="<?php echo $client_token; ?>"></script>
 <script type="text/javascript">
 
 try {

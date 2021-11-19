@@ -3,11 +3,13 @@ $_['paypal_setting'] = array(
 	'partner' => array(
 		'production' => array(
 			'partner_id' => 'TY2Q25KP2PX9L',
-			'client_id' => 'AbjxI4a9fMnew8UOMoDFVwSh7h1aeOBaXpd2wcccAnuqecijKIylRnNguGRWDrEPrTYraBQApf_-O3_4'
+			'client_id' => 'AbjxI4a9fMnew8UOMoDFVwSh7h1aeOBaXpd2wcccAnuqecijKIylRnNguGRWDrEPrTYraBQApf_-O3_4',
+			'partner_attribution_id' => 'OPENCARTLIMITED_Cart_OpenCartPCP'
 		),
 		'sandbox' => array(
 			'partner_id' => 'EJNHWRJJNB38L',
-			'client_id' => 'AfeIgIr-fIcEucsVXvdq21Ufu0wAALWhgJdVF4ItUK1IZFA9I4JIRdfyJ9vWrd9oi0B6mBGtJYDrlYsG'
+			'client_id' => 'AfeIgIr-fIcEucsVXvdq21Ufu0wAALWhgJdVF4ItUK1IZFA9I4JIRdfyJ9vWrd9oi0B6mBGtJYDrlYsG',
+			'partner_attribution_id' => 'OPENCARTLIMITED_Cart_OpenCartPCP'
 		)
 	),
 	'order_status' => array(
@@ -68,7 +70,8 @@ $_['paypal_setting'] = array(
 				'p24' => 0,
 				'sepa' => 0,
 				'sofort' => 0,
-				'venmo' => 0
+				'venmo' => 0,
+				'paylater' => 0
 			)
 		),
 		'card' => array(
@@ -423,6 +426,10 @@ $_['paypal_setting'] = array(
 		'venmo' => array(
 			'code' => 'venmo',
 			'name' => 'text_venmo',
+		),
+		'paylater' => array(
+			'code' => 'paylater',
+			'name' => 'text_paylater',
 		)
 	),
 	'form_align' => array(
