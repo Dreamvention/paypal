@@ -26,7 +26,8 @@ $_['paypal_smart_button_setting'] = array(
 				'p24' => 0,
 				'sepa' => 0,
 				'sofort' => 0,
-				'venmo' => 0
+				'venmo' => 0,
+				'paylater' => 0
 			),
 			'message_status' => true,
 			'message_align' => 'center',
@@ -62,7 +63,8 @@ $_['paypal_smart_button_setting'] = array(
 				'p24' => 0,
 				'sepa' => 0,
 				'sofort' => 0,
-				'venmo' => 0
+				'venmo' => 0,
+				'paylater' => 0
 			),
 			'message_status' => true,
 			'message_align' => 'right',
@@ -250,6 +252,10 @@ $_['paypal_smart_button_setting'] = array(
 		'venmo' => array(
 			'code' => 'venmo',
 			'name' => 'text_venmo',
+		),
+		'paylater' => array(
+			'code' => 'paylater',
+			'name' => 'text_paylater',
 		)
 	),
 	'message_align' => array(
