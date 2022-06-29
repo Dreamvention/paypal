@@ -49,6 +49,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			}
 		
 			$data['decimal_place'] = $setting['currency'][$data['currency_code']]['decimal_place'];
+			
+			$data['language'] = $this->config->get('config_language');
 		
 			$data['express_status'] = $setting['checkout']['express']['status'];
 
@@ -401,9 +403,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				$data['paypal_order_id'] = $result['id'];
 			}
 		}
+		
+		$data['language'] = $this->config->get('config_language');
 							
 		$data['error'] = $this->error;
 				
+		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($data));
 	}
 	
@@ -656,6 +661,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				}
 			}
 		}
+		
+		$data['language'] = $this->config->get('config_language');
 		
 		$data['error'] = $this->error;
 				

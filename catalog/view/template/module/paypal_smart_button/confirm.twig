@@ -363,13 +363,11 @@ function onLoadPaymentAddress() {
 			success: function(json) {				
 				$('#payment_address').find('.is-invalid').removeClass('is-invalid');
                 $('#payment_address').find('.invalid-feedback').removeClass('d-block');
-				console.log(json);			
+						
 				if (json['error']) {					
-					for (i in json['error']) {
-						for (key in json['error']) {
-                            $('#payment_address #input_payment_' + key).addClass('is-invalid').find('.form-control, .form-select, .form-check-input, .form-check-label').addClass('is-invalid');
-                            $('#payment_address #error_payment_' + key).html(json['error'][key]).addClass('d-block');
-                        }
+					for (key in json['error']) {
+                        $('#payment_address #input_payment_' + key).addClass('is-invalid').find('.form-control, .form-select, .form-check-input, .form-check-label').addClass('is-invalid');
+                        $('#payment_address #error_payment_' + key).html(json['error'][key]).addClass('d-block');
 					}
 				}
 				
@@ -491,12 +489,10 @@ function onLoadShippingAddress() {
                 $('#shipping_address').find('.invalid-feedback').removeClass('d-block');
 							
 				if (json['error']) {
-					for (i in json['error']) {
-						for (key in json['error']) {
-                            $('#shipping_address #input_shipping_' + key).addClass('is-invalid').find('.form-control, .form-select, .form-check-input, .form-check-label').addClass('is-invalid');
-                            $('#shipping_address #error_shipping_' + key).html(json['error'][key]).addClass('d-block');
-                        }
-					}
+					for (key in json['error']) {
+                        $('#shipping_address #input_shipping_' + key).addClass('is-invalid').find('.form-control, .form-select, .form-check-input, .form-check-label').addClass('is-invalid');
+                        $('#shipping_address #error_shipping_' + key).html(json['error'][key]).addClass('d-block');
+                    }
 				}
 				
 				if (json['url']) {

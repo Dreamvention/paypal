@@ -157,6 +157,8 @@ class PayPalSmartButton extends \Opencart\System\Engine\Controller {
 						
 				$data['button_width'] = $setting['button_width'][$data['button_size']];
 				$data['message_width'] = $setting['message_width'][$data['message_size']];
+				
+				$data['language'] = $this->config->get('config_language');
 												
 				return $this->load->view('extension/paypal/module/paypal_smart_button', $data);
 			}
@@ -398,9 +400,11 @@ class PayPalSmartButton extends \Opencart\System\Engine\Controller {
 		} else {
 			$this->error['warning'] = implode(' ', $errors);
 		}
+		
+		$data['language'] = $this->config->get('config_language');
 				
 		$data['error'] = $this->error;
-		
+				
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($data));		
 	}
@@ -603,6 +607,8 @@ class PayPalSmartButton extends \Opencart\System\Engine\Controller {
 
 			$data['url'] = $this->url->link('extension/paypal/module/paypal_smart_button|confirmOrder', 'language=' . $this->config->get('config_language'));			
 		}
+		
+		$data['language'] = $this->config->get('config_language');
 		
 		$data['error'] = $this->error;
 		

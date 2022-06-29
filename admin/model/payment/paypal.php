@@ -19,7 +19,7 @@ class PayPal extends \Opencart\System\Engine\Model {
         }
 	}
 	
-	public function log(array $data = [], string $title = '') {
+	public function log(array $data = [], string $title = ''): void {
 		if ($this->config->get('payment_paypal_debug')) {
 			$log = new \Opencart\System\Library\Log('paypal.log');
 			$log->write('PayPal debug (' . $title . '): ' . json_encode($data));

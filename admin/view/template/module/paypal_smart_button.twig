@@ -255,7 +255,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="row mb-3" {% if (page['message_layout'] == 'flex') %}hidden{% endif %}>
+							<div class="row mb-3 {% if (page['message_layout'] == 'flex') %}d-none{% endif %}">
 								<label class="col-sm-2 col-form-label" for="input_page_{{ page['code'] }}_message_text_color">{{ entry_message_text_color }}</label>
 								<div class="col-sm-10">
 									<div class="input-group">
@@ -271,7 +271,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="row mb-3" {% if (page['message_layout'] == 'flex') %}hidden{% endif %}>
+							<div class="row mb-3 {% if (page['message_layout'] == 'flex') %}d-none{% endif %}">
 								<label class="col-sm-2 col-form-label" for="input_page_{{ page['code'] }}_message_text_size">{{ entry_message_text_size }}</label>
 								<div class="col-sm-10">
 									<div class="input-group">
@@ -287,7 +287,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="row mb-3" {% if (page['message_layout'] == 'text') %}hidden{% endif %}>
+							<div class="row mb-3 {% if (page['message_layout'] == 'text') %}d-none{% endif %}">
 								<label class="col-sm-2 col-form-label" for="input_page_{{ page['code'] }}_message_flex_color">{{ entry_message_flex_color }}</label>
 								<div class="col-sm-10">
 									<div class="input-group">
@@ -303,7 +303,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="row mb-3" {% if (page['message_layout'] == 'text') %}hidden{% endif %}>
+							<div class="row mb-3 {% if (page['message_layout'] == 'text') %}d-none{% endif %}">
 								<label class="col-sm-2 col-form-label" for="input_page_{{ page['code'] }}_message_flex_ratio">{{ entry_message_flex_ratio }}</label>
 								<div class="col-sm-10">
 									<div class="input-group">
@@ -348,15 +348,15 @@ $('#input_page_product_message_layout').on('change', function() {
 	var layout = $(this).val();
 	
 	if (layout == 'text') {
-		$('#input_page_product_message_flex_color').parents('.row').attr('hidden', '');
-		$('#input_page_product_message_flex_ratio').parents('.row').attr('hidden', '');
-		$('#input_page_product_message_text_color').parents('.row').removeAttr('hidden');
-		$('#input_page_product_message_text_size').parents('.row').removeAttr('hidden');
+		$('#input_page_product_message_flex_color').parents('.row').addClass('d-none');
+		$('#input_page_product_message_flex_ratio').parents('.row').addClass('d-none');
+		$('#input_page_product_message_text_color').parents('.row').removeClass('d-none');
+		$('#input_page_product_message_text_size').parents('.row').removeClass('d-none');
 	} else {
-		$('#input_page_product_message_text_color').parents('.row').attr('hidden', '');
-		$('#input_page_product_message_text_size').parents('.row').attr('hidden', '');
-		$('#input_page_product_message_flex_color').parents('.row').removeAttr('hidden');
-		$('#input_page_product_message_flex_ratio').parents('.row').removeAttr('hidden');
+		$('#input_page_product_message_text_color').parents('.row').addClass('d-none');
+		$('#input_page_product_message_text_size').parents('.row').addClass('d-none');
+		$('#input_page_product_message_flex_color').parents('.row').removeClass('d-none');
+		$('#input_page_product_message_flex_ratio').parents('.row').removeClass('d-none');
 	}
 });
 
@@ -364,15 +364,15 @@ $('#input_page_cart_message_layout').on('change', function() {
 	var layout = $(this).val();
 	
 	if (layout == 'text') {
-		$('#input_page_cart_message_flex_color').parents('.row').attr('hidden', '');
-		$('#input_page_cart_message_flex_ratio').parents('.row').attr('hidden', '');
-		$('#input_page_cart_message_text_color').parents('.row').removeAttr('hidden');
-		$('#input_page_cart_message_text_size').parents('.row').removeAttr('hidden');
+		$('#input_page_cart_message_flex_color').parents('.row').addClass('d-none');
+		$('#input_page_cart_message_flex_ratio').parents('.row').addClass('d-none');
+		$('#input_page_cart_message_text_color').parents('.row').removeClass('d-none');
+		$('#input_page_cart_message_text_size').parents('.row').removeClass('d-none');
 	} else {
-		$('#input_page_cart_message_text_color').parents('.row').attr('hidden', '');
-		$('#input_page_cart_message_text_size').parents('.row').attr('hidden', '');
-		$('#input_page_cart_message_flex_color').parents('.row').removeAttr('hidden');
-		$('#input_page_cart_message_flex_ratio').parents('.row').removeAttr('hidden');
+		$('#input_page_cart_message_text_color').parents('.row').addClass('d-none');
+		$('#input_page_cart_message_text_size').parents('.row').addClass('d-none');
+		$('#input_page_cart_message_flex_color').parents('.row').removeClass('d-none');
+		$('#input_page_cart_message_flex_ratio').parents('.row').removeClass('d-none');
 	}
 });
 

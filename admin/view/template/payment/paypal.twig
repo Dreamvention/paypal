@@ -28,7 +28,7 @@
 						<li class="nav-item"><a href="#tab_general" data-bs-toggle="tab" class="nav-link active">{{ text_general }}</a></li>
 						<li class="nav-item"><a href="#tab_order_status" data-bs-toggle="tab" class="nav-link">{{ text_order_status }}</a></li>
 						<li class="nav-item"><a href="#tab_checkout_express" data-bs-toggle="tab" class="nav-link">{{ text_checkout_express }}</a></li>
-						<li class="nav-item" hidden><a href="#tab_checkout_card" data-bs-toggle="tab" class="nav-link">{{ text_checkout_card }}</a></li>
+						<li class="nav-item d-none"><a href="#tab_checkout_card" data-bs-toggle="tab" class="nav-link">{{ text_checkout_card }}</a></li>
 						<li class="nav-item"><a href="#tab_checkout_message" data-bs-toggle="tab" class="nav-link">{{ text_checkout_message }}</a></li>
 					</ul>
 		  
@@ -53,7 +53,7 @@
 							<div class="row mb-3">
 								<label class="col-sm-2 col-form-label" for="input_connect">{{ entry_connect }}</label>
 								<div class="col-sm-10">
-									<div id="section_connect" {% if client_id and secret and merchant_id %}hidden{% endif %}>
+									<div id="section_connect {% if client_id and secret and merchant_id %}d-none{% endif %}">
 										<style type="text/css">
 											#button_connect_ppcp::before {
 												content: "";
@@ -119,7 +119,7 @@
 								<label class="col-sm-2 col-form-label" for="input_checkout_card_status">{{ entry_checkout_card_status }}</label>
 								<div class="col-sm-10">
 									<div class="input-group">
-										<select name="payment_paypal_setting[checkout][card][status]" id="input_checkout_card_status" class="form-select" hidden>
+										<select name="payment_paypal_setting[checkout][card][status]" id="input_checkout_card_status" class="form-select d-none">
 											{% if setting['checkout']['card']['status'] %}
 											<option value="1" selected="selected">{{ text_enabled }}</option>
 											<option value="0">{{ text_disabled }}</option>
@@ -129,7 +129,7 @@
 											{% endif %}
 										</select>
 									</div>
-									<div class="alert alert-warning alert-dismissible" hidden><i class="fa fa-exclamation-circle"></i> {{ help_checkout_card_status }}
+									<div class="alert alert-warning alert-dismissible d-none"><i class="fa fa-exclamation-circle"></i> {{ help_checkout_card_status }}
 										<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 									</div>
 								</div>
@@ -406,7 +406,7 @@
 								{% endfor %}
 							</div>
 						</div>
-						<div class="tab-pane" id="tab_checkout_card" hidden>
+						<div class="tab-pane d-none" id="tab_checkout_card">
 							<div class="row mb-3">
 								<label class="col-sm-2 col-form-label" for="input_checkout_card_form_align">{{ entry_form_align }}</label>
 								<div class="col-sm-10">
@@ -526,7 +526,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="row mb-3" {% if (setting['checkout']['message']['message_layout'] == 'flex') %}hidden{% endif %}>
+							<div class="row mb-3 {% if (setting['checkout']['message']['message_layout'] == 'flex') %}d-none{% endif %}">
 								<label class="col-sm-2 col-form-label" for="input_checkout_message_text_color">{{ entry_message_text_color }}</label>
 								<div class="col-sm-10">
 									<div class="input-group">
@@ -542,7 +542,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="row mb-3" {% if (setting['checkout']['message']['message_layout'] == 'flex') %}hidden{% endif %}>
+							<div class="row mb-3 {% if (setting['checkout']['message']['message_layout'] == 'flex') %}d-none{% endif %}">
 								<label class="col-sm-2 col-form-label" for="input_checkout_message_text_size">{{ entry_message_text_size }}</label>
 								<div class="col-sm-10">
 									<div class="input-group">
@@ -558,7 +558,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="row mb-3" {% if (setting['checkout']['message']['message_layout'] == 'text') %}hidden{% endif %}>
+							<div class="row mb-3 {% if (setting['checkout']['message']['message_layout'] == 'text') %}d-none{% endif %}">
 								<label class="col-sm-2 col-form-label" for="input_checkout_message_flex_color">{{ entry_message_flex_color }}</label>
 								<div class="col-sm-10">
 									<div class="input-group">
@@ -574,7 +574,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="row mb-3" {% if (setting['checkout']['message']['message_layout'] == 'text') %}hidden{% endif %}>
+							<div class="row mb-3 {% if (setting['checkout']['message']['message_layout'] == 'text') %}d-none{% endif %}">
 								<label class="col-sm-2 col-form-label" for="input_checkout_message_flex_ratio">{{ entry_message_flex_ratio }}</label>
 								<div class="col-sm-10">
 									<div class="input-group">
@@ -603,11 +603,11 @@
 
 try {
 	if (paypal.HostedFields.isEligible() === true) {
-		$('[href="#tab_checkout_card"]').parents('.nav-item').removeAttr('hidden');
-		$('#tab_checkout_card').removeAttr('hidden');
-		$('#input_checkout_card_status').removeAttr('hidden');
+		$('[href="#tab_checkout_card"]').parents('.nav-item').removeClass('d-none');
+		$('#tab_checkout_card').removeClass('d-none');
+		$('#input_checkout_card_status').removeClass('d-none');
 	} else {
-		$('#input_checkout_card_status').parents('.row').find('.alert').removeAttr('hidden');
+		$('#input_checkout_card_status').parents('.row').find('.alert').removeClass('d-none');
 	}
 } catch (error) {
 	console.error('PayPal Card failed during startup', error);
@@ -642,8 +642,8 @@ $('#button_disconnect').on('click', function() {
 		$('#input_client_id').val('');
 		$('#input_secret').val('');
 		$('#input_merchant_id').val('');
-		$('#section_connect').removeAttr('hidden');
-		$('#section_disconnect').attr('hidden', '');
+		$('#section_connect').removeClass('d-none');
+		$('#section_disconnect').addClass('d-none');
 		
 		$.ajax({
 			type: 'post',
@@ -674,8 +674,8 @@ $('#input_environment').on('change', function() {
 	$('#input_client_id').val('');
 	$('#input_secret').val('');
 	$('#input_merchant_id').val('');
-	$('#section_connect').removeAttr('hidden');
-	$('#section_disconnect').attr('hidden', '');
+	$('#section_connect').removeClass('d-none');
+	$('#section_disconnect').addClass('d-none');
 	
 	$.ajax({
 		type: 'post',
@@ -695,15 +695,15 @@ $('#input_checkout_message_layout').on('change', function() {
 	var layout = $(this).val();
 	
 	if (layout == 'text') {
-		$('#input_checkout_message_flex_color').parents('.row').attr('hidden', '');
-		$('#input_checkout_message_flex_ratio').parents('.row').attr('hidden', '');
-		$('#input_checkout_message_text_color').parents('.row').removeAttr('hidden');
-		$('#input_checkout_message_text_size').parents('.row').removeAttr('hidden');
+		$('#input_checkout_message_flex_color').parents('.row').addClass('d-none');
+		$('#input_checkout_message_flex_ratio').parents('.row').addClass('d-none');
+		$('#input_checkout_message_text_color').parents('.row').removeClass('d-none');
+		$('#input_checkout_message_text_size').parents('.row').removeClass('d-none');
 	} else {
-		$('#input_checkout_message_text_color').parents('.row').attr('hidden', '');
-		$('#input_checkout_message_text_size').parents('.row').attr('hidden', '');
-		$('#input_checkout_message_flex_color').parents('.row').removeAttr('hidden');
-		$('#input_checkout_message_flex_ratio').parents('.row').removeAttr('hidden');
+		$('#input_checkout_message_text_color').parents('.row').addClass('d-none');
+		$('#input_checkout_message_text_size').parents('.row').addClass('d-none');
+		$('#input_checkout_message_flex_color').parents('.row').removeClass('d-none');
+		$('#input_checkout_message_flex_ratio').parents('.row').removeClass('d-none');
 	}
 });
 

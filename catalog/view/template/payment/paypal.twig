@@ -356,7 +356,7 @@ function setupPayPal() {
 				
 				$.ajax({
 					method: 'post',
-					url: 'index.php?route=extension/paypal/payment/paypal|createOrder',
+					url: 'index.php?route=extension/paypal/payment/paypal|createOrder&language={{ language }}',
 					data: {'checkout': 'express'},
 					dataType: 'json',
 					async: false,
@@ -379,7 +379,7 @@ function setupPayPal() {
 				
 				$.ajax({
 					method: 'post',
-					url: 'index.php?route=extension/paypal/payment/paypal|approveOrder',
+					url: 'index.php?route=extension/paypal/payment/paypal|approveOrder&language={{ language }}',
 					data: {'checkout': 'express', 'paypal_order_id': data.orderID},
 					dataType: 'json',
 					async: false,
@@ -454,7 +454,7 @@ function setupPayPal() {
 					
 					$.ajax({
 						method: 'post',
-						url: 'index.php?route=extension/paypal/payment/paypal|createOrder',
+						url: 'index.php?route=extension/paypal/payment/paypal|createOrder&language={{ language }}',
 						data: {'checkout': 'card'},
 						dataType: 'json',
 						async: false,
@@ -559,7 +559,7 @@ function setupPayPal() {
 							
 							$.ajax({
 								method: 'post',
-								url: 'index.php?route=extension/paypal/payment/paypal|approveOrder',
+								url: 'index.php?route=extension/paypal/payment/paypal|approveOrder&language={{ language }}',
 								data: {'checkout': 'card', 'payload': JSON.stringify(payload)},
 								dataType: 'json',
 								async: false,
@@ -597,7 +597,7 @@ function showPayPalAlert(json) {
 	
 	if (json['error']) {
 		if (json['error']['warning']) {
-			$('#paypal_form').prepend('<div class="alert alert-danger alert-dismissible"><i class="fas fa-info-circle"></i>' + json['error']['warning'] + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+			$('#paypal_form').prepend('<div class="alert alert-danger alert-dismissible"><i class="fas fa-exclamation-circle"></i> ' + json['error']['warning'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
 		}
 	}
 }
