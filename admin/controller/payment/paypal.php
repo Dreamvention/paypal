@@ -452,6 +452,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				
 		$this->response->redirect($this->url->link('extension/paypal/module/paypal_smart_button', 'user_token=' . $this->session->data['user_token']));
 	}
+	
+	public function install() {
+		$this->load->model('setting/setting');
+		
+		$this->model_setting_setting->editValue('config', 'config_session_samesite', 'Lax');
+	}
 					
 	private function token($length = 32): string {
 		// Create random token
