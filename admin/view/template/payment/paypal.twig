@@ -53,7 +53,7 @@
 							<div class="row mb-3">
 								<label class="col-sm-2 col-form-label" for="input_connect">{{ entry_connect }}</label>
 								<div class="col-sm-10">
-									<div id="section_connect {% if client_id and secret and merchant_id %}d-none{% endif %}">
+									<div id="section_connect" {% if client_id and secret and merchant_id %}class="d-none"{% endif %}>
 										<style type="text/css">
 											#button_connect_ppcp::before {
 												content: "";
