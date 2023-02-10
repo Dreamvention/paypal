@@ -76,12 +76,31 @@ class PayPal {
 			return false;
 		}
 	}
+	
+	//OUT: merchant info, if no return - check errors
+	public function getUserInfo() {
+		$command = '/v1/identity/oauth2/userinfo';
+		
+		$params = array(
+			'schema' => 'paypalv1.1'
+		);
+										
+		$result = $this->execute('GET', $command, $params);
+		
+		if (!empty($result['user_id'])) {
+			return $result;
+		} else {
+			$this->errors[] = $result;
+			
+			return false;
+		}
+	}
 					
 	//IN:  partner id
 	//OUT: merchant info, if no return - check errors
 	public function getSellerCredentials($partner_id) {
 		$command = '/v1/customer/partners/' . $partner_id . '/merchant-integrations/credentials';
-				
+						
 		$result = $this->execute('GET', $command);
 		
 		if (!empty($result['client_id'])) {
@@ -92,7 +111,23 @@ class PayPal {
 			return false;
 		}
 	}
+	
+	//IN:  partner id, merchant id
+	//OUT: merchant info, if no return - check errors
+	public function getSellerStatus($partner_id, $merchant_id) {
+		$command = '/v1/customer/partners/' . $partner_id . '/merchant-integrations/' . $merchant_id;
+						
+		$result = $this->execute('GET', $command);
 		
+		if (!empty($result['merchant_id'])) {
+			return $result;
+		} else {
+			$this->errors[] = $result;
+			
+			return false;
+		}
+	}
+			
 	//IN:  webhook info
 	public function createWebhook($webhook_info) {
 		$command = '/v1/notifications/webhooks';
@@ -364,11 +399,11 @@ class PayPal {
 				default:
 					$curl_options[CURLOPT_CUSTOMREQUEST] = strtoupper($method);
 			}
-			
+						
 			$ch = curl_init();
 			curl_setopt_array($ch, $curl_options);
 			$response = curl_exec($ch);
-			
+						
 			if (curl_errno($ch)) {
 				$curl_code = curl_errno($ch);
 				
@@ -377,25 +412,7 @@ class PayPal {
 				
 				$this->errors[] = array('name' => $curl_constant[$curl_code], 'message' => curl_strerror($curl_code));
 			}
-	
-            /*$status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-			
-			if (($status_code >= 0) && ($status_code < 200)) {
-				$this->errors[] = 'Server Not Found (' . $status_code . ')';
-			}
-			
-			if (($status_code >= 300) && ($status_code < 400)) {
-				$this->errors[] = 'Page Redirect (' . $status_code . ')';
-			}
-			
-			if (($status_code >= 400) && ($status_code < 500)) {
-				$this->errors[] = 'Page not found (' . $status_code . ')';
-			}
-			
-			if ($status_code >= 500) {
-				$this->errors[] = 'Server Error (' . $status_code . ')';
-			}*/
-			
+				
 			$head = '';
 			$body = '';
 			

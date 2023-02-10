@@ -122,7 +122,7 @@
 						<select name="payment_method" class="form-select" {% if not payment_methods %}disabled{% endif %}>
 							{% for payment_method in payment_methods %}
 							{% if payment_method['code'] == 'paypal' %}
-							<option value="{{ payment_method.code }}" {% if payment_method['code'] == code %}selected{% endif %}>{{ payment_method['title'] }}</option>
+							<option value="{{ payment_method['code'] }}" {% if payment_method['code'] == code %}selected{% endif %}>{{ payment_method['title'] }}</option>
 							{% endif %}
 							{% endfor %}
 							<optgroup label="{{ text_stored }}">
@@ -223,13 +223,13 @@ $('input[name=\'shipping_method\']').change(function() {
 $(document).on('click', '.button-payment-address', function(event) {
 	$('#payment_address').remove();
 	$('body').append('<div id="payment_address" class="modal fade"></div>');
-	$('#payment_address').load('index.php?route=extension/paypal/module/paypal_smart_button|paymentAddress&language={{ language }} #payment_address >', onLoadPaymentAddress);
+	$('#payment_address').load('index.php?route=extension/paypal/payment/paypal|paymentAddress&language={{ language }} #payment_address >', onLoadPaymentAddress);
 });
 
 $(document).on('click', '.button-shipping-address', function(event) {
 	$('#shipping_address').remove();
 	$('body').append('<div id="shipping_address" class="modal fade"></div>');
-	$('#shipping_address').load('index.php?route=extension/paypal/module/paypal_smart_button|shippingAddress&language={{ language }} #shipping_address >', onLoadShippingAddress);
+	$('#shipping_address').load('index.php?route=extension/paypal/payment/paypal|shippingAddress&language={{ language }} #shipping_address >', onLoadShippingAddress);
 });
 
 $('#paypal_confirm').bind('click', function() {
@@ -351,7 +351,7 @@ function onLoadPaymentAddress() {
 	$('#payment_address .button-confirm').on('click', function(event) {
 		$.ajax({
 			type: 'post',
-			url: 'index.php?route=extension/paypal/module/paypal_smart_button|confirmPaymentAddress&language={{ language }}',
+			url: 'index.php?route=extension/paypal/payment/paypal|confirmPaymentAddress&language={{ language }}',
 			data: $('#payment_address [name]'),
 			dataType: 'json',
 			beforeSend: function() {
@@ -481,7 +481,7 @@ function onLoadShippingAddress() {
 	$('#shipping_address .button-confirm').on('click', function(event) {
 		$.ajax({
 			type: 'post',
-			url: 'index.php?route=extension/paypal/module/paypal_smart_button|confirmShippingAddress&language={{ language }}',
+			url: 'index.php?route=extension/paypal/payment/paypal|confirmShippingAddress&language={{ language }}',
 			data: $('#shipping_address [name]'),
 			dataType: 'json',
 			success: function(json) {
