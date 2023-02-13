@@ -1675,11 +1675,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$this->response->setOutput(json_encode($data));
 	}
 					
-	public function install() {
-		$this->load->model('setting/setting');
-		
-		$this->model_setting_setting->editSettingValue('config', 'config_session_samesite', 'Lax');
-		
+	public function install() {		
 		$this->load->model('extension/event');
 		
 		$this->model_extension_event->deleteEvent('paypal');

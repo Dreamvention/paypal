@@ -28,7 +28,9 @@
 		<?php } else { ?>
 		<?php $class = 'col-sm-12'; ?>
 		<?php } ?>
-		<div class="panel panel-default">
+		<div id="content" class="<?php echo $class; ?>"><?php echo $content_top; ?>
+			<h1><?php echo $heading_title; ?></h1>
+			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h4 class="panel-title"><?php echo $text_checkout_payment_address; ?><div class="button-payment-address pull-right" role="button"><i class="fa fa-pencil"></i></div></h4>
 				</div>
