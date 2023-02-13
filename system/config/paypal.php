@@ -12,6 +12,172 @@ $_['paypal_setting'] = array(
 			'partner_attribution_id' => 'OPENCARTLIMITED_Cart_OpenCartPCP'
 		)
 	),
+	'general' => array(
+		'debug' => false,
+		'sale_analytics_range' => 'month',
+		'transaction_method' => 'capture',
+		'country_code' => 'US',
+		'currency_code' => 'USD',
+		'currency_value' => '1',
+		'card_currency_code' => 'USD',
+		'card_currency_value' => '1'
+	),
+	'button' => array(
+		'checkout' => array(
+			'page_code' => 'checkout',
+			'page_name' => 'text_checkout',
+			'status' => true,
+			'align' => 'right',
+			'size' => 'large',
+			'color' => 'gold',
+			'shape' => 'rect',
+			'label' => 'paypal',
+			'funding' => array(
+				'paylater' => 1,
+				'card' => 0,
+				'bancontact' => 0,
+				'blik' => 0,
+				'eps' => 0,
+				'giropay' => 0,
+				'ideal' => 0,
+				'mercadopago' => 0,
+				'mybank' => 0,
+				'p24' => 0,
+				'sepa' => 0,
+				'sofort' => 0,
+				'venmo' => 0
+			)
+		),
+		'product' => array(
+			'page_code' => 'product',
+			'page_name' => 'text_product',
+			'status' => true,
+			'insert_tag' => '#content #product #button-cart',
+			'insert_type' => 'after',
+			'align' => 'center',
+			'size' => 'responsive',
+			'color' => 'gold',
+			'shape' => 'rect',
+			'label' => 'paypal',
+			'tagline' => 'false',
+			'funding' => array(
+				'paylater' => 0,
+				'card' => 0,
+				'credit' => 0,
+				'bancontact' => 0,
+				'blik' => 0,
+				'eps' => 0,
+				'giropay' => 0,
+				'ideal' => 0,
+				'mercadopago' => 0,
+				'mybank' => 0,
+				'p24' => 0,
+				'sepa' => 0,
+				'sofort' => 0,
+				'venmo' => 0
+			)
+		),
+		'cart' => array(
+			'page_code' => 'cart',
+			'page_name' => 'text_cart',
+			'status' => true,
+			'insert_tag' => '#content .buttons .pull-right',
+			'insert_type' => 'append',
+			'align' => 'right',
+			'size' => 'large',
+			'color' => 'gold',
+			'shape' => 'rect',
+			'label' => 'paypal',
+			'tagline' => 'false',
+			'funding' => array(
+				'paylater' => 0,
+				'card' => 0,
+				'bancontact' => 0,
+				'blik' => 0,
+				'eps' => 0,
+				'giropay' => 0,
+				'ideal' => 0,
+				'mercadopago' => 0,
+				'mybank' => 0,
+				'p24' => 0,
+				'sepa' => 0,
+				'sofort' => 0,
+				'venmo' => 0
+			),
+		)
+	),
+	'card' => array(
+		'status' => true,
+		'align' => 'right',
+		'size' => 'large',
+		'secure_status' => true,
+		'secure_scenario' => array(
+			'failed_authentication' => 0,
+			'rejected_authentication' => 0,
+			'attempted_authentication' => 1,
+			'unable_authentication' => 0,
+			'challenge_authentication' => 0,
+			'card_ineligible' => 1,
+			'system_unavailable' => 0,
+			'system_bypassed' => 1
+		)
+	),
+	'message' => array(
+		'checkout' => array(
+			'page_code' => 'checkout',
+			'page_name' => 'text_checkout',
+			'status' => true,
+			'align' => 'right',
+			'size' => 'large',
+			'layout' => 'text',
+			'text_color' => 'black',
+			'text_size' => '12',
+			'flex_color' => 'blue',
+			'flex_ratio' => '8x1'
+		),
+		'home' => array(
+			'page_code' => 'home',
+			'page_name' => 'text_home',
+			'status' => true,
+			'insert_tag' => '.common-home #menu',
+			'insert_type' => 'after',
+			'align' => 'center',
+			'size' => 'responsive',
+			'layout' => 'text',
+			'text_color' => 'black',
+			'text_size' => '12',
+			'flex_color' => 'blue',
+			'flex_ratio' => '8x1'
+		),
+		'product' => array(
+			'page_code' => 'product',
+			'page_name' => 'text_product',
+			'status' => true,
+			'insert_tag' => '#content #product',
+			'insert_type' => 'before',
+			'align' => 'center',
+			'size' => 'responsive',
+			'layout' => 'text',
+			'text_color' => 'black',
+			'text_size' => '12',
+			'flex_color' => 'blue',
+			'flex_ratio' => '8x1'
+		),
+		'cart' => array(
+			'page_code' => 'cart',
+			'page_name' => 'text_cart',
+			'status' => true,
+			'insert_tag' => '#content .buttons .pull-right',
+			'insert_type' => 'append',
+			'align' => 'right',
+			'size' => 'large',
+			'layout' => 'text',
+			'text_color' => 'black',
+			'text_size' => '12',
+			'flex_color' => 'blue',
+			'flex_ratio' => '8x1'
+		)
+	),
 	'order_status' => array(
 		'completed' => array(
 			'code' => 'completed',
@@ -49,56 +215,65 @@ $_['paypal_setting'] = array(
 			'id' => 16
 		)
 	),
-	'checkout' => array(
-		'express' => array(
-			'status' => true,
-			'button_align' => 'right',
-			'button_size' => 'large',
-			'button_color' => 'gold',
-			'button_shape' => 'rect',
-			'button_label' => 'paypal',
-			'button_funding' => array(
-				'card' => 0,
-				'credit' => 0,
-				'bancontact' => 0,
-				'blik' => 0,
-				'eps' => 0,
-				'giropay' => 0,
-				'ideal' => 0,
-				'mercadopago' => 0,
-				'mybank' => 0,
-				'p24' => 0,
-				'sepa' => 0,
-				'sofort' => 0,
-				'venmo' => 0,
-				'paylater' => 0
-			)
+	'contact' => array(
+		'oid' => '00D300000000LaY',
+		'retURL' => 'https://www.opencart.com/',
+		'Vendor_Partner_ID_VPID_MAM__c' => '0018000000LjXtY',
+		'Campaign_ID__c' => '7012E000001XNG7',
+		'lead_source' => 'Partner',
+		'recordType' => '0122E000000Qq4v',
+		'company' => '',
+		'first_name' => '',
+		'last_name' => '',
+		'email' => '',
+		'url' => '',
+		'phone' => '',
+		'country' => '',
+		'00N30000000gJEZ' => '',
+		'00N2E00000II4xQ' => '',
+		'00N2E00000II4xP' => false,
+		'00N2E00000II4xO' => '',
+		'00N80000004IGsC' => ''
+	),
+	'sale_analytics_range' => array(
+		'day' => array(
+			'code' => 'day',
+			'name' => 'text_day'
 		),
-		'card' => array(
-			'status' => false,
-			'form_align' => 'right',
-			'form_size' => 'large',
-			'secure_status' => true,
-			'secure_scenario' => array(
-				'failed_authentication' => 0,
-				'rejected_authentication' => 0,
-				'attempted_authentication' => 1,
-				'unable_authentication' => 0,
-				'challenge_authentication' => 0,
-				'card_ineligible' => 1,
-				'system_unavailable' => 0,
-				'system_bypassed' => 1
-			)
+		'week' => array(
+			'code' => 'week',
+			'name' => 'text_week'
 		),
-		'message' => array(
-			'status' => true,
-			'message_align' => 'right',
-			'message_size' => 'large',
-			'message_layout' => 'text',
-			'message_text_color' => 'black',
-			'message_text_size' => '12',
-			'message_flex_color' => 'blue',
-			'message_flex_ratio' => '8x1'
+		'month' => array(
+			'code' => 'month',
+			'name' => 'text_month'
+		),
+		'year' => array(
+			'code' => 'year',
+			'name' => 'text_year'
+		)
+	),
+	'paylater_country' => array(
+		'US' => array(
+			'code' => 'US'
+		),
+		'GB' => array(
+			'code' => 'GB'
+		),
+		'FR' => array(
+			'code' => 'FR'
+		),
+		'DE' => array(
+			'code' => 'DE'
+		),
+		'IT' => array(
+			'code' => 'IT'
+		),
+		'ES' => array(
+			'code' => 'ES'
+		),
+		'AU' => array(
+			'code' => 'AU'
 		)
 	),
 	'currency' => array(
@@ -106,176 +281,194 @@ $_['paypal_setting'] = array(
 			'code' => 'AUD',
 			'name' => 'text_currency_aud',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => true
 		),
 		'BRL' => array(
 			'code' => 'BRL',
 			'name' => 'text_currency_brl',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => false
 		),
 		'CAD' => array(
 			'code' => 'CAD',
 			'name' => 'text_currency_cad',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => true
 		),
 		'CZK' => array(
 			'code' => 'CZK',
 			'name' => 'text_currency_czk',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => true
 		),
 		'DKK' => array(
 			'code' => 'DKK',
 			'name' => 'text_currency_dkk',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => true
 		),
 		'EUR' => array(
 			'code' => 'EUR',
 			'name' => 'text_currency_eur',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => true
 		),
 		'HKD' => array(
 			'code' => 'HKD',
 			'name' => 'text_currency_hkd',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => true
 		),
 		'HUF' => array(
 			'code' => 'HUF',
 			'name' => 'text_currency_huf',
 			'decimal_place' => 0,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => true
 		),
 		'INR' => array(
 			'code' => 'INR',
 			'name' => 'text_currency_inr',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => false
 		),
 		'ILS' => array(
 			'code' => 'ILS',
 			'name' => 'text_currency_ils',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => false
 		),
 		'JPY' => array(
 			'code' => 'JPY',
 			'name' => 'text_currency_jpy',
 			'decimal_place' => 0,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => true
 		),
 		'MYR' => array(
 			'code' => 'MYR',
 			'name' => 'text_currency_myr',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => false
 		),
 		'MXN' => array(
 			'code' => 'MXN',
 			'name' => 'text_currency_mxn',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => false
 		),
 		'TWD' => array(
 			'code' => 'TWD',
 			'name' => 'text_currency_twd',
 			'decimal_place' => 0,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => false
 		),
 		'NZD' => array(
 			'code' => 'NZD',
 			'name' => 'text_currency_nzd',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => true
 		),
 		'NOK' => array(
 			'code' => 'NOK',
 			'name' => 'text_currency_nok',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => true
 		),
 		'PHP' => array(
 			'code' => 'PHP',
 			'name' => 'text_currency_php',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => false
 		),
 		'PLN' => array(
 			'code' => 'PLN',
 			'name' => 'text_currency_pln',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => true
 		),
 		'GBP' => array(
 			'code' => 'GBP',
 			'name' => 'text_currency_gbp',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => true
 		),
 		'RUB' => array(
 			'code' => 'RUB',
 			'name' => 'text_currency_rub',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => false
 		),
 		'SGD' => array(
 			'code' => 'SGD',
 			'name' => 'text_currency_sgd',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => true
 		),
 		'SEK' => array(
 			'code' => 'SEK',
 			'name' => 'text_currency_sek',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => true
 		),
 		'CHF' => array(
 			'code' => 'CHF',
 			'name' => 'text_currency_chf',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => true
 		),
 		'THB' => array(
 			'code' => 'THB',
 			'name' => 'text_currency_thb',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => false
 		),
 		'USD' => array(
 			'code' => 'USD',
 			'name' => 'text_currency_usd',
 			'decimal_place' => 2,
-			'express_status' => true,
+			'status' => true,
 			'card_status' => true
+		)
+	),
+	'button_insert_type' => array(
+		'into_begin' => array(
+			'code'	=> 'prepend',
+			'name'	=> 'text_insert_prepend'
+		),
+		'into_end' => array(
+			'code'	=> 'append',
+			'name'	=> 'text_insert_append'
+		),
+		'before' => array(
+			'code'	=> 'before',
+			'name'	=> 'text_insert_before'
+		),
+		'after' => array(
+			'code'	=> 'after',
+			'name'	=> 'text_insert_after'
 		)
 	),
 	'button_align' => array(
@@ -364,6 +557,16 @@ $_['paypal_setting'] = array(
 			'name' => 'text_installment'
 		)
 	),
+	'button_tagline' => array(
+		'true' => array(
+			'code' => 'true',
+			'name' => 'text_yes'
+		),
+		'false' => array(
+			'code' => 'false',
+			'name' => 'text_no'
+		),
+	),
 	'button_width' => array(
 		'small' => '200px',
 		'medium' => '250px',
@@ -371,68 +574,64 @@ $_['paypal_setting'] = array(
 		'responsive' => ''
 	),
 	'button_funding' => array(
+		'paylater' => array(
+			'code' => 'paylater',
+			'name' => 'text_paylater'
+		),
 		'card' => array(
 			'code' => 'card',
-			'name' => 'text_card',
-		),
-		'credit' => array(
-			'code' => 'credit',
-			'name' => 'text_credit',
+			'name' => 'text_card'
 		),
 		'bancontact' => array(
 			'code' => 'bancontact',
-			'name' => 'text_bancontact',
+			'name' => 'text_bancontact'
 		),
 		'bancontact' => array(
 			'code' => 'bancontact',
-			'name' => 'text_bancontact',
+			'name' => 'text_bancontact'
 		),
 		'blik' => array(
 			'code' => 'blik',
-			'name' => 'text_blik',
+			'name' => 'text_blik'
 		),
 		'eps' => array(
 			'code' => 'eps',
-			'name' => 'text_eps',
+			'name' => 'text_eps'
 		),
 		'giropay' => array(
 			'code' => 'giropay',
-			'name' => 'text_giropay',
+			'name' => 'text_giropay'
 		),
 		'ideal' => array(
 			'code' => 'ideal',
-			'name' => 'text_ideal',
+			'name' => 'text_ideal'
 		),
 		'mercadopago' => array(
 			'code' => 'mercadopago',
-			'name' => 'text_mercadopago',
+			'name' => 'text_mercadopago'
 		),
 		'mybank' => array(
 			'code' => 'mybank',
-			'name' => 'text_mybank',
+			'name' => 'text_mybank'
 		),
 		'p24' => array(
 			'code' => 'p24',
-			'name' => 'text_p24',
+			'name' => 'text_p24'
 		),
 		'sepa' => array(
 			'code' => 'sepa',
-			'name' => 'text_sepa',
+			'name' => 'text_sepa'
 		),
 		'sofort' => array(
 			'code' => 'sofort',
-			'name' => 'text_sofort',
+			'name' => 'text_sofort'
 		),
 		'venmo' => array(
 			'code' => 'venmo',
-			'name' => 'text_venmo',
-		),
-		'paylater' => array(
-			'code' => 'paylater',
-			'name' => 'text_paylater',
+			'name' => 'text_venmo'
 		)
 	),
-	'form_align' => array(
+	'card_align' => array(
 		'left' => array(
 			'code' => 'left',
 			'name' => 'text_align_left'
@@ -446,7 +645,7 @@ $_['paypal_setting'] = array(
 			'name' => 'text_align_right'
 		)
 	),
-	'form_size' => array(
+	'card_size' => array(
 		'medium' => array(
 			'code' => 'medium',
 			'name' => 'text_medium'
@@ -460,12 +659,12 @@ $_['paypal_setting'] = array(
 			'name' => 'text_responsive'
 		)
 	),
-	'form_width' => array(
+	'card_width' => array(
 		'medium' => '250px',
 		'large' => '350px',
 		'responsive' => ''
 	),
-	'secure_scenario' => array(
+	'card_secure_scenario' => array(
 		'failed_authentication' => array(
 			'code' => 'failed_authentication',
 			'name' => 'text_3ds_failed_authentication',
@@ -513,6 +712,24 @@ $_['paypal_setting'] = array(
 			'name' => 'text_3ds_system_bypassed',
 			'error' => 'error_3ds_system_bypassed',
 			'recommended' => 1
+		)
+	),
+	'message_insert_type' => array(
+		'into_begin' => array(
+			'code'	=> 'prepend',
+			'name'	=> 'text_insert_prepend'
+		),
+		'into_end' => array(
+			'code'	=> 'append',
+			'name'	=> 'text_insert_append'
+		),
+		'before' => array(
+			'code'	=> 'before',
+			'name'	=> 'text_insert_before'
+		),
+		'after' => array(
+			'code'	=> 'after',
+			'name'	=> 'text_insert_after'
 		)
 	),
 	'message_align' => array(
@@ -588,6 +805,49 @@ $_['paypal_setting'] = array(
 			'name' => 'text_white'
 		)
 	),
-	'message_flex_ratio' => array('1x1', '1x4', '8x1', '20x1')
+	'message_flex_ratio' => array('1x1', '1x4', '8x1', '20x1'),
+	'contact_sales' => array('100k - 250k', '250k - 2m', '2m - 10m', '10m - 20m', '20m - 50m', '50m +'),
+	'contact_product' => array(
+		array(
+			'code' => 'BT DCC',
+			'name' => 'text_bt_dcc'
+		),
+		array(
+			'code' => 'Express Checkout (EC)',
+			'name' => 'text_express_checkout'
+		),
+		array(
+			'code' => 'Credit - Installments',
+			'name' => 'text_credit_installments'
+		),
+		array(
+			'code' => 'Point of Sale',
+			'name' => 'text_point_of_sale'
+		),
+		array(
+			'code' => 'Invoicing API',
+			'name' => 'text_invoicing_api'
+		),
+		array(
+			'code' => 'PayPal Working Capital',
+			'name' => 'text_paypal_working_capital'
+		),
+		array(
+			'code' => 'Risk servicing',
+			'name' => 'text_risk_servicing'
+		),
+		array(
+			'code' => 'PayPal Here',
+			'name' => 'text_paypal_here'
+		),
+		array(
+			'code' => 'Payouts',
+			'name' => 'text_payouts'
+		),
+		array(
+			'code' => 'Marketing solutions',
+			'name' => 'text_marketing_solutions'
+		),
+	)
 );
 ?>
