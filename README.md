@@ -28,7 +28,7 @@ This Module is Extension Installer ready.
 1. [Download](https://github.com/Dreamvention/paypal/releases) the **compiled** Extensions from the latest releases by selecting your OpenCart version accordingly.
 2. Upload via OpenCart Admin -> Extension Installer and click "Install" for PayPal extension
 3. Go to Extensions -> Payments -> PayPal Checkout Integration and click "Install"
-4. Click "Edit".
+4. Click "Edit" for PayPal Checkout Integration.
 
 Now you need to setup your PayPal Account.
 
