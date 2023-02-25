@@ -178,7 +178,7 @@ $('.payment-paypal .switch').bootstrapSwitch({
     'offText': '<?php echo $text_off; ?>'
 });
 
-$('.button-disconnect').on('click', function() {
+$('.payment-paypal').on('click', '.button-disconnect', function() {
 	if (confirm('<?php echo $text_confirm; ?>')) {		
 		$.ajax({
 			type: 'post',
