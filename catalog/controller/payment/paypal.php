@@ -2424,7 +2424,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			}
 									
 			if (isset($webhook_event['resource']['invoice_id']) && !$errors) {
-				$order_id = $webhook_event['resource']['invoice_id'];
+				$invoice_id = explode('_', $webhook_event['resource']['invoice_id']);
+				$order_id = reset($invoice_id);
 				
 				$order_status_id = 0;
 					
