@@ -18,6 +18,9 @@
 		<?php if ($error_warning) { ?>
 		<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?php echo $error_warning; ?></div>
 		<?php } ?>
+		<?php if ($text_version) { ?>
+		<div class="alert alert-info"><i class="fa fa-info-circle"></i> <?php echo $text_version; ?></div>
+		<?php } ?>
 		<div class="panel panel-default panel-dashboard">
 			<div class="panel-heading">
 				<h3 class="panel-title"><i class="fa fa-pencil"></i> <?php echo $text_edit; ?></h3>
