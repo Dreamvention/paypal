@@ -44,8 +44,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			if ($setting['card']['status']) {										
 				$data['card_status'] = $setting['card']['status'];
 			}
-			
-			if ($setting['message']['checkout']['status']) {										
+					
+			if ($setting['message']['checkout']['status'] && ($this->session->data['currency'] == $setting['general']['currency_code'])) {			
 				$data['message_status'] = $setting['message']['checkout']['status'];
 			}
 			

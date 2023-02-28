@@ -97,6 +97,9 @@
 	border-color: #C5D5FF;
 	color: #000000;
 }
+.payment-paypal .alert-info .alert-link {
+	color: #000000;
+}
 .payment-paypal .alert .close {
 	position: absolute;
 	top: 15px;

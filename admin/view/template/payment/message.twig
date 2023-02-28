@@ -18,6 +18,9 @@
 		{% if error_warning %}
 		<div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> {{ error_warning }}</div>
 		{% endif %}
+		{% if text_version %}
+		<div class="alert alert-info"><i class="fas fa-info-circle"></i> {{ text_version }}</div>
+		{% endif %}
 		<div class="card">
 			<div class="card-header"><i class="fas fa-pencil-alt"></i> {{ text_edit }}</div>
 			<div class="card-body">

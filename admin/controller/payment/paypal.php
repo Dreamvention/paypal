@@ -217,6 +217,14 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['text_checkout_express'] = sprintf($this->language->get('text_checkout_express'), $data['configure_url'][$data['environment']]['express_checkout']);
 		$data['text_support'] = sprintf($this->language->get('text_support'), $this->request->server['HTTP_HOST']);
 		
+		$result = $this->model_extension_paypal_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
+		
+		if (!empty($result['href'])) {
+			$data['text_version'] = sprintf($this->language->get('text_version'), $result['href']);
+		} else {
+			$data['text_version'] = '';
+		}
+		
 		$agree_status = $this->model_extension_paypal_payment_paypal->getAgreeStatus();
 		
 		if (!$agree_status) {
@@ -280,8 +288,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		
 		$data['save'] = $this->url->link('extension/paypal/payment/paypal|save', 'user_token=' . $this->session->data['user_token']);
 		$data['back'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment');
-		$data['sale_analytics_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal|getSaleAnalytics', 'user_token=' . $this->session->data['user_token'], true));
-		$data['agree_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal|agree', 'user_token=' . $this->session->data['user_token']));			
+		$data['sale_analytics_url'] = str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal|getSaleAnalytics', 'user_token=' . $this->session->data['user_token']));
+		$data['agree_url'] = str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal|agree', 'user_token=' . $this->session->data['user_token']));			
 		
 		// Setting 		
 		$_config = new \Opencart\System\Engine\Config();
@@ -320,6 +328,14 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$paypal_sale_total = $this->model_extension_paypal_payment_paypal->getTotalSales();
 		
 		$data['paypal_sale_total'] = $this->currency->format($paypal_sale_total, $this->config->get('config_currency'));
+		
+		$result = $this->model_extension_paypal_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
+		
+		if (!empty($result['href'])) {
+			$data['text_version'] = sprintf($this->language->get('text_version'), $result['href']);
+		} else {
+			$data['text_version'] = '';
+		}
 		
 		$agree_status = $this->model_extension_paypal_payment_paypal->getAgreeStatus();
 		
@@ -420,6 +436,14 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$this->load->model('localisation/country');
 
 		$data['countries'] = $this->model_localisation_country->getCountries();
+		
+		$result = $this->model_extension_paypal_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
+		
+		if (!empty($result['href'])) {
+			$data['text_version'] = sprintf($this->language->get('text_version'), $result['href']);
+		} else {
+			$data['text_version'] = '';
+		}
 		
 		$agree_status = $this->model_extension_paypal_payment_paypal->getAgreeStatus();
 		
@@ -555,6 +579,14 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			}
 		}
 		
+		$result = $this->model_extension_paypal_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
+		
+		if (!empty($result['href'])) {
+			$data['text_version'] = sprintf($this->language->get('text_version'), $result['href']);
+		} else {
+			$data['text_version'] = '';
+		}
+		
 		$agree_status = $this->model_extension_paypal_payment_paypal->getAgreeStatus();
 		
 		if (!$agree_status) {
@@ -688,6 +720,14 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				
 				$this->error['warning'] = implode(' ', $error_messages);
 			}
+		}
+		
+		$result = $this->model_extension_paypal_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
+		
+		if (!empty($result['href'])) {
+			$data['text_version'] = sprintf($this->language->get('text_version'), $result['href']);
+		} else {
+			$data['text_version'] = '';
 		}
 		
 		$agree_status = $this->model_extension_paypal_payment_paypal->getAgreeStatus();
@@ -832,6 +872,14 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			}
 		}
 		
+		$result = $this->model_extension_paypal_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
+		
+		if (!empty($result['href'])) {
+			$data['text_version'] = sprintf($this->language->get('text_version'), $result['href']);
+		} else {
+			$data['text_version'] = '';
+		}
+		
 		$agree_status = $this->model_extension_paypal_payment_paypal->getAgreeStatus();
 		
 		if (!$agree_status) {
@@ -906,6 +954,14 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$this->load->model('localisation/order_status');
 
 		$data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
+		
+		$result = $this->model_extension_paypal_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
+		
+		if (!empty($result['href'])) {
+			$data['text_version'] = sprintf($this->language->get('text_version'), $result['href']);
+		} else {
+			$data['text_version'] = '';
+		}
 
 		$agree_status = $this->model_extension_paypal_payment_paypal->getAgreeStatus();
 		
@@ -982,6 +1038,14 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$this->load->model('localisation/country');
 
 		$data['countries'] = $this->model_localisation_country->getCountries();
+		
+		$result = $this->model_extension_paypal_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
+		
+		if (!empty($result['href'])) {
+			$data['text_version'] = sprintf($this->language->get('text_version'), $result['href']);
+		} else {
+			$data['text_version'] = '';
+		}
 		
 		$agree_status = $this->model_extension_paypal_payment_paypal->getAgreeStatus();
 		

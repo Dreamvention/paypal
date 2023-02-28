@@ -169,6 +169,31 @@ class PayPal extends \Opencart\System\Engine\Model {
 		return $agree_status;
 	}
 	
+	public function checkVersion(string $opencart_version, string $paypal_version): array|bool {
+		$curl = curl_init();
+			
+		curl_setopt($curl, CURLOPT_URL, 'https://www.opencart.com/index.php?route=api/promotion/paypalCheckoutIntegration&opencart=' . $opencart_version . '&paypal=' . $paypal_version);
+		curl_setopt($curl, CURLOPT_HEADER, 0);
+		curl_setopt($curl, CURLOPT_HEADER, 0);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
+		curl_setopt($curl, CURLOPT_FORBID_REUSE, 1);
+		curl_setopt($curl, CURLOPT_FRESH_CONNECT, 1);
+							
+		$response = curl_exec($curl);
+			
+		curl_close($curl);
+		
+		$result = json_decode($response, true);
+		
+		if ($result) {
+			return $result;
+		} else {
+			return false;
+		}
+	}
+	
 	public function sendContact($data): void {
 		$curl = curl_init();
 

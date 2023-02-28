@@ -1,18 +1,18 @@
 <?php
 namespace Opencart\System\Library;
 class PayPal {
-	private $server = array(
+	private $server = [
 		'sandbox' => 'https://api.sandbox.paypal.com',
 		'production' => 'https://api.paypal.com'
-	);
+	];
 	private $environment = 'sandbox';
 	private $partner_id = '';
 	private $client_id = '';
 	private $secret = '';
 	private $partner_attribution_id = '';
 	private $access_token = '';
-	private $errors = array();
-	private $last_response = array();
+	private $errors = [];
+	private $last_response = [];
 		
 	//IN:  paypal info
 	public function __construct($paypal_info) {
@@ -39,7 +39,7 @@ class PayPal {
 	
 	//IN:  token info
 	//OUT: access token, if no return - check errors
-	public function setAccessToken($token_info) {
+	public function setAccessToken(array $token_info): string|bool {
 		$command = '/v1/oauth2/token';
 		
 		$params = $token_info;
@@ -58,12 +58,12 @@ class PayPal {
 	}
 	
 	//OUT: access token
-	public function getAccessToken() {
+	public function getAccessToken(): string {
 		return $this->access_token;
 	}
 	
 	//OUT: access token, if no return - check errors
-	public function getClientToken() {
+	public function getClientToken(): string|bool {
 		$command = '/v1/identity/generate-token';
 										
 		$result = $this->execute('POST', $command);
@@ -78,12 +78,12 @@ class PayPal {
 	}
 	
 	//OUT: merchant info, if no return - check errors
-	public function getUserInfo() {
+	public function getUserInfo(): array|bool {
 		$command = '/v1/identity/oauth2/userinfo';
 		
-		$params = array(
+		$params = [
 			'schema' => 'paypalv1.1'
-		);
+		];
 										
 		$result = $this->execute('GET', $command, $params);
 		
@@ -98,7 +98,7 @@ class PayPal {
 					
 	//IN:  partner id
 	//OUT: merchant info, if no return - check errors
-	public function getSellerCredentials($partner_id) {
+	public function getSellerCredentials(string $partner_id): array|bool {
 		$command = '/v1/customer/partners/' . $partner_id . '/merchant-integrations/credentials';
 						
 		$result = $this->execute('GET', $command);
@@ -114,7 +114,7 @@ class PayPal {
 	
 	//IN:  partner id, merchant id
 	//OUT: merchant info, if no return - check errors
-	public function getSellerStatus($partner_id, $merchant_id) {
+	public function getSellerStatus(string $partner_id, string $merchant_id): array|bool {
 		$command = '/v1/customer/partners/' . $partner_id . '/merchant-integrations/' . $merchant_id;
 						
 		$result = $this->execute('GET', $command);
@@ -129,7 +129,7 @@ class PayPal {
 	}
 			
 	//IN:  webhook info
-	public function createWebhook($webhook_info) {
+	public function createWebhook(array $webhook_info): array|bool {
 		$command = '/v1/notifications/webhooks';
 		
 		$params = $webhook_info;
@@ -147,7 +147,7 @@ class PayPal {
 	
 	//IN:  webhook id
 	//OUT: webhook info, if no return - check errors
-	public function updateWebhook($webhook_id, $webhook_info) {
+	public function updateWebhook(string $webhook_id, array $webhook_info): array|bool {
 		$command = '/v1/notifications/webhooks/' . $webhook_id;
 		
 		$params = $webhook_info;
@@ -164,7 +164,7 @@ class PayPal {
 	}
 	
 	//IN:  webhook id
-	public function deleteWebhook($webhook_id) {
+	public function deleteWebhook(string $webhook_id): bool {
 		$command = '/v1/notifications/webhooks/' . $webhook_id;
 				
 		$result = $this->execute('DELETE', $command);
@@ -174,7 +174,7 @@ class PayPal {
 	
 	//IN:  webhook id
 	//OUT: webhook info, if no return - check errors
-	public function getWebhook($webhook_id) {
+	public function getWebhook(string $webhook_id): array|bool {
 		$command = '/v1/notifications/webhooks/' . $webhook_id;
 				
 		$result = $this->execute('GET', $command);
@@ -189,7 +189,7 @@ class PayPal {
 	}
 	
 	//OUT: webhooks info, if no return - check errors
-	public function getWebhooks() {
+	public function getWebhooks(): array|bool {
 		$command = '/v1/notifications/webhooks';
 				
 		$result = $this->execute('GET', $command);
@@ -205,7 +205,7 @@ class PayPal {
 	
 	//IN:  webhook event id
 	//OUT: webhook event info, if no return - check errors
-	public function getWebhookEvent($webhook_event_id) {
+	public function getWebhookEvent(string $webhook_event_id): array|bool {
 		$command = '/v1/notifications/webhooks-events/' . $webhook_event_id;
 				
 		$result = $this->execute('GET', $command);
@@ -220,7 +220,7 @@ class PayPal {
 	}
 	
 	//OUT: webhook events info, if no return - check errors
-	public function getWebhookEvents() {
+	public function getWebhookEvents(): array|bool {
 		$command = '/v1/notifications/webhooks-events';
 				
 		$result = $this->execute('GET', $command);
@@ -235,7 +235,7 @@ class PayPal {
 	}
 	
 	//IN:  order info
-	public function createOrder($order_info) {
+	public function createOrder(array $order_info): array|bool {
 		$command = '/v2/checkout/orders';
 		
 		$params = $order_info;
@@ -253,7 +253,7 @@ class PayPal {
 	
 	//IN:  order id
 	//OUT: order info, if no return - check errors
-	public function updateOrder($order_id, $order_info) {
+	public function updateOrder(string $order_id, array $order_info): bool {
 		$command = '/v2/checkout/orders/' . $order_id;
 		
 		$params = $order_info;
@@ -265,7 +265,7 @@ class PayPal {
 	
 	//IN:  order id
 	//OUT: order info, if no return - check errors
-	public function getOrder($order_id) {
+	public function getOrder(string $order_id): array|bool {
 		$command = '/v2/checkout/orders/' . $order_id;
 				
 		$result = $this->execute('GET', $command);
@@ -280,7 +280,7 @@ class PayPal {
 	}
 	
 	//IN:  order id
-	public function setOrderAuthorize($order_id) {
+	public function setOrderAuthorize(string $order_id): array|bool {
 		$command = '/v2/checkout/orders/' . $order_id . '/authorize';
 						
 		$result = $this->execute('POST', $command);
@@ -295,7 +295,7 @@ class PayPal {
 	}
 	
 	//IN:  order id
-	public function setOrderCapture($order_id) {
+	public function setOrderCapture(string $order_id): array|bool {
 		$command = '/v2/checkout/orders/' . $order_id . '/capture';
 						
 		$result = $this->execute('POST', $command);
@@ -310,33 +310,33 @@ class PayPal {
 	}
 				
 	//OUT: number of errors
-	public function hasErrors()	{
+	public function hasErrors(): int {
 		return count($this->errors);
 	}
 	
 	//OUT: array of errors
-	public function getErrors()	{
+	public function getErrors(): array {
 		return $this->errors;
 	}
 	
 	//OUT: last response
-	public function getResponse() {
+	public function getResponse(): array|bool {
 		return $this->last_response;
 	}
 	
-	private function execute($method, $command, $params = array(), $json = false) {
-		$this->errors = array();
+	private function execute(string $method, string $command, array $params = [], bool $json = false): array|bool {
+		$this->errors = [];
 
 		if ($method && $command) {
-			$curl_options = array(
+			$curl_options = [
 				CURLOPT_URL => $this->server[$this->environment] . $command,
 				CURLOPT_HEADER => true,
 				CURLOPT_RETURNTRANSFER => true,
 				CURLOPT_INFILESIZE => Null,
-				CURLOPT_HTTPHEADER => array(),
+				CURLOPT_HTTPHEADER => [],
 				CURLOPT_CONNECTTIMEOUT => 10,
 				CURLOPT_TIMEOUT => 10
-			);
+			];
 			
 			$curl_options[CURLOPT_HTTPHEADER][] = 'Accept-Charset: utf-8';
 			$curl_options[CURLOPT_HTTPHEADER][] = 'Accept: application/json';
@@ -387,7 +387,7 @@ class PayPal {
 							$curl_options[CURLOPT_INFILE] = $buffer;
 							$curl_options[CURLOPT_INFILESIZE] = strlen($params_string);
 						} else {
-							$this->errors[] = array('name' => 'FAILED_OPEN_TEMP_FILE', 'message' => 'Unable to open a temporary file');
+							$this->errors[] = ['name' => 'FAILED_OPEN_TEMP_FILE', 'message' => 'Unable to open a temporary file'];
 						}
 					}
 					
@@ -410,7 +410,7 @@ class PayPal {
 				$constant = get_defined_constants(true);
 				$curl_constant = preg_grep('/^CURLE_/', array_flip($constant['curl']));
 				
-				$this->errors[] = array('name' => $curl_constant[$curl_code], 'message' => curl_strerror($curl_code));
+				$this->errors[] = ['name' => $curl_constant[$curl_code], 'message' => curl_strerror($curl_code)];
 			}
 				
 			$head = '';
@@ -420,13 +420,13 @@ class PayPal {
 			
 			if (isset($parts[0]) && isset($parts[1])) {
 				if (($parts[0] == 'HTTP/1.1 100 Continue') && isset($parts[2])) {
-					list($head, $body) = array($parts[1], $parts[2]);
+					list($head, $body) = [$parts[1], $parts[2]];
 				} else {
-					list($head, $body) = array($parts[0], $parts[1]);
+					list($head, $body) = [$parts[0], $parts[1]];
 				}
             }
 			
-            $response_headers = array();
+            $response_headers = [];
             $header_lines = explode("\r\n", $head);
             array_shift($header_lines);
 			
@@ -447,7 +447,7 @@ class PayPal {
 		}
 	}
 	
-	private function buildQuery($params, $json) {
+	private function buildQuery(string|array $params, bool $json): string {
 		if (is_string($params)) {
             return $params;
         }
@@ -459,7 +459,7 @@ class PayPal {
 		}
     }
 	
-	private function token($length = 32) {
+	private function token(int $length = 32): string {
 		// Create random token
 		$string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 	
