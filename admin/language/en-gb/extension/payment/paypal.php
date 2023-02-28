@@ -10,6 +10,7 @@ $_['text_edit']          					= 'Edit PayPal';
 $_['text_welcome']							= 'PayPal Checkout lets you offer PayPal, Venmo (US only), Pay Later options, debit & credit cards, plus local payment methods — all designed to help you maximize conversion.';
 $_['text_checkout_express']					= 'If your country is not available in the list when going through the PayPal onboarding experience please <a href="%s" target="_blank" class="button-connect-express-checkout" data-paypal-button="PPLtBlue" data-paypal-onboard-complete="onBoardedCallback">click here</a>.';
 $_['text_support']							= 'If you face any issue during the onboarding process, please try other browser (e.g. Chrome) or clear your browser cache. If it doesn\'t help, please <a href="mailto:support@opencart.com?subject=%s%%20-%%20an%%20issue%%20during%%20the%%20onboarding%%20process&body=Please%%20provide%%20your%%20contact%%20information%%20and%%20a%%20detailed%%20description%%20of%%20the%%20issue%%20you%%20have%%20encountered.%%20It%%20would%%20be%%20helpful%%20if%%20you%%20could%%20also%%20include%%20a%%20screenshot%%20or%%20video%%20of%%20the%%20problem.">contact</a> our support team.';
+$_['text_version']							= 'New PayPal Checkout Integration version available. You can download it <a href="%s" target="_blank" class="alert-link">here</a>!';
 $_['text_tab_dashboard']					= 'Back to the dashboard';
 $_['text_tab_general']				 		= 'General';
 $_['text_tab_button']						= 'Buttons';

@@ -1,5 +1,6 @@
 <?php 
 $_['paypal_setting'] = array(
+	'version' => '2.0.0',
 	'partner' => array(
 		'production' => array(
 			'partner_id' => 'TY2Q25KP2PX9L',

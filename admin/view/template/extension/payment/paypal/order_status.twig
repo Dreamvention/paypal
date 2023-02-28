@@ -18,6 +18,9 @@
 		{% if error_warning %}
 		<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}</div>
 		{% endif %}
+		{% if text_version %}
+		<div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ text_version }}</div>
+		{% endif %}
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>

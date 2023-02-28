@@ -232,6 +232,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['text_checkout_express'] = sprintf($this->language->get('text_checkout_express'), $data['configure_url'][$data['environment']]['express_checkout']);
 		$data['text_support'] = sprintf($this->language->get('text_support'), $this->request->server['HTTP_HOST']);
 		
+		$result = $this->model_extension_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
+		
+		if (!empty($result['href'])) {
+			$data['text_version'] = sprintf($this->language->get('text_version'), $result['href']);
+		} else {
+			$data['text_version'] = '';
+		}
+		
 		$agree_status = $this->model_extension_payment_paypal->getAgreeStatus();
 		
 		if (!$agree_status) {
@@ -342,6 +350,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		
 		$data['paypal_sale_total'] = $this->currency->format($paypal_sale_total, $this->config->get('config_currency'));
 		
+		$result = $this->model_extension_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
+		
+		if (!empty($result['href'])) {
+			$data['text_version'] = sprintf($this->language->get('text_version'), $result['href']);
+		} else {
+			$data['text_version'] = '';
+		}
+		
 		$agree_status = $this->model_extension_payment_paypal->getAgreeStatus();
 		
 		if (!$agree_status) {
@@ -449,6 +465,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$this->load->model('localisation/country');
 
 		$data['countries'] = $this->model_localisation_country->getCountries();
+		
+		$result = $this->model_extension_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
+		
+		if (!empty($result['href'])) {
+			$data['text_version'] = sprintf($this->language->get('text_version'), $result['href']);
+		} else {
+			$data['text_version'] = '';
+		}
 		
 		$agree_status = $this->model_extension_payment_paypal->getAgreeStatus();
 		
@@ -591,6 +615,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			}
 		}
 		
+		$result = $this->model_extension_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
+		
+		if (!empty($result['href'])) {
+			$data['text_version'] = sprintf($this->language->get('text_version'), $result['href']);
+		} else {
+			$data['text_version'] = '';
+		}
+		
 		$agree_status = $this->model_extension_payment_paypal->getAgreeStatus();
 		
 		if (!$agree_status) {
@@ -731,6 +763,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				
 				$this->error['warning'] = implode(' ', $error_messages);
 			}
+		}
+		
+		$result = $this->model_extension_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
+		
+		if (!empty($result['href'])) {
+			$data['text_version'] = sprintf($this->language->get('text_version'), $result['href']);
+		} else {
+			$data['text_version'] = '';
 		}
 		
 		$agree_status = $this->model_extension_payment_paypal->getAgreeStatus();
@@ -882,6 +922,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			}
 		}
 		
+		$result = $this->model_extension_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
+		
+		if (!empty($result['href'])) {
+			$data['text_version'] = sprintf($this->language->get('text_version'), $result['href']);
+		} else {
+			$data['text_version'] = '';
+		}
+		
 		$agree_status = $this->model_extension_payment_paypal->getAgreeStatus();
 		
 		if (!$agree_status) {
@@ -963,6 +1011,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$this->load->model('localisation/order_status');
 
 		$data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
+		
+		$result = $this->model_extension_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
+		
+		if (!empty($result['href'])) {
+			$data['text_version'] = sprintf($this->language->get('text_version'), $result['href']);
+		} else {
+			$data['text_version'] = '';
+		}
 
 		$agree_status = $this->model_extension_payment_paypal->getAgreeStatus();
 		
@@ -1046,6 +1102,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$this->load->model('localisation/country');
 
 		$data['countries'] = $this->model_localisation_country->getCountries();
+		
+		$result = $this->model_extension_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
+		
+		if (!empty($result['href'])) {
+			$data['text_version'] = sprintf($this->language->get('text_version'), $result['href']);
+		} else {
+			$data['text_version'] = '';
+		}
 		
 		$agree_status = $this->model_extension_payment_paypal->getAgreeStatus();
 		
