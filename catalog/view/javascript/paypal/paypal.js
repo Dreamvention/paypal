@@ -33,7 +33,7 @@ var PayPalAPI = (function () {
 		var script_file = document.getElementsByTagName('script');
 		
 		for (var i = 0; i < script_file.length; i++) {
-			if (script_file[i].getAttribute('src').indexOf('paypal.js') !== -1) {
+			if (script_file[i].hasAttribute('src') && (script_file[i].getAttribute('src').indexOf('paypal.js') !== -1)) {
 				params = getQueryParams(script_file[i].getAttribute('src'));
 			
 				break;
