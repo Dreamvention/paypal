@@ -2531,7 +2531,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		
 				$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
 				
-				if (!empty($setting['paylater_country'][$setting['general']['country_code']]) && !empty($setting['button']['checkout']['funding']['paylater'])) {
+				if (!empty($setting['paylater_country'][$setting['general']['country_code']]) && ($setting['button']['checkout']['funding']['paylater'] != 2)) {
 					$this->config->set('payment_paypal_paylater_status', 1);
 					
 					$output[] = [
