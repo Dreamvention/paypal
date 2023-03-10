@@ -2632,7 +2632,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		
 				$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('paypal_setting'));
 				
-				if (!empty($setting['paylater_country'][$setting['general']['country_code']]) && !empty($setting['button']['checkout']['funding']['paylater'])) {
+				if (!empty($setting['paylater_country'][$setting['general']['country_code']]) && ($setting['button']['checkout']['funding']['paylater'] != 2)) {
 					$this->config->set('paypal_paylater_status', 1);
 					
 					$output[] = array(
