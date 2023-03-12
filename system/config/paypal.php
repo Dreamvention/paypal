@@ -16,6 +16,7 @@ $_['paypal_setting'] = array(
 	'general' => array(
 		'debug' => false,
 		'sale_analytics_range' => 'month',
+		'checkout_mode' => 'multi_button',
 		'transaction_method' => 'capture',
 		'country_code' => 'US',
 		'currency_code' => 'USD',
@@ -252,6 +253,26 @@ $_['paypal_setting'] = array(
 		'year' => array(
 			'code' => 'year',
 			'name' => 'text_year'
+		)
+	),
+	'checkout_mode' => array(
+		'multi_button' => array(
+			'code' => 'multi_button',
+			'name' => 'text_multi_button'
+		),
+		'one_button' => array(
+			'code' => 'one_button',
+			'name' => 'text_one_button'
+		)
+	),
+	'transaction_method' => array(
+		'authorize' => array(
+			'code' => 'authorize',
+			'name' => 'text_authorization'
+		),
+		'capture' => array(
+			'code' => 'capture',
+			'name' => 'text_sale'
 		)
 	),
 	'paylater_country' => array(

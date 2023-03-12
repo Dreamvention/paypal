@@ -68,6 +68,65 @@
 							<div class="row">
 								<div class="col col-md-6">
 									<div class="form-group">
+										<label class="control-label" for="input_general_sale_analytics_range">{{ entry_sale_analytics_range }}</label>
+										<select name="payment_paypal_setting[general][sale_analytics_range]" id="input_general_sale_analytics_range" class="form-control">
+											{% for sale_analytics_range in setting['sale_analytics_range'] %}
+											{% if sale_analytics_range['code'] == setting['general']['sale_analytics_range'] %}
+											<option value="{{ sale_analytics_range['code'] }}" selected="selected">{{ attribute(_context, sale_analytics_range['name']) }}</option>
+											{% else %}
+											<option value="{{ sale_analytics_range['code'] }}">{{ attribute(_context, sale_analytics_range['name']) }}</option>
+											{% endif %}
+											{% endfor %}
+										</select>
+									</div>
+									<div class="form-group">
+										<label class="control-label" for="input_general_checkout_mode"><span data-toggle="tooltip" title="{{ help_checkout_mode }}">{{ entry_checkout_mode }}</span></label>
+										<select name="payment_paypal_setting[general][checkout_mode]" id="input_general_checkout_mode" class="form-control">
+											{% for checkout_mode in setting['checkout_mode'] %}
+											{% if checkout_mode['code'] == setting['general']['checkout_mode'] %}
+											<option value="{{ checkout_mode['code'] }}" selected="selected">{{ attribute(_context, checkout_mode['name']) }}</option>
+											{% else %}
+											<option value="{{ checkout_mode['code'] }}">{{ attribute(_context, checkout_mode['name']) }}</option>
+											{% endif %}
+											{% endfor %}
+										</select>
+									</div>
+									<div class="form-group">
+										<label class="control-label" for="input_general_transaction_method">{{ entry_transaction_method }}</label>
+										<select name="payment_paypal_setting[general][transaction_method]" id="input_general_transaction_method" class="form-control">
+											{% for transaction_method in setting['transaction_method'] %}
+											{% if transaction_method['code'] == setting['general']['transaction_method'] %}
+											<option value="{{ transaction_method['code'] }}" selected="selected">{{ attribute(_context, transaction_method['name']) }}</option>
+											{% else %}
+											<option value="{{ transaction_method['code'] }}">{{ attribute(_context, transaction_method['name']) }}</option>
+											{% endif %}
+											{% endfor %}
+										</select>
+									</div>
+									<div class="form-group">
+										<label class="control-label" for="input_total"><span data-toggle="tooltip" title="{{ help_total }}">{{ entry_total }}</span></label>
+										<input type="text" name="payment_paypal_total" value="{{ total }}" placeholder="{{ entry_total }}" id="input_total" class="form-control" />
+									</div>
+									<div class="form-group">
+										<label class="control-label" for="input_geo_zone">{{ entry_geo_zone }}</label>
+										<select name="payment_paypal_geo_zone_id" id="input_geo_zone" class="form-control">
+											<option value="0">{{ text_all_zones }}</option>
+											{% for geo_zone in geo_zones %}
+											{% if geo_zone['geo_zone_id'] == geo_zone_id %}
+											<option value="{{ geo_zone['geo_zone_id'] }}" selected="selected">{{ geo_zone['name'] }}</option>
+											{% else %}
+											<option value="{{ geo_zone['geo_zone_id'] }}">{{ geo_zone['name'] }}</option>
+											{% endif %}
+											{% endfor %}
+										</select>
+									</div>
+									<div class="form-group">
+										<label class="control-label" for="input_sort_order">{{ entry_sort_order }}</label>
+										<input type="text" name="payment_paypal_sort_order" value="{{ sort_order }}" placeholder="{{ entry_sort_order }}" id="input_sort_order" class="form-control" />
+									</div>
+								</div>
+								<div class="col col-md-6">
+									<div class="form-group">
 										<label class="control-label" for="input_general_country_code"><span data-toggle="tooltip" title="{{ help_country_code }}">{{ entry_country_code }}</span></label>
 										<select name="payment_paypal_setting[general][country_code]" id="input_general_country_code" class="form-control">
 											{% for country in countries %}
@@ -116,53 +175,6 @@
 									<div class="form-group">
 										<label class="control-label" for="input_general_card_currency_value"><span data-toggle="tooltip" title="{{ help_card_currency_value }}">{{ entry_card_currency_value }}</span></label>
 										<input type="text" name="payment_paypal_setting[general][card_currency_value]" value="{{ setting['general']['card_currency_value'] }}" placeholder="{{ entry_card_currency_value }}" id="input_general_card_currency_value" class="form-control" />										
-									</div>
-								</div>
-								<div class="col col-md-6">
-									<div class="form-group">
-										<label class="control-label" for="input_general_sale_analytics_range">{{ entry_sale_analytics_range }}</label>
-										<select name="payment_paypal_setting[general][sale_analytics_range]" id="input_general_sale_analytics_range" class="form-control">
-											{% for sale_analytics_range in setting['sale_analytics_range'] %}
-											{% if sale_analytics_range['code'] == setting['general']['sale_analytics_range'] %}
-											<option value="{{ sale_analytics_range['code'] }}" selected="selected">{{ attribute(_context, sale_analytics_range['name']) }}</option>
-											{% else %}
-											<option value="{{ sale_analytics_range['code'] }}">{{ attribute(_context, sale_analytics_range['name']) }}</option>
-											{% endif %}
-											{% endfor %}
-										</select>
-									</div>
-									<div class="form-group">
-										<label class="control-label" for="input_general_transaction_method">{{ entry_transaction_method }}</label>
-										<select name="payment_paypal_setting[general][transaction_method]" id="input_general_transaction_method" class="form-control">
-											{% if (setting['general']['transaction_method'] == 'authorize') %}
-											<option value="authorize" selected="selected">{{ text_authorization }}</option>
-											<option value="capture">{{ text_sale }}</option>
-											{% else %}
-											<option value="authorize">{{ text_authorization }}</option>
-											<option value="capture" selected="selected">{{ text_sale }}</option>
-											{% endif %}
-										</select>
-									</div>
-									<div class="form-group">
-										<label class="control-label" for="input_total"><span data-toggle="tooltip" title="{{ help_total }}">{{ entry_total }}</span></label>
-										<input type="text" name="payment_paypal_total" value="{{ total }}" placeholder="{{ entry_total }}" id="input_total" class="form-control" />
-									</div>
-									<div class="form-group">
-										<label class="control-label" for="input_geo_zone">{{ entry_geo_zone }}</label>
-										<select name="payment_paypal_geo_zone_id" id="input_geo_zone" class="form-control">
-											<option value="0">{{ text_all_zones }}</option>
-											{% for geo_zone in geo_zones %}
-											{% if geo_zone['geo_zone_id'] == geo_zone_id %}
-											<option value="{{ geo_zone['geo_zone_id'] }}" selected="selected">{{ geo_zone['name'] }}</option>
-											{% else %}
-											<option value="{{ geo_zone['geo_zone_id'] }}">{{ geo_zone['name'] }}</option>
-											{% endif %}
-											{% endfor %}
-										</select>
-									</div>
-									<div class="form-group">
-										<label class="control-label" for="input_sort_order">{{ entry_sort_order }}</label>
-										<input type="text" name="payment_paypal_sort_order" value="{{ sort_order }}" placeholder="{{ entry_sort_order }}" id="input_sort_order" class="form-control" />
 									</div>
 								</div>
 							</div>
