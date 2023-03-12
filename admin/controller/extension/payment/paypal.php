@@ -448,6 +448,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['text_week']	= $this->language->get('text_week');
 		$data['text_month']	= $this->language->get('text_month');
 		$data['text_year']	= $this->language->get('text_year');
+		$data['text_multi_button'] = $this->language->get('text_multi_button');
+		$data['text_one_button'] = $this->language->get('text_one_button');
 		$data['text_authorization'] = $this->language->get('text_authorization');
 		$data['text_sale'] = $this->language->get('text_sale');
 		$data['text_all_zones'] = $this->language->get('text_all_zones');
@@ -482,6 +484,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['entry_status'] = $this->language->get('entry_status');
 		$data['entry_debug'] = $this->language->get('entry_debug');
 		$data['entry_sale_analytics_range'] = $this->language->get('entry_sale_analytics_range');
+		$data['entry_checkout_mode'] = $this->language->get('entry_checkout_mode');
 		$data['entry_transaction_method'] = $this->language->get('entry_transaction_method');
 		$data['entry_total'] = $this->language->get('entry_total');
 		$data['entry_geo_zone'] = $this->language->get('entry_geo_zone');
@@ -492,6 +495,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['entry_card_currency_code'] = $this->language->get('entry_card_currency_code');
 		$data['entry_card_currency_value'] = $this->language->get('entry_card_currency_value');
 		
+		$data['help_checkout_mode'] = $this->language->get('help_checkout_mode');
 		$data['help_total'] = $this->language->get('help_total');
 		$data['help_country_code'] = $this->language->get('help_country_code');
 		$data['help_currency_code'] = $this->language->get('help_currency_code');

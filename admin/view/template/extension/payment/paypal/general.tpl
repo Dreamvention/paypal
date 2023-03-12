@@ -68,6 +68,65 @@
 							<div class="row">
 								<div class="col col-md-6">
 									<div class="form-group">
+										<label class="control-label" for="input_general_sale_analytics_range"><?php echo $entry_sale_analytics_range; ?></label>
+										<select name="paypal_setting[general][sale_analytics_range]" id="input_general_sale_analytics_range" class="form-control">
+											<?php foreach ($setting['sale_analytics_range'] as $sale_analytics_range) { ?>
+											<?php if ($sale_analytics_range['code'] == $setting['general']['sale_analytics_range']) { ?>
+											<option value="<?php echo $sale_analytics_range['code']; ?>" selected="selected"><?php echo ${$sale_analytics_range['name']}; ?></option>
+											<?php } else { ?>
+											<option value="<?php echo $sale_analytics_range['code']; ?>"><?php echo ${$sale_analytics_range['name']}; ?></option>
+											<?php } ?>
+											<?php } ?>
+										</select>
+									</div>
+									<div class="form-group">
+										<label class="control-label" for="input_general_checkout_mode"><span data-toggle="tooltip" title="<?php echo $help_checkout_mode; ?>"><?php echo $entry_checkout_mode; ?></span></label>
+										<select name="paypal_setting[general][checkout_mode]" id="input_general_checkout_mode" class="form-control">
+											<?php foreach ($setting['checkout_mode'] as $checkout_mode) { ?>
+											<?php if ($checkout_mode['code'] == $setting['general']['checkout_mode']) { ?>
+											<option value="<?php echo $checkout_mode['code']; ?>" selected="selected"><?php echo ${$checkout_mode['name']}; ?></option>
+											<?php } else { ?>
+											<option value="<?php echo $checkout_mode['code']; ?>"><?php echo ${$checkout_mode['name']}; ?></option>
+											<?php } ?>
+											<?php } ?>
+										</select>
+									</div>
+									<div class="form-group">
+										<label class="control-label" for="input_general_transaction_method"><?php echo $entry_transaction_method; ?></label>
+										<select name="paypal_setting[general][transaction_method]" id="input_general_transaction_method" class="form-control">
+											<?php foreach ($setting['transaction_method'] as $transaction_method) { ?>
+											<?php if ($transaction_method['code'] == $setting['general']['transaction_method']) { ?>
+											<option value="<?php echo $transaction_method['code']; ?>" selected="selected"><?php echo ${$transaction_method['name']}; ?></option>
+											<?php } else { ?>
+											<option value="<?php echo $transaction_method['code']; ?>"><?php echo ${$transaction_method['name']}; ?></option>
+											<?php } ?>
+											<?php } ?>
+										</select>
+									</div>
+									<div class="form-group">
+										<label class="control-label" for="input_total"><span data-toggle="tooltip" title="<?php echo $help_total; ?>"><?php echo $entry_total; ?></span></label>
+										<input type="text" name="paypal_total" value="<?php echo $total; ?>" placeholder="<?php echo $entry_total; ?>" id="input_total" class="form-control" />
+									</div>
+									<div class="form-group">
+										<label class="control-label" for="input_geo_zone"><?php echo $entry_geo_zone; ?></label>
+										<select name="paypal_geo_zone_id" id="input_geo_zone" class="form-control">
+											<option value="0"><?php echo $text_all_zones; ?></option>
+											<?php foreach ($geo_zones as $geo_zone) { ?>
+											<?php if ($geo_zone['geo_zone_id'] == $geo_zone_id) { ?>
+											<option value="<?php echo $geo_zone['geo_zone_id']; ?>" selected="selected"><?php echo $geo_zone['name']; ?></option>
+											<?php } else { ?>
+											<option value="<?php echo $geo_zone['geo_zone_id']; ?>"><?php echo $geo_zone['name']; ?></option>
+											<?php } ?>
+											<?php } ?>
+										</select>
+									</div>
+									<div class="form-group">
+										<label class="control-label" for="input_sort_order"><?php echo $entry_sort_order; ?></label>
+										<input type="text" name="paypal_sort_order" value="<?php echo $sort_order; ?>" placeholder="<?php echo $entry_sort_order; ?>" id="input_sort_order" class="form-control" />
+									</div>
+								</div>
+								<div class="col col-md-6">
+									<div class="form-group">
 										<label class="control-label" for="input_general_country_code"><span data-toggle="tooltip" title="<?php echo $help_country_code; ?>"><?php echo $entry_country_code; ?></span></label>
 										<select name="paypal_setting[general][country_code]" id="input_general_country_code" class="form-control">
 											<?php foreach ($countries as $country) { ?>
@@ -116,53 +175,6 @@
 									<div class="form-group">
 										<label class="control-label" for="input_general_card_currency_value"><span data-toggle="tooltip" title="<?php echo $help_card_currency_value; ?>"><?php echo $entry_card_currency_value; ?></span></label>
 										<input type="text" name="paypal_setting[general][card_currency_value]" value="<?php echo $setting['general']['card_currency_value']; ?>" placeholder="<?php echo $entry_card_currency_value; ?>" id="input_general_card_currency_value" class="form-control" />										
-									</div>
-								</div>
-								<div class="col col-md-6">
-									<div class="form-group">
-										<label class="control-label" for="input_general_sale_analytics_range"><?php echo $entry_sale_analytics_range; ?></label>
-										<select name="paypal_setting[general][sale_analytics_range]" id="input_general_sale_analytics_range" class="form-control">
-											<?php foreach ($setting['sale_analytics_range'] as $sale_analytics_range) { ?>
-											<?php if ($sale_analytics_range['code'] == $setting['general']['sale_analytics_range']) { ?>
-											<option value="<?php echo $sale_analytics_range['code']; ?>" selected="selected"><?php echo ${$sale_analytics_range['name']}; ?></option>
-											<?php } else { ?>
-											<option value="<?php echo $sale_analytics_range['code']; ?>"><?php echo ${$sale_analytics_range['name']}; ?></option>
-											<?php } ?>
-											<?php } ?>
-										</select>
-									</div>
-									<div class="form-group">
-										<label class="control-label" for="input_general_transaction_method"><?php echo $entry_transaction_method; ?></label>
-										<select name="paypal_setting[general][transaction_method]" id="input_general_transaction_method" class="form-control">
-											<?php if ($setting['general']['transaction_method'] == 'authorize') { ?>
-											<option value="authorize" selected="selected"><?php echo $text_authorization; ?></option>
-											<option value="capture"><?php echo $text_sale; ?></option>
-											<?php } else { ?>
-											<option value="authorize"><?php echo $text_authorization; ?></option>
-											<option value="capture" selected="selected"><?php echo $text_sale; ?></option>
-											<?php } ?>
-										</select>
-									</div>
-									<div class="form-group">
-										<label class="control-label" for="input_total"><span data-toggle="tooltip" title="<?php echo $help_total; ?>"><?php echo $entry_total; ?></span></label>
-										<input type="text" name="paypal_total" value="<?php echo $total; ?>" placeholder="<?php echo $entry_total; ?>" id="input_total" class="form-control" />
-									</div>
-									<div class="form-group">
-										<label class="control-label" for="input_geo_zone"><?php echo $entry_geo_zone; ?></label>
-										<select name="paypal_geo_zone_id" id="input_geo_zone" class="form-control">
-											<option value="0"><?php echo $text_all_zones; ?></option>
-											<?php foreach ($geo_zones as $geo_zone) { ?>
-											<?php if ($geo_zone['geo_zone_id'] == $geo_zone_id) { ?>
-											<option value="<?php echo $geo_zone['geo_zone_id']; ?>" selected="selected"><?php echo $geo_zone['name']; ?></option>
-											<?php } else { ?>
-											<option value="<?php echo $geo_zone['geo_zone_id']; ?>"><?php echo $geo_zone['name']; ?></option>
-											<?php } ?>
-											<?php } ?>
-										</select>
-									</div>
-									<div class="form-group">
-										<label class="control-label" for="input_sort_order"><?php echo $entry_sort_order; ?></label>
-										<input type="text" name="paypal_sort_order" value="<?php echo $sort_order; ?>" placeholder="<?php echo $entry_sort_order; ?>" id="input_sort_order" class="form-control" />
 									</div>
 								</div>
 							</div>
