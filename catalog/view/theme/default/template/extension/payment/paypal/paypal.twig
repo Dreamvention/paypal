@@ -47,7 +47,7 @@ $(document).on('click', '.paypal-button-confirm', function(event) {
 	
 	$('body').append('<div id="paypal_modal" class="modal fade"></div>');
 	
-	$('#paypal_modal').load('index.php?route=extension/payment/paypal/modal&language={{ language }} #paypal_modal >', function() {		
+	$('#paypal_modal').load('index.php?route=extension/payment/paypal/modal #paypal_modal >', function() {		
 		$('#paypal_modal').modal('show');
 		
 		PayPalAPI.init();
