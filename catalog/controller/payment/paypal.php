@@ -403,8 +403,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 							$data['button_disable_funding'][] = $button_funding['code'];
 						}
 					}
-										
-					if (isset($this->session->data['payment_method']['code']) && ($this->session->data['payment_method']['code'] == 'paypal_paylater')) {
+									
+					if (isset($this->session->data['payment_method']) && ($this->session->data['payment_method'] == 'paypal_paylater')) {
 						$data['button_funding_source'] = 'paylater';
 					}
 				}
@@ -2564,7 +2564,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		return false;
 	}
 	
-	public function header_before($route, &$data): void {
+	public function header_before(string $route, array &$data): void {
 		$this->load->model('extension/paypal/payment/paypal');
 		
 		$agree_status = $this->model_extension_paypal_payment_paypal->getAgreeStatus();
@@ -2607,7 +2607,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		}			
 	}
 	
-	public function extension_get_extensions_by_type_after($route, $data, &$output): void {
+	public function extension_get_extensions_by_type_after(string $route, array $data, array &$output): void {
 		if ($this->config->get('payment_paypal_status') && $this->config->get('payment_paypal_client_id') && $this->config->get('payment_paypal_secret')) {
 			$type = $data[0];
 			
@@ -2636,7 +2636,37 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		}			
 	}
 	
-	private function validateShipping($code): bool {
+	public function extension_get_extension_by_code_after(string $route, array $data, array &$output): void {
+		if ($this->config->get('payment_paypal_status') && $this->config->get('payment_paypal_client_id') && $this->config->get('payment_paypal_secret')) {
+			$type = $data[0];
+			$code = $data[1];
+			
+			if (($type == 'payment') && ($code == 'paypal_paylater')) {			
+				// Setting
+				$_config = new \Opencart\System\Engine\Config();
+				$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
+				$_config->load('paypal');
+			
+				$config_setting = $_config->get('paypal_setting');
+		
+				$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
+				
+				if (!empty($setting['paylater_country'][$setting['general']['country_code']]) && ($setting['button']['checkout']['funding']['paylater'] != 2)) {
+					$this->config->set('payment_paypal_paylater_status', 1);
+					
+					$output = [
+						'extension_id' => 0,
+						'extension' => 'paypal',
+						'type' => 'payment',
+						'code' => 'paypal_paylater'
+					];
+				}
+			}
+			
+		}			
+	}
+	
+	private function validateShipping(string $code): bool {
 		$this->load->language('checkout/cart');
 		$this->load->language('extension/paypal/payment/paypal');
 

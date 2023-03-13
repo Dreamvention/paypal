@@ -1249,18 +1249,22 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$this->model_setting_event->deleteEventByCode('paypal');
 		
 		if (VERSION >= '4.0.1.0') {
-			$this->model_setting_event->addEvent(['code' => 'paypal', 'description' => '', 'trigger' => 'catalog/controller/common/header/before', 'action' => 'extension/paypal/payment/paypal|header_before', 'status' => true, 'sort_order' => 1]);
-			$this->model_setting_event->addEvent(['code' => 'paypal', 'description' => '', 'trigger' => 'catalog/model/setting/extension/getExtensionsByType/after', 'action' => 'extension/paypal/payment/paypal|extension_get_extensions_by_type_after', 'status' => true, 'sort_order' => 2]);
+			$this->model_setting_event->addEvent(['code' => 'paypal_header', 'description' => '', 'trigger' => 'catalog/controller/common/header/before', 'action' => 'extension/paypal/payment/paypal|header_before', 'status' => true, 'sort_order' => 1]);
+			$this->model_setting_event->addEvent(['code' => 'paypal_extension_get_extensions_by_type', 'description' => '', 'trigger' => 'catalog/model/setting/extension/getExtensionsByType/after', 'action' => 'extension/paypal/payment/paypal|extension_get_extensions_by_type_after', 'status' => true, 'sort_order' => 2]);
+			$this->model_setting_event->addEvent(['code' => 'paypal_extension_get_extension_by_code', 'description' => '', 'trigger' => 'catalog/model/setting/extension/getExtensionByCode/after', 'action' => 'extension/paypal/payment/paypal|extension_get_extension_by_code_after', 'status' => true, 'sort_order' => 3]);
 		} else {
-			$this->model_setting_event->addEvent('paypal', '', 'catalog/controller/common/header/before', 'extension/paypal/payment/paypal|header_before', true, 1);
-			$this->model_setting_event->addEvent('paypal', '', 'catalog/model/setting/extension/getExtensionsByType/after', 'extension/paypal/payment/paypal|extension_get_extensions_by_type_after', true, 2);
+			$this->model_setting_event->addEvent('paypal_header', '', 'catalog/controller/common/header/before', 'extension/paypal/payment/paypal|header_before', true, 1);
+			$this->model_setting_event->addEvent('paypal_extension_get_extensions_by_type', '', 'catalog/model/setting/extension/getExtensionsByType/after', 'extension/paypal/payment/paypal|extension_get_extensions_by_type_after', true, 2);
+			$this->model_setting_event->addEvent('paypal_extension_get_extension_by_code', '', 'catalog/model/setting/extension/getExtensionByCode/after', 'extension/paypal/payment/paypal|extension_get_extension_by_code_after', true, 3);
 		}
 	}
 	
 	public function uninstall(): void {
 		$this->load->model('setting/event');
 		
-		$this->model_setting_event->deleteEventByCode('paypal');
+		$this->model_setting_event->deleteEventByCode('paypal_header');
+		$this->model_setting_event->deleteEventByCode('paypal_extension_get_extensions_by_type');
+		$this->model_setting_event->deleteEventByCode('paypal_extension_get_extension_by_code');
 	}
 	
 	private function validate(): array|bool {
