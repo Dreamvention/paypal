@@ -14,17 +14,21 @@ PayPalAPI.init();
 <?php } else { ?>
 <div class="buttons">
 	<div class="pull-right">
-		<button type="button" id="button-confirm" class="btn btn-primary paypal-paylater-button-confirm"><?php echo $button_confirm; ?></button>
+		<button type="button" id="button-confirm" class="btn btn-primary paypal-paylater-button-confirm" data-loading-text="<?php echo $text_loading; ?>"><?php echo $button_confirm; ?></button>
 	</div>
 </div>
 <script type="text/javascript">
 
 $(document).on('click', '.paypal-paylater-button-confirm', function(event) {
+	$('.paypal-paylater-button-confirm').button('loading');
+	
 	$('#paypal_modal').remove();
 	
 	$('body').append('<div id="paypal_modal" class="modal fade"></div>');
 	
 	$('#paypal_modal').load('index.php?route=payment/paypal_paylater/modal #paypal_modal >', function() {		
+		$('.paypal-paylater-button-confirm').button('reset');
+		
 		$('#paypal_modal').modal('show');
 		
 		PayPalAPI.init();
