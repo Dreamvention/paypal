@@ -18,11 +18,15 @@ PayPalAPI.init();
 <script type="text/javascript">
 
 $(document).on('click', '.paypal-paylater-button-confirm', function(event) {
+	$('.paypal-paylater-button-confirm').prop('disabled', true).addClass('loading');
+	
 	$('#paypal_modal').remove();
 	
 	$('body').append('<div id="paypal_modal" class="modal fade"></div>');
 	
 	$('#paypal_modal').load('index.php?route=extension/paypal/payment/paypal_paylater|modal&language={{ language }} #paypal_modal >', function() {		
+		$('.paypal-paylater-button-confirm').prop('disabled', false).removeClass('loading');
+		
 		$('#paypal_modal').modal('show');
 		
 		PayPalAPI.init();
