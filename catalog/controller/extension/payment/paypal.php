@@ -44,6 +44,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				$data['card_status'] = $setting['card']['status'];
 			}
 			
+			$data['text_loading'] = $this->language->get('text_loading');
+			
 			$data['entry_card_number'] = $this->language->get('entry_card_number');
 			$data['entry_expiration_date'] = $this->language->get('entry_expiration_date');
 			$data['entry_cvv'] = $this->language->get('entry_cvv');

@@ -26,6 +26,7 @@ $_['text_payment_description'] 				= '%s every %d %s(s) for %d payment(s)';
 $_['text_payment_cancel']      				= '%s every %d %s(s) until canceled';
 $_['text_order_message']					= 'PayPal Seller Protection - %s';
 $_['text_wait']								= 'Please wait!';
+$_['text_loading']          				= 'Loading...';
 
 // Column
 $_['column_image']             				= 'Image';
