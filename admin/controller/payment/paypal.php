@@ -1746,7 +1746,9 @@ class ControllerPaymentPayPal extends Controller {
 	public function install() {		
 		$this->load->model('extension/event');
 		
-		$this->model_extension_event->deleteEvent('paypal');
+		$this->model_extension_event->deleteEvent('paypal_header');
+		$this->model_extension_event->deleteEvent('paypal_extension_get_extensions');
+		
 		$this->model_extension_event->addEvent('paypal_header', 'catalog/controller/common/header/before', 'payment/paypal/header_before');
 		$this->model_extension_event->addEvent('paypal_extension_get_extensions', 'catalog/model/extension/extension/getExtensions/after', 'payment/paypal/extension_get_extensions_after');
 	}
