@@ -1246,7 +1246,9 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		
 		$this->load->model('setting/event');
 		
-		$this->model_setting_event->deleteEventByCode('paypal');
+		$this->model_setting_event->deleteEventByCode('paypal_header');
+		$this->model_setting_event->deleteEventByCode('paypal_extension_get_extensions_by_type');
+		$this->model_setting_event->deleteEventByCode('paypal_extension_get_extension_by_code');
 		
 		if (VERSION >= '4.0.1.0') {
 			$this->model_setting_event->addEvent(['code' => 'paypal_header', 'description' => '', 'trigger' => 'catalog/controller/common/header/before', 'action' => 'extension/paypal/payment/paypal|header_before', 'status' => true, 'sort_order' => 1]);
