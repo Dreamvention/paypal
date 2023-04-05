@@ -9,7 +9,7 @@ var PayPalAPI = (function () {
 		
 		if (data['error'] && data['error']['warning']) {
 			if ($('#paypal_form').length) {
-				$('#paypal_form').prepend('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i><button type="button" class="close" paypal_data-dismiss="alert">&times;</button> ' + data['error']['warning'] + '</div>');
+				$('#paypal_form').prepend('<div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> ' + data['error']['warning'] + '</div>');						
 			} else {
 				alert(data['error']['warning']);
 			}
