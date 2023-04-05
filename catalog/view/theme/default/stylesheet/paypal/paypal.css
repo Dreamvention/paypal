@@ -42,6 +42,12 @@
 	animation: paypal-spinner .75s linear infinite;
 	z-index: 1000;
 }
+.modal {
+    z-index: 960;
+}
+.modal-backdrop {
+	z-index: 940;
+}
 @keyframes paypal-spinner {
 	to {
 		transform: rotate(360deg); 
