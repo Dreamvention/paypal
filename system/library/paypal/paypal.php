@@ -50,8 +50,6 @@ class PayPal {
 			
 			return $this->access_token;
 		} else {
-			$this->errors[] = $result;
-						
 			return false;
 		}
 	}
@@ -70,8 +68,6 @@ class PayPal {
 		if (!empty($result['client_token'])) {
 			return $result['client_token'];
 		} else {
-			$this->errors[] = $result;
-			
 			return false;
 		}
 	}
@@ -89,8 +85,6 @@ class PayPal {
 		if (!empty($result['user_id'])) {
 			return $result;
 		} else {
-			$this->errors[] = $result;
-			
 			return false;
 		}
 	}
@@ -105,8 +99,6 @@ class PayPal {
 		if (!empty($result['client_id'])) {
 			return $result;
 		} else {
-			$this->errors[] = $result;
-			
 			return false;
 		}
 	}
@@ -121,8 +113,6 @@ class PayPal {
 		if (!empty($result['merchant_id'])) {
 			return $result;
 		} else {
-			$this->errors[] = $result;
-			
 			return false;
 		}
 	}
@@ -138,8 +128,6 @@ class PayPal {
 		if (!empty($result['id'])) {
 			return $result;
 		} else {
-			$this->errors[] = $result;
-			
 			return false;
 		}
 	}
@@ -156,8 +144,6 @@ class PayPal {
 		if (!empty($result['id'])) {
 			return $result;
 		} else {
-			$this->errors[] = $result;
-			
 			return false;
 		}
 	}
@@ -181,8 +167,6 @@ class PayPal {
 		if (!empty($result['id'])) {
 			return $result;
 		} else {
-			$this->errors[] = $result;
-			
 			return false;
 		}
 	}
@@ -196,8 +180,6 @@ class PayPal {
 		if (!empty($result['webhooks'])) {
 			return $result['webhooks'];
 		} else {
-			$this->errors[] = $result;
-			
 			return false;
 		}
 	}
@@ -212,8 +194,6 @@ class PayPal {
 		if (!empty($result['id'])) {
 			return $result;
 		} else {
-			$this->errors[] = $result;
-			
 			return false;
 		}
 	}
@@ -227,8 +207,6 @@ class PayPal {
 		if (!empty($result['events'])) {
 			return $result['events'];
 		} else {
-			$this->errors[] = $result;
-			
 			return false;
 		}
 	}
@@ -244,8 +222,6 @@ class PayPal {
 		if (!empty($result['id'])) {
 			return $result;
 		} else {
-			$this->errors[] = $result;
-			
 			return false;
 		}
 	}
@@ -272,8 +248,6 @@ class PayPal {
 		if (!empty($result['id'])) {
 			return $result;
 		} else {
-			$this->errors[] = $result;
-			
 			return false;
 		}
 	}
@@ -287,8 +261,6 @@ class PayPal {
 		if (!empty($result['id'])) {
 			return $result;
 		} else {
-			$this->errors[] = $result;
-			
 			return false;
 		}
 	}
@@ -302,8 +274,6 @@ class PayPal {
 		if (!empty($result['id'])) {
 			return $result;
 		} else {
-			$this->errors[] = $result;
-			
 			return false;
 		}
 	}
@@ -442,7 +412,11 @@ class PayPal {
 
 			$this->last_response = json_decode($body, true);
 			
-			return $this->last_response;		
+			if (!empty($this->last_response['message'])) {
+				$this->errors[] = (array)$this->last_response;
+			}
+			
+			return (array)$this->last_response;		
 		}
 	}
 	
