@@ -494,6 +494,10 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		
 			$data['order_id'] = '';
 			
+			if (!empty($this->request->post['product'])) {
+				$this->request->post['product'] = $this->unserialize($this->request->post['product']);
+			}
+			
 			if (($page_code == 'product') && (!empty($this->request->post['product']['product_id']))) {
 				$product = $this->request->post['product'];
 				$product_id = (int)$product['product_id'];
@@ -791,9 +795,9 @@ class ControllerExtensionPaymentPayPal extends Controller {
 						$data['paypal_order_id'] = $result['id'];
 					}
 				}
-			}			
-		} else {
-			$this->error['warning'] = implode(' ', $errors);
+			} else {
+				$this->error['warning'] = implode(' ', $errors);
+			}
 		}
 					
 		$data['error'] = $this->error;
@@ -2854,5 +2858,15 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			
 			return false;
 		}
+	}
+	
+	private function unserialize($str) {
+		$data = array();
+				
+		$str = str_replace('&amp;', '&', $str);
+		
+		parse_str($str, $data);
+		
+		return $data;
 	}
 }
