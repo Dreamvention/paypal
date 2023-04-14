@@ -515,6 +515,10 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		
 			$data['order_id'] = '';
 			
+			if (!empty($this->request->post['product'])) {
+				$this->request->post['product'] = $this->unserialize($this->request->post['product']);
+			}
+			
 			if (($page_code == 'product') && (!empty($this->request->post['product']['product_id']))) {
 				$product = $this->request->post['product'];
 				$product_id = (int)$product['product_id'];
@@ -819,9 +823,9 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						$data['paypal_order_id'] = $result['id'];
 					}
 				}
-			}			
-		} else {
-			$this->error['warning'] = implode(' ', $errors);
+			} else {
+				$this->error['warning'] = implode(' ', $errors);
+			}
 		}
 				
 		$data['language'] = $this->config->get('config_language');
@@ -2862,5 +2866,15 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			
 			return false;
 		}
+	}
+	
+	private function unserialize(string $str): array {
+		$data = [];
+				
+		$str = str_replace('&amp;', '&', $str);
+		
+		parse_str($str, $data);
+		
+		return $data;
 	}
 }
