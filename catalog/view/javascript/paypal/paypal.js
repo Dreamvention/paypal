@@ -171,7 +171,7 @@ var PayPalAPI = (function () {
 					createOrder: function(data, actions) {
 						paypal_order_id = false;
 						
-						product_data = $('#product input[type=\'text\'], #product input[type=\'hidden\'], #product input[type=\'radio\']:checked, #product input[type=\'checkbox\']:checked, #product select, #product textarea').serializeArray().reduce(function(a, x) {a[x.name] = x.value; return a;}, {});
+						product_data = $('#product input[type=\'text\'], #product input[type=\'hidden\'], #product input[type=\'radio\']:checked, #product input[type=\'checkbox\']:checked, #product select, #product textarea').serialize();
 				
 						$.ajax({
 							method: 'post',

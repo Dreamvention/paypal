@@ -511,6 +511,10 @@ class ControllerPaymentPayPal extends Controller {
 		
 			$data['order_id'] = '';
 			
+			if (!empty($this->request->post['product'])) {
+				$this->request->post['product'] = $this->unserialize($this->request->post['product']);
+			}
+				
 			if (($page_code == 'product') && (!empty($this->request->post['product']['product_id']))) {
 				$product = $this->request->post['product'];
 				$product_id = (int)$product['product_id'];
@@ -570,7 +574,7 @@ class ControllerPaymentPayPal extends Controller {
 						unset($this->session->data['shipping_methods']);
 						unset($this->session->data['payment_method']);
 						unset($this->session->data['payment_methods']);
-					}					
+					}				
 				}
 			}
 						
@@ -808,13 +812,13 @@ class ControllerPaymentPayPal extends Controller {
 						$data['paypal_order_id'] = $result['id'];
 					}
 				}
-			}			
-		} else {
-			$this->error['warning'] = implode(' ', $errors);
+			} else {
+				$this->error['warning'] = implode(' ', $errors);
+			}
 		}
 					
 		$data['error'] = $this->error;
-				
+						
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($data));
 	}
@@ -2941,5 +2945,15 @@ class ControllerPaymentPayPal extends Controller {
 			
 			return false;
 		}
+	}
+	
+	private function unserialize($str) {
+		$data = array();
+				
+		$str = str_replace('&amp;', '&', $str);
+		
+		parse_str($str, $data);
+		
+		return $data;
 	}
 }
