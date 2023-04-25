@@ -41,10 +41,10 @@ var PayPalAPI = (function () {
 		}
 		
 		paypal_data = params;
-		
+				
 		$.ajax({
 			method: 'post',
-			url: 'index.php?route=extension/paypal/payment/paypal|getData',
+			url: 'index.php?route=extension/paypal/payment/paypal' + paypal_data['separator'] + 'getData',
 			data: paypal_data,
 			dataType: 'json',
 			async: false,
@@ -175,7 +175,7 @@ var PayPalAPI = (function () {
 				
 						$.ajax({
 							method: 'post',
-							url: 'index.php?route=extension/paypal/payment/paypal|createOrder',
+							url: 'index.php?route=extension/paypal/payment/paypal' + paypal_data['separator'] + 'createOrder',
 							data: {'page_code' : paypal_data['page_code'], 'payment_type' : 'button', 'product' : product_data},
 							dataType: 'json',
 							async: false,
@@ -198,7 +198,7 @@ var PayPalAPI = (function () {
 				
 						$.ajax({
 							method: 'post',
-							url: 'index.php?route=extension/paypal/payment/paypal|approveOrder',
+							url: 'index.php?route=extension/paypal/payment/paypal' + paypal_data['separator'] + 'approveOrder',
 							data: {'page_code' : paypal_data['page_code'], 'payment_type' : 'button', 'paypal_order_id': data.orderID},
 							dataType: 'json',
 							async: false,
@@ -293,7 +293,7 @@ var PayPalAPI = (function () {
 					
 							$.ajax({
 								method: 'post',
-								url: 'index.php?route=extension/paypal/payment/paypal|createOrder',
+								url: 'index.php?route=extension/paypal/payment/paypal' + paypal_data['separator'] + 'createOrder',
 								data: {'page_code' : paypal_data['page_code'], 'payment_type' : 'card'},
 								dataType: 'json',
 								async: false,
@@ -395,7 +395,7 @@ var PayPalAPI = (function () {
 							
 									$.ajax({
 										method: 'post',
-										url: 'index.php?route=extension/paypal/payment/paypal|approveOrder',
+										url: 'index.php?route=extension/paypal/payment/paypal' + paypal_data['separator'] + 'approveOrder',
 										data: {'page_code' : paypal_data['page_code'], 'payment_type' : 'card', 'payload': JSON.stringify(payload)},
 										dataType: 'json',
 										async: false,

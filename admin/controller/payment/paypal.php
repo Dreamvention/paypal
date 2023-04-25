@@ -1250,7 +1250,9 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$this->model_setting_event->deleteEventByCode('paypal_extension_get_extensions_by_type');
 		$this->model_setting_event->deleteEventByCode('paypal_extension_get_extension_by_code');
 		
-		if (VERSION >= '4.0.1.0') {
+		if (VERSION >= '4.0.2.0') {
+			$this->model_setting_event->addEvent(['code' => 'paypal_header', 'description' => '', 'trigger' => 'catalog/controller/common/header/before', 'action' => 'extension/paypal/payment/paypal.header_before', 'status' => true, 'sort_order' => 1]);
+		} elseif (VERSION >= '4.0.1.0') {
 			$this->model_setting_event->addEvent(['code' => 'paypal_header', 'description' => '', 'trigger' => 'catalog/controller/common/header/before', 'action' => 'extension/paypal/payment/paypal|header_before', 'status' => true, 'sort_order' => 1]);
 			$this->model_setting_event->addEvent(['code' => 'paypal_extension_get_extensions_by_type', 'description' => '', 'trigger' => 'catalog/model/setting/extension/getExtensionsByType/after', 'action' => 'extension/paypal/payment/paypal|extension_get_extensions_by_type_after', 'status' => true, 'sort_order' => 2]);
 			$this->model_setting_event->addEvent(['code' => 'paypal_extension_get_extension_by_code', 'description' => '', 'trigger' => 'catalog/model/setting/extension/getExtensionByCode/after', 'action' => 'extension/paypal/payment/paypal|extension_get_extension_by_code_after', 'status' => true, 'sort_order' => 3]);
@@ -1265,8 +1267,11 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$this->load->model('setting/event');
 		
 		$this->model_setting_event->deleteEventByCode('paypal_header');
-		$this->model_setting_event->deleteEventByCode('paypal_extension_get_extensions_by_type');
-		$this->model_setting_event->deleteEventByCode('paypal_extension_get_extension_by_code');
+		
+		if (VERSION < '4.0.2.0') {
+			$this->model_setting_event->deleteEventByCode('paypal_extension_get_extensions_by_type');
+			$this->model_setting_event->deleteEventByCode('paypal_extension_get_extension_by_code');
+		}
 	}
 	
 	private function validate(): array|bool {

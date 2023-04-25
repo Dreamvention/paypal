@@ -79,6 +79,12 @@ class PayPalPayLater extends \Opencart\System\Engine\Controller {
 				$this->error['warning'] .= ' ' . sprintf($this->language->get('error_payment'), $this->url->link('information/contact', 'language=' . $this->config->get('config_language')));
 			}
 			
+			if (VERSION >= '4.0.2.0') {
+				$data['separator'] = '.';
+			} else {
+				$data['separator'] = '|';
+			}
+			
 			$data['language'] = $this->config->get('config_language');		
 
 			$data['error'] = $this->error;	

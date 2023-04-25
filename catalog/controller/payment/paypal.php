@@ -96,6 +96,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				$this->error['warning'] .= ' ' . sprintf($this->language->get('error_payment'), $this->url->link('information/contact', 'language=' . $this->config->get('config_language')));
 			}
 			
+			if (VERSION >= '4.0.2.0') {
+				$data['separator'] = '.';
+			} else {
+				$data['separator'] = '|';
+			}
+			
 			$data['language'] = $this->config->get('config_language');		
 
 			$data['error'] = $this->error;	
@@ -404,8 +410,14 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						}
 					}
 									
-					if (isset($this->session->data['payment_method']) && ($this->session->data['payment_method'] == 'paypal_paylater')) {
-						$data['button_funding_source'] = 'paylater';
+					if (VERSION >= '4.0.2.0') {
+						if (isset($this->session->data['payment_method']['code']) && ($this->session->data['payment_method']['code'] == 'paypal_paylater')) {
+							$data['button_funding_source'] = 'paylater';
+						}
+					} else {
+						if (isset($this->session->data['payment_method']) && ($this->session->data['payment_method'] == 'paypal_paylater')) {
+							$data['button_funding_source'] = 'paylater';
+						}
 					}
 				}
 				
@@ -493,6 +505,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			if (!empty($this->error['warning'])) {
 				$this->error['warning'] .= ' ' . sprintf($this->language->get('error_payment'), $this->url->link('information/contact', 'language=' . $this->config->get('config_language')));
 			}
+		}
+		
+		if (VERSION >= '4.0.2.0') {
+			$data['separator'] = '.';
+		} else {
+			$data['separator'] = '|';
 		}
 				
 		$data['error'] = $this->error;
@@ -701,7 +719,11 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					$shipping_total = 0;
 		
 					if (isset($this->session->data['shipping_method'])) {
-						$shipping = explode('.', $this->session->data['shipping_method']);
+						if (VERSION >= '4.0.2.0') {
+							$shipping = explode('.', $this->session->data['shipping_method']['code']);
+						} else {
+							$shipping = explode('.', $this->session->data['shipping_method']);
+						}
 
 						if (isset($shipping[0]) && isset($shipping[1]) && isset($this->session->data['shipping_methods'][$shipping[0]]['quote'][$shipping[1]])) {
 							$shipping_method_info = $this->session->data['shipping_methods'][$shipping[0]]['quote'][$shipping[1]];
@@ -949,7 +971,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					if ($this->customer->isLogged()) {
 						$customer_info = $this->model_account_customer->getCustomer($this->customer->getId());
 
-						$this->session->data['customer']['customer_id'] = $this->customer->getId();
+						$this->session->data['customer']['customer_id'] = $customer_info['customer_id'];
 						$this->session->data['customer']['customer_group_id'] = $customer_info['customer_group_id'];
 						$this->session->data['customer']['firstname'] = $customer_info['firstname'];
 						$this->session->data['customer']['lastname'] = $customer_info['lastname'];
@@ -967,8 +989,13 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					}
 								
 					if ($this->customer->isLogged() && $this->customer->getAddressId()) {
-						$this->session->data['payment_address'] = $this->model_account_address->getAddress($this->customer->getAddressId());
+						if (VERSION >= '4.0.2.0') {
+							$this->session->data['payment_address'] = $this->model_account_address->getAddress($this->session->data['customer']['customer_id'], $this->customer->getAddressId());
+						} else {
+							$this->session->data['payment_address'] = $this->model_account_address->getAddress($this->customer->getAddressId());
+						}
 					} else {
+						$this->session->data['payment_address']['address_id'] = 0;
 						$this->session->data['payment_address']['firstname'] = (isset($paypal_order_info['payer']['name']['given_name']) ? $paypal_order_info['payer']['name']['given_name'] : '');
 						$this->session->data['payment_address']['lastname'] = (isset($paypal_order_info['payer']['name']['surname']) ? $paypal_order_info['payer']['name']['surname'] : '');
 						$this->session->data['payment_address']['company'] = '';
@@ -995,8 +1022,14 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				
 					if ($this->cart->hasShipping()) {
 						if ($this->customer->isLogged() && $this->customer->getAddressId()) {
-							$this->session->data['shipping_address'] = $this->model_account_address->getAddress($this->customer->getAddressId());
+							if (VERSION >= '4.0.2.0') {
+								$this->session->data['shipping_address'] = $this->model_account_address->getAddress($this->session->data['customer']['customer_id'], $this->customer->getAddressId());
+							} else {
+								$this->session->data['shipping_address'] = $this->model_account_address->getAddress($this->customer->getAddressId());
+							}
 						} else {
+							$this->session->data['shipping_address']['address_id'] = 0;
+							
 							if (isset($paypal_order_info['purchase_units'][0]['shipping']['name']['full_name'])) {
 								$shipping_name = explode(' ', $paypal_order_info['purchase_units'][0]['shipping']['name']['full_name']);
 								$shipping_firstname = $shipping_name[0];
@@ -1039,7 +1072,11 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						}
 					}
 
-					$data['url'] = $this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language'));			
+					if (VERSION >= '4.0.2.0') {
+						$data['url'] = $this->url->link('extension/paypal/payment/paypal.confirmOrder', 'language=' . $this->config->get('config_language'));
+					} else {
+						$data['url'] = $this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language'));
+					}
 				}
 			} else {
 				if (($payment_type == 'button') && !empty($this->request->post['paypal_order_id'])) {
@@ -1282,7 +1319,11 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 			$this->session->data['success'] = $this->language->get('text_coupon');
 
-			$this->response->redirect($this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language')));
+			if (VERSION >= '4.0.2.0') {
+				$this->response->redirect($this->url->link('extension/paypal/payment/paypal.confirmOrder', 'language=' . $this->config->get('config_language')));
+			} else {
+				$this->response->redirect($this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language')));
+			}
 		}
 
 		// Voucher
@@ -1291,7 +1332,11 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 			$this->session->data['success'] = $this->language->get('text_voucher');
 
-			$this->response->redirect($this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language')));
+			if (VERSION >= '4.0.2.0') {
+				$this->response->redirect($this->url->link('extension/paypal/payment/paypal.confirmOrder', 'language=' . $this->config->get('config_language')));
+			} else {
+				$this->response->redirect($this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language')));
+			}
 		}
 
 		// Reward
@@ -1300,7 +1345,11 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 			$this->session->data['success'] = $this->language->get('text_reward');
 
-			$this->response->redirect($this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language')));
+			if (VERSION >= '4.0.2.0') {
+				$this->response->redirect($this->url->link('extension/paypal/payment/paypal.confirmOrder', 'language=' . $this->config->get('config_language')));
+			} else {
+				$this->response->redirect($this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language')));
+			}
 		}
 		
 		$this->document->setTitle($this->language->get('text_paypal'));
@@ -1323,11 +1372,18 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			'text' => $this->language->get('text_cart'),
 			'href' => $this->url->link('checkout/cart', 'language=' . $this->config->get('config_language'))
 		];
-
-		$data['breadcrumbs'][] = [
-			'text' => $this->language->get('text_paypal'),
-			'href' => $this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language'))
-		];
+		
+		if (VERSION >= '4.0.2.0') {
+			$data['breadcrumbs'][] = [
+				'text' => $this->language->get('text_paypal'),
+				'href' => $this->url->link('extension/paypal/payment/paypal.confirmOrder', 'language=' . $this->config->get('config_language'))
+			];
+		} else {
+			$data['breadcrumbs'][] = [
+				'text' => $this->language->get('text_paypal'),
+				'href' => $this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language'))
+			];
+		}
 		
 		$points_total = 0;
 
@@ -1387,7 +1443,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 				$option_data[] = [
 					'name'  => $option['name'],
-					'value' => (utf8_strlen($value) > 20 ? utf8_substr($value, 0, 20) . '..' : $value)
+					'value' => ($this->strlen($value) > 20 ? utf8_substr($value, 0, 20) . '..' : $value)
 				];
 			}
 
@@ -1482,12 +1538,16 @@ class PayPal extends \Opencart\System\Engine\Controller {
 							$quote = $this->{'model_extension_' . $result['extension'] . '_shipping_' . $result['code']}->getQuote($data['shipping_address']);
 
 							if ($quote) {
-								$method_data[$result['code']] = [
-									'title'      => $quote['title'],
-									'quote'      => $quote['quote'],
-									'sort_order' => $quote['sort_order'],
-									'error'      => $quote['error']
-								];
+								if (VERSION >= '4.0.2.0') {
+									$method_data[$result['code']] = $quote;
+								} else {
+									$method_data[$result['code']] = [
+										'title'      => $quote['title'],
+										'quote'      => $quote['quote'],
+										'sort_order' => $quote['sort_order'],
+										'error'      => $quote['error']
+									];
+								}
 							}
 						}
 					}
@@ -1508,11 +1568,25 @@ class PayPal extends \Opencart\System\Engine\Controller {
 							//default the shipping to the very first option.
 							$key1 = key($method_data);
 							$key2 = key($method_data[$key1]['quote']);
-							$this->session->data['shipping_method'] = $method_data[$key1]['quote'][$key2]['code'];
+							
+							if (VERSION >= '4.0.2.0') {
+								$this->session->data['shipping_method'] = $method_data[$key1]['quote'][$key2];
+							} else {
+								$this->session->data['shipping_method'] = $method_data[$key1]['quote'][$key2]['code'];
+							}
 						}
-
-						$data['code'] = $this->session->data['shipping_method'];
-						$data['action_shipping'] = $this->url->link('extension/paypal/payment/paypal|confirmShipping', 'language=' . $this->config->get('config_language'));
+						
+						if (VERSION >= '4.0.2.0') {
+							$data['code'] = $this->session->data['shipping_method']['code'];
+						} else {
+							$data['code'] = $this->session->data['shipping_method'];
+						}
+						
+						if (VERSION >= '4.0.2.0') {
+							$data['action_shipping'] = $this->url->link('extension/paypal/payment/paypal.confirmShipping', 'language=' . $this->config->get('config_language'));
+						} else {
+							$data['action_shipping'] = $this->url->link('extension/paypal/payment/paypal|confirmShipping', 'language=' . $this->config->get('config_language'));
+						}
 					}
 				} else {
 					unset($this->session->data['shipping_methods']);
@@ -1538,11 +1612,19 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		foreach ($results as $result) {
 			if ($this->config->get('payment_' . $result['code'] . '_status')) {
 				$this->load->model('extension/' . $result['extension'] . '/payment/' . $result['code']);
+				
+				if (VERSION >= '4.0.2.0') {
+					$payment_methods = $this->{'model_extension_' . $result['extension'] . '_payment_' . $result['code']}->getMethods($data['payment_address']);
 
-				$payment_method = $this->{'model_extension_' . $result['extension'] . '_payment_' . $result['code']}->getMethod($data['payment_address']);
+					if ($payment_methods) {
+						$method_data[$result['code']] = $payment_methods;
+					}
+				} else {
+					$payment_method = $this->{'model_extension_' . $result['extension'] . '_payment_' . $result['code']}->getMethod($data['payment_address']);
 
-				if ($payment_method) {
-					$method_data[$result['code']] = $payment_method;
+					if ($payment_method) {
+						$method_data[$result['code']] = $payment_method;
+					}
 				}
 			}
 		}
@@ -1557,15 +1639,18 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		
 		$this->session->data['payment_methods'] = $method_data;
 		$data['payment_methods'] = $method_data;
-
+		
 		if (!isset($method_data['paypal'])) {
 			$this->session->data['error_warning'] = $this->language->get('error_unavailable');
 			
 			$this->response->redirect($this->url->link('checkout/checkout', 'language=' . $this->config->get('config_language')));
 		}
 
-		$this->session->data['payment_methods'] = $method_data;
-		$this->session->data['payment_method'] = $method_data['paypal']['code'];
+		if (VERSION >= '4.0.2.0') {
+			$this->session->data['payment_method'] = $method_data['paypal']['option']['paypal'];
+		} else {
+			$this->session->data['payment_method'] = $method_data['paypal']['code'];
+		}
 		
 		// Custom Fields
 		$this->load->model('account/custom_field');
@@ -1616,7 +1701,11 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			];
 		}
 		
-		$data['action_confirm'] = $this->url->link('extension/paypal/payment/paypal|completeOrder', 'language=' . $this->config->get('config_language'));
+		if (VERSION >= '4.0.2.0') {
+			$data['action_confirm'] = $this->url->link('extension/paypal/payment/paypal.completeOrder', 'language=' . $this->config->get('config_language'));
+		} else {
+			$data['action_confirm'] = $this->url->link('extension/paypal/payment/paypal|completeOrder', 'language=' . $this->config->get('config_language'));
+		}
 		
 		if (isset($this->session->data['error_warning'])) {
 			$data['error_warning'] = $this->session->data['error_warning'];
@@ -1649,6 +1738,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			if (!$result instanceof \Exception) {
 				$data['modules'][] = $result;
 			}
+		}
+		
+		if (VERSION >= '4.0.2.0') {
+			$data['separator'] = '.';
+		} else {
+			$data['separator'] = '|';
 		}
 		
 		$data['language'] = $this->config->get('config_language');
@@ -1749,6 +1844,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$order_data['telephone'] = $this->session->data['customer']['telephone'];
 			$order_data['custom_field'] = $this->session->data['customer']['custom_field'];
 						
+			$order_data['payment_address_id'] = $this->session->data['payment_address']['address_id'];
 			$order_data['payment_firstname'] = $this->session->data['payment_address']['firstname'];
 			$order_data['payment_lastname'] = $this->session->data['payment_address']['lastname'];
 			$order_data['payment_company'] = $this->session->data['payment_address']['company'];
@@ -1763,23 +1859,38 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$order_data['payment_address_format'] = $this->session->data['payment_address']['address_format'];
 			$order_data['payment_custom_field'] = (isset($this->session->data['payment_address']['custom_field']) ? $this->session->data['payment_address']['custom_field'] : []);
 
-			if (isset($this->session->data['payment_methods'][$this->session->data['payment_method']])) {
-				$payment_method_info = $this->session->data['payment_methods'][$this->session->data['payment_method']];
+			if (isset($this->session->data['payment_method'])) {
+				if (VERSION >= '4.0.2.0') {
+					$payment = explode('.', $this->session->data['payment_method']['code']);
+					
+					if (isset($payment[0]) && isset($payment[1]) && isset($this->session->data['payment_methods'][$payment[0]]['option'][$payment[1]])) {
+						$payment_method_info = $this->session->data['payment_methods'][$payment[0]]['option'][$payment[1]];
+					}
+				} else {
+					if (isset($this->session->data['payment_methods'][$this->session->data['payment_method']])) {
+						$payment_method_info = $this->session->data['payment_methods'][$this->session->data['payment_method']];
+					}
+				}
 			}
-							
-			if (isset($payment_method_info['title'])) {
-				$order_data['payment_method'] = $payment_method_info['title'];
-			} else {
-				$order_data['payment_method'] = '';
-			}
+			
+			if (VERSION >= '4.0.2.0') {
+				$order_data['payment_method'] = $payment_method_info;
+			} else {				
+				if (isset($payment_method_info['title'])) {
+					$order_data['payment_method'] = $payment_method_info['title'];
+				} else {
+					$order_data['payment_method'] = '';
+				}
 
-			if (isset($payment_method_info['code'])) {
-				$order_data['payment_code'] = $payment_method_info['code'];
-			} else {
-				$order_data['payment_code'] = '';
-			}			
+				if (isset($payment_method_info['code'])) {
+					$order_data['payment_code'] = $payment_method_info['code'];
+				} else {
+					$order_data['payment_code'] = '';
+				}
+			}				
 
 			if ($this->cart->hasShipping()) {
+				$order_data['shipping_address_id'] = $this->session->data['shipping_address']['address_id'];
 				$order_data['shipping_firstname'] = $this->session->data['shipping_address']['firstname'];
 				$order_data['shipping_lastname'] = $this->session->data['shipping_address']['lastname'];
 				$order_data['shipping_company'] = $this->session->data['shipping_address']['company'];
@@ -1795,25 +1906,34 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				$order_data['shipping_custom_field'] = (isset($this->session->data['shipping_address']['custom_field']) ? $this->session->data['shipping_address']['custom_field'] : []);
 
 				if (isset($this->session->data['shipping_method'])) {
-					$shipping = explode('.', $this->session->data['shipping_method']);
+					if (VERSION >= '4.0.2.0') {
+						$shipping = explode('.', $this->session->data['shipping_method']['code']);
+					} else {
+						$shipping = explode('.', $this->session->data['shipping_method']);
+					}
 
 					if (isset($shipping[0]) && isset($shipping[1]) && isset($this->session->data['shipping_methods'][$shipping[0]]['quote'][$shipping[1]])) {
 						$shipping_method_info = $this->session->data['shipping_methods'][$shipping[0]]['quote'][$shipping[1]];
 					}
 				}
-
-				if (isset($shipping_method_info['title'])) {
-					$order_data['shipping_method'] = $shipping_method_info['title'];
+				
+				if (VERSION >= '4.0.2.0') {
+					$order_data['shipping_method'] = $shipping_method_info;
 				} else {
-					$order_data['shipping_method'] = '';
-				}
+					if (isset($shipping_method_info['title'])) {
+						$order_data['shipping_method'] = $shipping_method_info['title'];
+					} else {
+						$order_data['shipping_method'] = '';
+					}
 
-				if (isset($shipping_method_info['code'])) {
-					$order_data['shipping_code'] = $shipping_method_info['code'];
-				} else {
-					$order_data['shipping_code'] = '';
+					if (isset($shipping_method_info['code'])) {
+						$order_data['shipping_code'] = $shipping_method_info['code'];
+					} else {
+						$order_data['shipping_code'] = '';
+					}
 				}
 			} else {
+				$order_data['shipping_address_id'] = 0;
 				$order_data['shipping_firstname'] = '';
 				$order_data['shipping_lastname'] = '';
 				$order_data['shipping_company'] = '';
@@ -1827,8 +1947,13 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				$order_data['shipping_country_id'] = 0;
 				$order_data['shipping_address_format'] = '';
 				$order_data['shipping_custom_field'] = [];
-				$order_data['shipping_method'] = '';
-				$order_data['shipping_code'] = '';
+				
+				if (VERSION >= '4.0.2.0') {
+					$order_data['shipping_method'] = [];
+				} else {
+					$order_data['shipping_method'] = '';
+					$order_data['shipping_code'] = '';
+				}
 			}
 
 			$order_data['products'] = [];
@@ -2059,7 +2184,11 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$shipping_total = 0;
 		
 			if (isset($this->session->data['shipping_method'])) {
-				$shipping = explode('.', $this->session->data['shipping_method']);
+				if (VERSION >= '4.0.2.0') {
+					$shipping = explode('.', $this->session->data['shipping_method']['code']);
+				} else {
+					$shipping = explode('.', $this->session->data['shipping_method']);
+				}
 
 				if (isset($shipping[0]) && isset($shipping[1]) && isset($this->session->data['shipping_methods'][$shipping[0]]['quote'][$shipping[1]])) {
 					$shipping_method_info = $this->session->data['shipping_methods'][$shipping[0]]['quote'][$shipping[1]];
@@ -2321,7 +2450,11 @@ class PayPal extends \Opencart\System\Engine\Controller {
 	public function confirmShipping(): void {
 		$this->validateShipping($this->request->post['shipping_method']);
 
-		$this->response->redirect($this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language')));
+		if (VERSION >= '4.0.2.0') {
+			$this->response->redirect($this->url->link('extension/paypal/payment/paypal.confirmOrder', 'language=' . $this->config->get('config_language')));
+		} else {
+			$this->response->redirect($this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language')));
+		}
 	}
 	
 	public function confirmPaymentAddress(): void {
@@ -2385,7 +2518,11 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				$this->session->data['payment_address']['zone_code'] = '';
 			}
 			
-			$data['url'] = $this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language'));
+			if (VERSION >= '4.0.2.0') {
+				$data['url'] = $this->url->link('extension/paypal/payment/paypal.confirmOrder', 'language=' . $this->config->get('config_language'));
+			} else {
+				$data['url'] = $this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language'));
+			}
 		}
 
 		$data['error'] = $this->error;
@@ -2442,7 +2579,11 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				$this->session->data['shipping_address']['custom_field'] = [];
 			}
 			
-			$data['url'] = $this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language'));
+			if (VERSION >= '4.0.2.0') {
+				$data['url'] = $this->url->link('extension/paypal/payment/paypal.confirmOrder', 'language=' . $this->config->get('config_language'));
+			} else {
+				$data['url'] = $this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language'));
+			}
 		}
 		
 		$data['error'] = $this->error;
@@ -2605,7 +2746,13 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				if ($params['page_code'] == 'checkout') {			
 					$this->document->addStyle('extension/paypal/catalog/view/stylesheet/card.css');
 				}
-			
+				
+				if (VERSION >= '4.0.2.0') {
+					$params['separator'] = '.';
+				} else {
+					$params['separator'] = '|';
+				}
+		
 				$this->document->addScript('extension/paypal/catalog/view/javascript/paypal.js?' . http_build_query($params));
 			}
 		}			
@@ -2686,7 +2833,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				
 				return false;
 			} else {
-				$this->session->data['shipping_method'] = $this->session->data['shipping_methods'][$shipping[0]]['quote'][$shipping[1]]['code'];
+				if (VERSION >= '4.0.2.0') {
+					$this->session->data['shipping_method'] = $this->session->data['shipping_methods'][$shipping[0]]['quote'][$shipping[1]];
+				} else {
+					$this->session->data['shipping_method'] = $this->session->data['shipping_methods'][$shipping[0]]['quote'][$shipping[1]]['code'];
+				}
+				
 				$this->session->data['success'] = $this->language->get('text_shipping_updated');
 				
 				return true;
@@ -2695,27 +2847,27 @@ class PayPal extends \Opencart\System\Engine\Controller {
 	}
 	
 	private function validatePaymentAddress(): bool {
-		if ((utf8_strlen(trim($this->request->post['firstname'])) < 1) || (utf8_strlen(trim($this->request->post['firstname'])) > 32)) {
+		if (($this->strlen(trim($this->request->post['firstname'])) < 1) || ($this->strlen(trim($this->request->post['firstname'])) > 32)) {
 			$this->error['firstname'] = $this->language->get('error_firstname');
 		}
 
-		if ((utf8_strlen(trim($this->request->post['lastname'])) < 1) || (utf8_strlen(trim($this->request->post['lastname'])) > 32)) {
+		if (($this->strlen(trim($this->request->post['lastname'])) < 1) || ($this->strlen(trim($this->request->post['lastname'])) > 32)) {
 			$this->error['lastname'] = $this->language->get('error_lastname');
 		}
 
-		if ((utf8_strlen($this->request->post['email']) > 96) || !filter_var($this->request->post['email'], FILTER_VALIDATE_EMAIL)) {
+		if (($this->strlen($this->request->post['email']) > 96) || !filter_var($this->request->post['email'], FILTER_VALIDATE_EMAIL)) {
 			$this->error['email'] = $this->language->get('error_email');
 		}
 
-		if ($this->config->get('config_telephone_required') && ((utf8_strlen($this->request->post['telephone']) < 3) || (utf8_strlen($this->request->post['telephone']) > 32))) {
+		if ($this->config->get('config_telephone_required') && (($this->strlen($this->request->post['telephone']) < 3) || ($this->strlen($this->request->post['telephone']) > 32))) {
 			$this->error['telephone'] = $this->language->get('error_telephone');
 		}
 
-		if ((utf8_strlen(trim($this->request->post['address_1'])) < 3) || (utf8_strlen(trim($this->request->post['address_1'])) > 128)) {
+		if (($this->strlen(trim($this->request->post['address_1'])) < 3) || ($this->strlen(trim($this->request->post['address_1'])) > 128)) {
 			$this->error['address_1'] = $this->language->get('error_address_1');
 		}
 
-		if ((utf8_strlen(trim($this->request->post['city'])) < 2) || (utf8_strlen(trim($this->request->post['city'])) > 128)) {
+		if (($this->strlen(trim($this->request->post['city'])) < 2) || ($this->strlen(trim($this->request->post['city'])) > 128)) {
 			$this->error['city'] = $this->language->get('error_city');
 		}
 
@@ -2723,7 +2875,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 		$country_info = $this->model_localisation_country->getCountry($this->request->post['country_id']);
 
-		if ($country_info && $country_info['postcode_required'] && (utf8_strlen(trim($this->request->post['postcode'])) < 2 || utf8_strlen(trim($this->request->post['postcode'])) > 10)) {
+		if ($country_info && $country_info['postcode_required'] && ($this->strlen(trim($this->request->post['postcode'])) < 2 || $this->strlen(trim($this->request->post['postcode'])) > 10)) {
 			$this->error['postcode'] = $this->language->get('error_postcode');
 		}
 
@@ -2754,19 +2906,19 @@ class PayPal extends \Opencart\System\Engine\Controller {
 	}
 	
 	private function validateShippingAddress(): bool {
-		if ((utf8_strlen(trim($this->request->post['firstname'])) < 1) || (utf8_strlen(trim($this->request->post['firstname'])) > 32)) {
+		if (($this->strlen(trim($this->request->post['firstname'])) < 1) || ($this->strlen(trim($this->request->post['firstname'])) > 32)) {
 			$this->error['firstname'] = $this->language->get('error_firstname');
 		}
 
-		if ((utf8_strlen(trim($this->request->post['lastname'])) < 1) || (utf8_strlen(trim($this->request->post['lastname'])) > 32)) {
+		if (($this->strlen(trim($this->request->post['lastname'])) < 1) || ($this->strlen(trim($this->request->post['lastname'])) > 32)) {
 			$this->error['lastname'] = $this->language->get('error_lastname');
 		}
 
-		if ((utf8_strlen(trim($this->request->post['address_1'])) < 3) || (utf8_strlen(trim($this->request->post['address_1'])) > 128)) {
+		if (($this->strlen(trim($this->request->post['address_1'])) < 3) || ($this->strlen(trim($this->request->post['address_1'])) > 128)) {
 			$this->error['address_1'] = $this->language->get('error_address_1');
 		}
 
-		if ((utf8_strlen(trim($this->request->post['city'])) < 2) || (utf8_strlen(trim($this->request->post['city'])) > 128)) {
+		if (($this->strlen(trim($this->request->post['city'])) < 2) || ($this->strlen(trim($this->request->post['city'])) > 128)) {
 			$this->error['city'] = $this->language->get('error_city');
 		}
 
@@ -2774,7 +2926,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 		$country_info = $this->model_localisation_country->getCountry($this->request->post['country_id']);
 
-		if ($country_info && $country_info['postcode_required'] && (utf8_strlen(trim($this->request->post['postcode'])) < 2 || utf8_strlen(trim($this->request->post['postcode'])) > 10)) {
+		if ($country_info && $country_info['postcode_required'] && ($this->strlen(trim($this->request->post['postcode'])) < 2 || Helper\Utf8\strlen(trim($this->request->post['postcode'])) > 10)) {
 			$this->error['postcode'] = $this->language->get('error_postcode');
 		}
 
@@ -2876,5 +3028,15 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		parse_str($str, $data);
 		
 		return $data;
+	}
+	
+	private function strlen(string $str): int {
+		if (VERSION >= '4.0.2.0') {
+			return (int)oc_strlen($str);
+		} elseif (VERSION >= '4.0.1.0') {
+			return (int)Helper\Utf8\strlen($str);
+		} else {
+			return (int)utf8_strlen($str);
+		}
 	}
 }

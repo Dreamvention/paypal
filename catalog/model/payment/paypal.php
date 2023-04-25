@@ -33,6 +33,53 @@ class PayPal extends \Opencart\System\Engine\Model {
 		return $method_data;
 	}
 	
+	public function getMethods(array $address = []): array {
+		$method_data = [];
+
+		$agree_status = $this->getAgreeStatus();
+		
+		if ($this->config->get('payment_paypal_status') && $this->config->get('payment_paypal_client_id') && $this->config->get('payment_paypal_secret') && $agree_status) {
+			$this->load->language('extension/paypal/payment/paypal');
+			
+			if ($this->cart->hasSubscription()) {
+				$status = false;
+			} elseif (!$this->config->get('config_checkout_payment_address')) {
+				$status = true;
+			} elseif (!$this->config->get('payment_cod_geo_zone_id')) {
+				$status = true;
+			} else {
+				$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "zone_to_geo_zone` WHERE `geo_zone_id` = '" . (int)$this->config->get('payment_paypal_geo_zone_id') . "' AND `country_id` = '" . (int)$address['country_id'] . "' AND (`zone_id` = '" . (int)$address['zone_id'] . "' OR `zone_id` = '0')");
+
+				if ($query->num_rows) {
+					$status = true;
+				} else {
+					$status = false;
+				}
+			}
+
+			if ($status) {
+				$option_data['paypal'] = [
+					'code' => 'paypal.paypal',
+					'name' => $this->language->get('text_paypal_title')
+				];
+				
+				$option_data['paylater'] = [
+					'code' => 'paypal.paylater',
+					'name' => $this->language->get('text_paypal_paylater_title')
+				];
+
+				$method_data = [
+					'code'       => 'paypal',
+					'name'       => $this->language->get('text_paypal'),
+					'option'     => $option_data,
+					'sort_order' => $this->config->get('payment_paypal_sort_orderr')
+				];
+			}
+		}
+
+		return $method_data;
+	}
+	
 	public function hasProductInCart(int $product_id, array $option = [], int $subscription_plan_id = 0): int {
 		$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "cart WHERE api_id = '" . (isset($this->session->data['api_id']) ? (int)$this->session->data['api_id'] : 0) . "' AND customer_id = '" . (int)$this->customer->getId() . "' AND session_id = '" . $this->db->escape($this->session->getId()) . "' AND product_id = '" . (int)$product_id . "' AND subscription_plan_id = '" . (int)$subscription_plan_id . "' AND `option` = '" . $this->db->escape(json_encode($option)) . "'");
 		

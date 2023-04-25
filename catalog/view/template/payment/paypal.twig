@@ -52,7 +52,7 @@ $(document).on('click', '.paypal-button-confirm', function(event) {
 	
 	$('body').append('<div id="paypal_modal" class="modal fade"></div>');
 	
-	$('#paypal_modal').load('index.php?route=extension/paypal/payment/paypal|modal&language={{ language }} #paypal_modal >', function() {		
+	$('#paypal_modal').load('index.php?route=extension/paypal/payment/paypal{{ separator }}modal&language={{ language }} #paypal_modal >', function() {		
 		$('.paypal-button-confirm').prop('disabled', false).removeClass('loading');
 		 
 		$('#paypal_modal').modal('show');

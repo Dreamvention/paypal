@@ -91,49 +91,65 @@
 			</div>
 			{% endif %}
 			{% if has_shipping %}
+			{% if not shipping_methods %}
+			<div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> {{ error_no_shipping }}</div>
+			{% else %}
 			<form action="{{ action_shipping }}" method="post" id="shipping_form">
 				<div class="card mb-3">
 					<div class="card-header"><h4 class="mb-0">{{ text_checkout_shipping_method }}</h4></div>
 					<div class="card-body"> 
-						<div class="input-group">
-							<select name="shipping_method" class="form-select" {% if not shipping_methods %}disabled{% endif %}>
-								<option value="">{{ text_select }}</option>
-								{% for shipping_method in shipping_methods %}
-								<optgroup label="{{ shipping_method['title'] }}">
-									{% if not shipping_method['error'] %}
-									{% for quote in shipping_method['quote'] %}
-									<option value="{{ quote['code'] }}" {% if quote['code'] == code %}selected{% endif %}>{{ quote['title'] }}{% if quote['cost'] %} - {{ quote['text'] }}{% endif %}</option>
-									{% endfor %}
-									{% else %}
-									<option value="" class="text-danger" disabled>{{ shipping_method['error'] }}</option>
-									{% endif %}
-								</optgroup>
-								{% endfor %}
-							</select>
-						</div>
+						{% for shipping_method in shipping_methods %}
+						<p><strong>{% if shipping_method['name'] %}{{ shipping_method['name'] }}{% else %}{{ shipping_method['title'] }}{% endif %}</strong></p>
+						{% if not shipping_method['error'] %}
+						{% for quote in shipping_method['quote'] %}
+						<div class="form-check">
+							{% if quote['code'] == code or not code %}
+							{% set code = quote['code'] %}
+							<input type="radio" name="shipping_method" value="{{ quote['code'] }}" id="input_shipping_method_{{ quote['code'] }}" checked="checked" />
+							{% else %}
+							<input type="radio" name="shipping_method" value="{{ quote['code'] }}" id="input_shipping_method_{{ quote['code'] }}" />
+							{% endif %}
+                            <label for="input_shipping_method_{{ quote['code'] }}">{% if quote['name'] %}{{ quote['name'] }}{% else %}{{ quote['title'] }}{% endif %} - {{ quote['text'] }}</label>
+                        </div>
+                        {% endfor %}
+						{% else %}
+						<div class="alert alert-danger">{{ shipping_method['error'] }}</div>
+						{% endif %}
+						{% endfor %}
 					</div>
 				</div>
 			</form>
 			{% endif %}
+			{% endif %}
 			<div class="card mb-3">
 				<div class="card-header"><h4 class="mb-0">{{ text_checkout_payment_method }}</h4></div>
 				<div class="card-body"> 	
-					<div class="input-group">
-						<select name="payment_method" class="form-select" {% if not payment_methods %}disabled{% endif %}>
-							{% for payment_method in payment_methods %}
-							{% if payment_method['code'] == 'paypal' %}
-							<option value="{{ payment_method['code'] }}" {% if payment_method['code'] == code %}selected{% endif %}>{{ payment_method['title'] }}</option>
-							{% endif %}
-							{% endfor %}
-							<optgroup label="{{ text_stored }}">
-								{% for store in stores %}
-								<option value="{{ store['code'] }}" {% if store['code'] == code %}selected{% endif %}>{{ store['name'] }}</option>
-								{% endfor %}
-							</optgroup>
-						</select>
+					{% for payment_method in payment_methods %}
+					{% if payment_method['code'] == 'paypal' %}
+					<p><strong>{% if payment_method['name'] %}{{ payment_method['name'] }}{% else %}{{ payment_method['title'] }}{% endif %}</strong></p>
+					{% if not payment_method['error'] %}
+					{% if payment_method['option'] %}
+					{% for option in payment_method['option'] %}
+					<div class="form-check">
+						{% if option['code'] == 'paypal.paypal' %}
+						<input type="radio" name="payment_method" value="{{ option['code'] }}" id="input-payment-method-{{ option['code'] }}" checked="checked" />
+						<label for="input_payment_method_{{ option['code'] }}">{{ option['name'] }}</label>
+						{% endif %}
 					</div>
+					{% endfor %}
+					{% else %}
+					<div class="form-check">
+						<input type="radio" name="payment_method" value="{{ payment_method['code'] }}" id="input-payment-method-{{ payment_method['code'] }}" checked="checked" />
+						<label for="input_payment_method_{{ payment_method['code'] }}">{% if payment_method['name'] %}{{ payment_method['name'] }}{% else %}{{ payment_method['title'] }}{% endif %}</label>
+					</div>
+					{% endif %}
+					{% else %}
+					<div class="alert alert-danger">{{ payment_method['error'] }}</div>
+					{% endif %}
+                    {% endif %}
+					{% endfor %}
 				</div>
-			</div>
+			</div>			
 			<div class="table-responsive mb-3">
 				<table class="table table-bordered">
 					<thead>
@@ -223,13 +239,13 @@ $('input[name=\'shipping_method\']').change(function() {
 $(document).on('click', '.button-payment-address', function(event) {
 	$('#payment_address').remove();
 	$('body').append('<div id="payment_address" class="modal fade"></div>');
-	$('#payment_address').load('index.php?route=extension/paypal/payment/paypal|paymentAddress&language={{ language }} #payment_address >', onLoadPaymentAddress);
+	$('#payment_address').load('index.php?route=extension/paypal/payment/paypal{{ separator }}paymentAddress&language={{ language }} #payment_address >', onLoadPaymentAddress);
 });
 
 $(document).on('click', '.button-shipping-address', function(event) {
 	$('#shipping_address').remove();
 	$('body').append('<div id="shipping_address" class="modal fade"></div>');
-	$('#shipping_address').load('index.php?route=extension/paypal/payment/paypal|shippingAddress&language={{ language }} #shipping_address >', onLoadShippingAddress);
+	$('#shipping_address').load('index.php?route=extension/paypal/payment/paypal{{ separator }}shippingAddress&language={{ language }} #shipping_address >', onLoadShippingAddress);
 });
 
 $('#paypal_confirm').bind('click', function() {
@@ -351,7 +367,7 @@ function onLoadPaymentAddress() {
 	$('#payment_address .button-confirm').on('click', function(event) {
 		$.ajax({
 			type: 'post',
-			url: 'index.php?route=extension/paypal/payment/paypal|confirmPaymentAddress&language={{ language }}',
+			url: 'index.php?route=extension/paypal/payment/paypal{{ separator }}confirmPaymentAddress&language={{ language }}',
 			data: $('#payment_address [name]'),
 			dataType: 'json',
 			beforeSend: function() {
@@ -481,7 +497,7 @@ function onLoadShippingAddress() {
 	$('#shipping_address .button-confirm').on('click', function(event) {
 		$.ajax({
 			type: 'post',
-			url: 'index.php?route=extension/paypal/payment/paypal|confirmShippingAddress&language={{ language }}',
+			url: 'index.php?route=extension/paypal/payment/paypal{{ separator }}confirmShippingAddress&language={{ language }}',
 			data: $('#shipping_address [name]'),
 			dataType: 'json',
 			success: function(json) {
