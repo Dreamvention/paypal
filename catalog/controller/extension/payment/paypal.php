@@ -1571,7 +1571,6 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$this->response->redirect($this->url->link('checkout/checkout', '', true));
 		}
 
-		$this->session->data['payment_methods'] = $method_data;
 		$this->session->data['payment_method'] = $method_data['paypal'];
 		
 		// Custom Fields
