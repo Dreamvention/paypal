@@ -18,6 +18,14 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$agree_status = $this->model_extension_paypal_payment_paypal->getAgreeStatus();
 		
 		if ($this->config->get('payment_paypal_status') && $this->config->get('payment_paypal_client_id') && $this->config->get('payment_paypal_secret') && !$this->webhook() && $agree_status) {
+			if (VERSION >= '4.0.2.0') {
+				if (!empty($this->session->data['payment_method']['code'])) {
+					if ($this->session->data['payment_method']['code'] == 'paypal.paylater') {
+						return $this->load->controller('extension/paypal/payment/paypal_paylater');
+					}
+				}
+			}
+		
 			$this->load->language('extension/paypal/payment/paypal');
 			
 			// Setting
@@ -2708,7 +2716,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		
 		return false;
 	}
-	
+		
 	public function header_before(string $route, array &$data): void {
 		$this->load->model('extension/paypal/payment/paypal');
 		
