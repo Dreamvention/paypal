@@ -20,6 +20,11 @@ var PayPalAPI = (function () {
 			$('#paypal_button_' + paypal_data['page_code'] + '_container').addClass('paypal-spinner');
 		}
 		
+		if (paypal_data['components'].includes('applepay')) {
+			$('#applepay_button_container').html('');
+			$('#applepay_button_container').addClass('paypal-spinner');
+		}
+		
 		if (paypal_data['components'].includes('hosted-fields')) {
 			$('#paypal_card_container').find('iframe').remove();
 			$('#paypal_card_container').addClass('paypal-spinner');
@@ -117,6 +122,51 @@ var PayPalAPI = (function () {
 			}
 			
 			$('#paypal_button_' + paypal_data['page_code'] + '_container').removeClass('paypal-spinner');
+		}
+		
+		if (paypal_data['components'].includes('applepay') && $('#applepay_button').length && !$('#applepay_button_container').html()) {
+			$('#applepay_button').css('text-align', paypal_data['applepay_button_align']);
+			
+			var applepay_button_style = [];
+			
+			if (paypal_data['applepay_button_width']) {
+				$('#applepay_button_container').css('display', 'inline-block');
+				$('#applepay_button_container').css('width', paypal_data['applepay_button_width']);
+			} else {
+				$('#applepay_button_container').css('display', 'block');
+				$('#applepay_button_container').css('width', 'auto');
+			}
+						
+			var applepay_button = document.createElement('apple-pay-button');
+			
+			applepay_button.setAttribute('id', 'apple-pay-button');
+			applepay_button.setAttribute('buttonstyle', paypal_data['applepay_button_color']);
+			applepay_button.setAttribute('type', paypal_data['applepay_button_type']);
+			applepay_button.setAttribute('locale', paypal_data['locale']);
+						
+			var applepay_button_style = [];
+			
+			applepay_button_style.push('display: inline-block');
+						
+			if (paypal_data['applepay_button_width']) {
+				applepay_button_style.push('--apple-pay-button-width: ' + paypal_data['applepay_button_width']);
+			} else {
+				applepay_button_style.push('--apple-pay-button-width: 100%');
+			}
+						
+			applepay_button_style.push('--apple-pay-button-height: calc(var(--apple-pay-button-width) / 7.5)');
+						
+			if (paypal_data['applepay_button_shape'] == 'pill') {
+				applepay_button_style.push('--apple-pay-button-border-radius: 1000px');
+			} else {
+				applepay_button_style.push('--apple-pay-button-border-radius: 4px');
+			}
+																		
+			applepay_button.setAttribute('style', applepay_button_style.join('; '));
+															
+			document.querySelector('#applepay_button_container').appendChild(applepay_button);			
+									
+			$('#applepay_button_container').removeClass('paypal-spinner');
 		}
 		
 		if (paypal_data['components'].includes('hosted-fields') && $('#paypal_card').length) {
@@ -302,7 +352,7 @@ var PayPalAPI = (function () {
 			paypal_callback();
 		}
 	};
-	
+		
 	var init = function(data, callback = '') {
 		paypal_data = data;
 		paypal_callback = callback;

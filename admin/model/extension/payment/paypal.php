@@ -192,7 +192,7 @@ class ModelExtensionPaymentPayPal extends Model {
 			return false;
 		}
 	}
-	
+		
 	public function sendContact($data) {
 		$curl = curl_init();
 
