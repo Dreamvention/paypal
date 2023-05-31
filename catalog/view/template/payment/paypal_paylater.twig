@@ -8,7 +8,9 @@
 </div>
 <script type="text/javascript">
 
-PayPalAPI.init();
+if (typeof PayPalAPI !== 'undefined') {
+	PayPalAPI.init();
+}
 	
 </script>
 {% else %}
@@ -29,7 +31,9 @@ $(document).on('click', '.paypal-paylater-button-confirm', function(event) {
 		
 		$('#paypal_modal').modal('show');
 		
-		PayPalAPI.init();
+		if (typeof PayPalAPI !== 'undefined') {
+			PayPalAPI.init();
+		}
 	});
 });
 

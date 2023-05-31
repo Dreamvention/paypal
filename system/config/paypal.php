@@ -108,6 +108,14 @@ $_['paypal_setting'] = [
 			],
 		]
 	],
+	'applepay_button' => [
+		'status' => true,
+		'align' => 'right',
+		'size' => 'large',
+		'color' => 'black',
+		'shape' => 'rect',
+		'type' => 'buy'
+	],
 	'card' => [
 		'status' => true,
 		'align' => 'right',
@@ -652,6 +660,86 @@ $_['paypal_setting'] = [
 			'code' => 'venmo',
 			'name' => 'text_venmo'
 		]
+	],
+	'applepay_button_align' => [
+		'left' => [
+			'code' => 'left',
+			'name' => 'text_align_left'
+		],
+		'center' => [
+			'code' => 'center',
+			'name' => 'text_align_center'
+		],
+		'right' => [
+			'code' => 'right',
+			'name' => 'text_align_right'
+		]
+	],
+	'applepay_button_size' => [
+		'small' => [
+			'code' => 'small',
+			'name' => 'text_small'
+		],
+		'medium' => [
+			'code' => 'medium',
+			'name' => 'text_medium'
+		],
+		'large' => [
+			'code' => 'large',
+			'name' => 'text_large'
+		],
+		'responsive' => [
+			'code' => 'responsive',
+			'name' => 'text_responsive'
+		]
+	],
+	'applepay_button_color' => [
+		'black' => [
+			'code' => 'black',
+			'name' => 'text_black'
+		],
+		'white' => [
+			'code' => 'white',
+			'name' => 'text_white'
+		],
+		'white_outline' => [
+			'code' => 'white-outline',
+			'name' => 'text_white_outline'
+		]
+	],
+	'applepay_button_shape' => [
+		'pill' => [
+			'code' => 'pill',
+			'name' => 'text_pill'
+		],
+		'rect' => [
+			'code' => 'rect',
+			'name' => 'text_rect'
+		]
+	],
+	'applepay_button_type' => [
+		'buy' => [
+			'code' => 'buy',
+			'name' => 'text_buy'
+		],
+		'donate' => [
+			'code' => 'donate',
+			'name' => 'text_donate'
+		],
+		'plain' => [
+			'code' => 'plain',
+			'name' => 'text_plain'
+		],
+		'check-out' => [
+			'code' => 'check-out',
+			'name' => 'text_check_out'
+		]
+	],
+	'applepay_button_width' => [
+		'small' => '200px',
+		'medium' => '250px',
+		'large' => '350px',
+		'responsive' => ''
 	],
 	'card_align' => [
 		'left' => [

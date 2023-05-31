@@ -331,6 +331,10 @@
 	width: 37px;
 	background-image: url('../image/payment/icon-button.svg');
 }
+.payment-paypal .card .tab .tab-icon-applepay-button {
+	width: 37px;
+	background-image: url('../image/payment/icon-applepay-button.svg');
+}
 .payment-paypal .card .tab .tab-icon-card {
 	width: 33px;
 	background-image: url('../image/payment/icon-card.svg');
@@ -401,6 +405,12 @@
 	padding: 0px 0px;
 }
 .payment-paypal .card .section-button-setting .legend {
+	padding: 10px 0px;
+}
+.payment-paypal .card .section-applepay-button-setting {
+	padding: 0px 0px;
+}
+.payment-paypal .card .section-applepay-button-setting .legend {
 	padding: 10px 0px;
 }
 .payment-paypal .card .section-card-setting {
@@ -685,6 +695,17 @@
 }
 @media (max-width: 476px) {
 	.payment-paypal .card .paypal-button .paypal-button-container {
+		width: 100% !important;
+	}
+}
+.payment-paypal .card .applepay-button {
+	position: relative;
+}
+@media (max-width: 476px) {
+	.payment-paypal .card .applepay-button .applepay-button-container {
+		width: 100% !important;
+	}
+	.payment-paypal .card .applepay-button #apple-pay-button {
 		width: 100% !important;
 	}
 }

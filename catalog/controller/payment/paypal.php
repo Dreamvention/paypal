@@ -2,9 +2,16 @@
 namespace Opencart\Catalog\Controller\Extension\PayPal\Payment;
 class PayPal extends \Opencart\System\Engine\Controller {
 	private $error = [];
+	private $separator = '';
 		
 	public function __construct($registry) {
 		parent::__construct($registry);
+		
+		if (VERSION >= '4.0.2.0') {
+			$this->separator = '.';
+		} else {
+			$this->separator = '|';
+		}
 
 		if (version_compare(phpversion(), '7.1', '>=')) {
 			ini_set('precision', 14);
@@ -48,6 +55,10 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		
 			if ($setting['button']['checkout']['status']) {
 				$data['button_status'] = $setting['button']['checkout']['status'];
+			}
+			
+			if ($setting['applepay_button']['status']) {										
+				$data['applepay_button_status'] = $setting['applepay_button']['status'];
 			}
 				
 			if ($setting['card']['status']) {										
@@ -104,12 +115,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				$this->error['warning'] .= ' ' . sprintf($this->language->get('error_payment'), $this->url->link('information/contact', 'language=' . $this->config->get('config_language')));
 			}
 			
-			if (VERSION >= '4.0.2.0') {
-				$data['separator'] = '.';
-			} else {
-				$data['separator'] = '|';
-			}
-			
+			$data['separator'] = $this->separator;
+						
 			$data['language'] = $this->config->get('config_language');		
 
 			$data['error'] = $this->error;	
@@ -142,6 +149,10 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		
 		if ($setting['button']['checkout']['status']) {
 			$data['button_status'] = $setting['button']['checkout']['status'];
+		}
+		
+		if ($setting['applepay_button']['status']) {										
+			$data['applepay_button_status'] = $setting['applepay_button']['status'];
 		}
 				
 		if ($setting['card']['status']) {										
@@ -429,6 +440,33 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					}
 				}
 				
+				if ($setting['applepay_button']['status']) {
+					$data['components'][] = 'applepay';
+					$data['applepay_button_status'] = $setting['applepay_button']['status'];
+					$data['applepay_button_align'] = $setting['applepay_button']['align'];
+					$data['applepay_button_size'] = $setting['applepay_button']['size'];
+					$data['applepay_button_width'] = $setting['applepay_button_width'][$data['applepay_button_size']];
+					$data['applepay_button_color'] = $setting['applepay_button']['color'];
+					$data['applepay_button_shape'] = $setting['applepay_button']['shape'];
+					$data['applepay_button_type'] = $setting['applepay_button']['type'];
+					
+					if (!empty($this->session->data['order_id'])) {
+						$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
+		
+						$data['applepay_amount'] = number_format($order_info['total'] * $data['currency_value'], $data['decimal_place'], '.', '');
+					} else {
+						$item_total = 0;
+								
+						foreach ($this->cart->getProducts() as $product) {
+							$product_price = $this->tax->calculate($product['price'], $product['tax_class_id'], true);
+									
+							$item_total += $product_price * $product['quantity'];
+						}
+			
+						$data['applepay_amount'] = number_format($item_total * $data['currency_value'], $data['decimal_place'], '.', '');
+					}
+				}
+				
 				if ($setting['card']['status']) {										
 					$data['components'][] = 'hosted-fields';
 					$data['card_status'] = $setting['card']['status'];
@@ -515,12 +553,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			}
 		}
 		
-		if (VERSION >= '4.0.2.0') {
-			$data['separator'] = '.';
-		} else {
-			$data['separator'] = '|';
-		}
-				
+		$data['separator'] = $this->separator;
+						
 		$data['error'] = $this->error;
 		
 		$this->response->addHeader('Content-Type: application/json');
@@ -658,6 +692,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				$currency_value = $this->currency->getValue($this->session->data['currency']);
 				
 				if (($payment_type == 'button') && empty($setting['currency'][$currency_code]['status'])) {
+					$currency_code = $setting['general']['currency_code'];
+					$currency_value = $setting['general']['currency_value'];
+				}
+				
+				if (($payment_type == 'applepay_button') && empty($setting['currency'][$currency_code]['status'])) {
+					$transaction_method = 'capture';
 					$currency_code = $setting['general']['currency_code'];
 					$currency_value = $setting['general']['currency_value'];
 				}
@@ -1080,14 +1120,10 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						}
 					}
 
-					if (VERSION >= '4.0.2.0') {
-						$data['url'] = $this->url->link('extension/paypal/payment/paypal.confirmOrder', 'language=' . $this->config->get('config_language'));
-					} else {
-						$data['url'] = $this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language'));
-					}
+					$data['url'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'confirmOrder', 'language=' . $this->config->get('config_language'));
 				}
 			} else {
-				if (($payment_type == 'button') && !empty($this->request->post['paypal_order_id'])) {
+				if ((($payment_type == 'button') || ($payment_type == 'applepay_button')) && !empty($this->request->post['paypal_order_id'])) {
 					$paypal_order_id = $this->request->post['paypal_order_id'];
 				}
 		
@@ -1327,11 +1363,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 			$this->session->data['success'] = $this->language->get('text_coupon');
 
-			if (VERSION >= '4.0.2.0') {
-				$this->response->redirect($this->url->link('extension/paypal/payment/paypal.confirmOrder', 'language=' . $this->config->get('config_language')));
-			} else {
-				$this->response->redirect($this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language')));
-			}
+			$this->response->redirect($this->url->link('extension/paypal/payment/paypal' . $this->separator . 'confirmOrder', 'language=' . $this->config->get('config_language')));
 		}
 
 		// Voucher
@@ -1340,11 +1372,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 			$this->session->data['success'] = $this->language->get('text_voucher');
 
-			if (VERSION >= '4.0.2.0') {
-				$this->response->redirect($this->url->link('extension/paypal/payment/paypal.confirmOrder', 'language=' . $this->config->get('config_language')));
-			} else {
-				$this->response->redirect($this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language')));
-			}
+			$this->response->redirect($this->url->link('extension/paypal/payment/paypal' . $this->separator . 'confirmOrder', 'language=' . $this->config->get('config_language')));
 		}
 
 		// Reward
@@ -1353,11 +1381,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 			$this->session->data['success'] = $this->language->get('text_reward');
 
-			if (VERSION >= '4.0.2.0') {
-				$this->response->redirect($this->url->link('extension/paypal/payment/paypal.confirmOrder', 'language=' . $this->config->get('config_language')));
-			} else {
-				$this->response->redirect($this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language')));
-			}
+			$this->response->redirect($this->url->link('extension/paypal/payment/paypal' . $this->separator . 'confirmOrder', 'language=' . $this->config->get('config_language')));
 		}
 		
 		$this->document->setTitle($this->language->get('text_paypal'));
@@ -1381,18 +1405,11 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			'href' => $this->url->link('checkout/cart', 'language=' . $this->config->get('config_language'))
 		];
 		
-		if (VERSION >= '4.0.2.0') {
-			$data['breadcrumbs'][] = [
-				'text' => $this->language->get('text_paypal'),
-				'href' => $this->url->link('extension/paypal/payment/paypal.confirmOrder', 'language=' . $this->config->get('config_language'))
-			];
-		} else {
-			$data['breadcrumbs'][] = [
-				'text' => $this->language->get('text_paypal'),
-				'href' => $this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language'))
-			];
-		}
-		
+		$data['breadcrumbs'][] = [
+			'text' => $this->language->get('text_paypal'),
+			'href' => $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'confirmOrder', 'language=' . $this->config->get('config_language'))
+		];
+				
 		$points_total = 0;
 
 		foreach ($this->cart->getProducts() as $product) {
@@ -1590,11 +1607,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 							$data['code'] = $this->session->data['shipping_method'];
 						}
 						
-						if (VERSION >= '4.0.2.0') {
-							$data['action_shipping'] = $this->url->link('extension/paypal/payment/paypal.confirmShipping', 'language=' . $this->config->get('config_language'));
-						} else {
-							$data['action_shipping'] = $this->url->link('extension/paypal/payment/paypal|confirmShipping', 'language=' . $this->config->get('config_language'));
-						}
+						$data['action_shipping'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'confirmShipping', 'language=' . $this->config->get('config_language'));
 					}
 				} else {
 					unset($this->session->data['shipping_methods']);
@@ -1709,12 +1722,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			];
 		}
 		
-		if (VERSION >= '4.0.2.0') {
-			$data['action_confirm'] = $this->url->link('extension/paypal/payment/paypal.completeOrder', 'language=' . $this->config->get('config_language'));
-		} else {
-			$data['action_confirm'] = $this->url->link('extension/paypal/payment/paypal|completeOrder', 'language=' . $this->config->get('config_language'));
-		}
-		
+		$data['action_confirm'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'completeOrder', 'language=' . $this->config->get('config_language'));
+				
 		if (isset($this->session->data['error_warning'])) {
 			$data['error_warning'] = $this->session->data['error_warning'];
 			unset($this->session->data['error_warning']);
@@ -1748,12 +1757,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			}
 		}
 		
-		if (VERSION >= '4.0.2.0') {
-			$data['separator'] = '.';
-		} else {
-			$data['separator'] = '|';
-		}
-		
+		$data['separator'] = $this->separator;
+				
 		$data['language'] = $this->config->get('config_language');
 		
 		$data['config_telephone_display'] = $this->config->get('config_telephone_display');
@@ -2458,11 +2463,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 	public function confirmShipping(): void {
 		$this->validateShipping($this->request->post['shipping_method']);
 
-		if (VERSION >= '4.0.2.0') {
-			$this->response->redirect($this->url->link('extension/paypal/payment/paypal.confirmOrder', 'language=' . $this->config->get('config_language')));
-		} else {
-			$this->response->redirect($this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language')));
-		}
+		$this->response->redirect($this->url->link('extension/paypal/payment/paypal' . $this->separator . 'confirmOrder', 'language=' . $this->config->get('config_language')));
 	}
 	
 	public function confirmPaymentAddress(): void {
@@ -2526,11 +2527,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				$this->session->data['payment_address']['zone_code'] = '';
 			}
 			
-			if (VERSION >= '4.0.2.0') {
-				$data['url'] = $this->url->link('extension/paypal/payment/paypal.confirmOrder', 'language=' . $this->config->get('config_language'));
-			} else {
-				$data['url'] = $this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language'));
-			}
+			$data['url'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'confirmOrder', 'language=' . $this->config->get('config_language'));
 		}
 
 		$data['error'] = $this->error;
@@ -2587,11 +2584,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				$this->session->data['shipping_address']['custom_field'] = [];
 			}
 			
-			if (VERSION >= '4.0.2.0') {
-				$data['url'] = $this->url->link('extension/paypal/payment/paypal.confirmOrder', 'language=' . $this->config->get('config_language'));
-			} else {
-				$data['url'] = $this->url->link('extension/paypal/payment/paypal|confirmOrder', 'language=' . $this->config->get('config_language'));
-			}
+			$data['url'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'confirmOrder', 'language=' . $this->config->get('config_language'));
 		}
 		
 		$data['error'] = $this->error;
@@ -2753,14 +2746,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 								
 				if ($params['page_code'] == 'checkout') {			
 					$this->document->addStyle('extension/paypal/catalog/view/stylesheet/card.css');
+					
+					$this->document->addScript('https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js');
 				}
 				
-				if (VERSION >= '4.0.2.0') {
-					$params['separator'] = '.';
-				} else {
-					$params['separator'] = '|';
-				}
-		
+				$params['separator'] = $this->separator;
+						
 				$this->document->addScript('extension/paypal/catalog/view/javascript/paypal.js?' . http_build_query($params));
 			}
 		}			

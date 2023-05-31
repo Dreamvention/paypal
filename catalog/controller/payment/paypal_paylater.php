@@ -2,6 +2,17 @@
 namespace Opencart\Catalog\Controller\Extension\PayPal\Payment;
 class PayPalPayLater extends \Opencart\System\Engine\Controller {
 	private $error = [];
+	private $separator = '';
+	
+	public function __construct($registry) {
+		parent::__construct($registry);
+		
+		if (VERSION >= '4.0.2.0') {
+			$this->separator = '.';
+		} else {
+			$this->separator = '|';
+		}
+	}
 			
 	public function index(): string {
 		$this->load->model('extension/paypal/payment/paypal');
@@ -79,12 +90,8 @@ class PayPalPayLater extends \Opencart\System\Engine\Controller {
 				$this->error['warning'] .= ' ' . sprintf($this->language->get('error_payment'), $this->url->link('information/contact', 'language=' . $this->config->get('config_language')));
 			}
 			
-			if (VERSION >= '4.0.2.0') {
-				$data['separator'] = '.';
-			} else {
-				$data['separator'] = '|';
-			}
-			
+			$data['separator'] = $this->separator;
+						
 			$data['language'] = $this->config->get('config_language');		
 
 			$data['error'] = $this->error;	
