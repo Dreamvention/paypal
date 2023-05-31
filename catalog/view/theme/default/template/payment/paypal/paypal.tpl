@@ -5,6 +5,11 @@
 		<div id="paypal_button_container" class="paypal-button-container paypal-spinner"></div>
 	</div>
 	<?php } ?>
+	<?php if ($applepay_button_status) { ?>
+	<div id="applepay_button" class="applepay-button buttons clearfix">
+		<div id="applepay_button_container" class="applepay-button-container paypal-spinner"></div>
+	</div>
+	<?php } ?>
 	<?php if ($card_status) { ?>
 	<div id="paypal_card" class="paypal-card">
 		<div id="paypal_card_container" class="paypal-card-container paypal-spinner">
@@ -31,8 +36,10 @@
 </div>
 <script type="text/javascript">
 
-PayPalAPI.init();
-	
+if (typeof PayPalAPI !== 'undefined') {
+	PayPalAPI.init();
+}
+
 </script>
 <?php } else { ?>
 <div class="buttons">
@@ -54,7 +61,9 @@ $(document).on('click', '.paypal-button-confirm', function(event) {
 		
 		$('#paypal_modal').modal('show');
 		
-		PayPalAPI.init();
+		if (typeof PayPalAPI !== 'undefined') {
+			PayPalAPI.init();
+		}
 	});
 });
 

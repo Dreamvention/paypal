@@ -39,6 +39,10 @@ class ControllerPaymentPayPal extends Controller {
 			if ($setting['button']['checkout']['status']) {
 				$data['button_status'] = $setting['button']['checkout']['status'];
 			}
+			
+			if ($setting['applepay_button']['status']) {										
+				$data['applepay_button_status'] = $setting['applepay_button']['status'];
+			}
 				
 			if ($setting['card']['status']) {										
 				$data['card_status'] = $setting['card']['status'];
@@ -124,6 +128,10 @@ class ControllerPaymentPayPal extends Controller {
 			
 		if ($setting['button']['checkout']['status']) {
 			$data['button_status'] = $setting['button']['checkout']['status'];
+		}
+		
+		if ($setting['applepay_button']['status']) {										
+			$data['applepay_button_status'] = $setting['applepay_button']['status'];
 		}
 				
 		if ($setting['card']['status']) {										
@@ -406,6 +414,33 @@ class ControllerPaymentPayPal extends Controller {
 					}
 				}
 				
+				if ($setting['applepay_button']['status']) {
+					$data['components'][] = 'applepay';
+					$data['applepay_button_status'] = $setting['applepay_button']['status'];
+					$data['applepay_button_align'] = $setting['applepay_button']['align'];
+					$data['applepay_button_size'] = $setting['applepay_button']['size'];
+					$data['applepay_button_width'] = $setting['applepay_button_width'][$data['applepay_button_size']];
+					$data['applepay_button_color'] = $setting['applepay_button']['color'];
+					$data['applepay_button_shape'] = $setting['applepay_button']['shape'];
+					$data['applepay_button_type'] = $setting['applepay_button']['type'];
+					
+					if (!empty($this->session->data['order_id'])) {
+						$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
+		
+						$data['applepay_amount'] = number_format($order_info['total'] * $data['currency_value'], $data['decimal_place'], '.', '');
+					} else {
+						$item_total = 0;
+								
+						foreach ($this->cart->getProducts() as $product) {
+							$product_price = $this->tax->calculate($product['price'], $product['tax_class_id'], true);
+									
+							$item_total += $product_price * $product['quantity'];
+						}
+			
+						$data['applepay_amount'] = number_format($item_total * $data['currency_value'], $data['decimal_place'], '.', '');
+					}
+				}
+				
 				if ($setting['card']['status']) {										
 					$data['components'][] = 'hosted-fields';
 					$data['card_status'] = $setting['card']['status'];
@@ -627,6 +662,12 @@ class ControllerPaymentPayPal extends Controller {
 				$currency_value = $this->currency->getValue($this->session->data['currency']);
 				
 				if (($payment_type == 'button') && empty($setting['currency'][$currency_code]['status'])) {
+					$currency_code = $setting['general']['currency_code'];
+					$currency_value = $setting['general']['currency_value'];
+				}
+				
+				if (($payment_type == 'applepay_button') && empty($setting['currency'][$currency_code]['status'])) {
+					$transaction_method = 'capture';
 					$currency_code = $setting['general']['currency_code'];
 					$currency_value = $setting['general']['currency_value'];
 				}
@@ -1028,7 +1069,7 @@ class ControllerPaymentPayPal extends Controller {
 					$data['url'] = $this->url->link('payment/paypal/confirmOrder', '', true);			
 				}
 			} else {
-				if (($payment_type == 'button') && !empty($this->request->post['paypal_order_id'])) {
+				if ((($payment_type == 'button') || ($payment_type == 'applepay_button')) && !empty($this->request->post['paypal_order_id'])) {
 					$paypal_order_id = $this->request->post['paypal_order_id'];
 				}
 		
@@ -2705,6 +2746,8 @@ class ControllerPaymentPayPal extends Controller {
 					} else {
 						$this->document->addStyle('catalog/view/theme/default/stylesheet/paypal/card.css');
 					}
+					
+					$this->document->addScript('https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js');
 				}
 			
 				$this->document->addScript('catalog/view/javascript/paypal/paypal.js?' . http_build_query($params));

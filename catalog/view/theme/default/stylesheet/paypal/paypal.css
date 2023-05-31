@@ -6,6 +6,17 @@
 		width: 100% !important;
 	}
 }
+.applepay-button {
+	position: relative;
+}
+@media (max-width: 476px) {
+	.applepay-button-container {
+		width: 100% !important;
+	}
+	.applepay-button #apple-pay-button {
+		width: 100% !important;
+	}
+}
 .paypal-card {
 	position: relative;
 }
