@@ -108,6 +108,14 @@ $_['paypal_setting'] = array(
 			),
 		)
 	),
+	'applepay_button' => array(
+		'status' => true,
+		'align' => 'right',
+		'size' => 'large',
+		'color' => 'black',
+		'shape' => 'rect',
+		'type' => 'buy'
+	),
 	'card' => array(
 		'status' => true,
 		'align' => 'right',
@@ -652,6 +660,86 @@ $_['paypal_setting'] = array(
 			'code' => 'venmo',
 			'name' => 'text_venmo'
 		)
+	),
+	'applepay_button_align' => array(
+		'left' => array(
+			'code' => 'left',
+			'name' => 'text_align_left'
+		),
+		'center' => array(
+			'code' => 'center',
+			'name' => 'text_align_center'
+		),
+		'right' => array(
+			'code' => 'right',
+			'name' => 'text_align_right'
+		)
+	),
+	'applepay_button_size' => array(
+		'small' => array(
+			'code' => 'small',
+			'name' => 'text_small'
+		),
+		'medium' => array(
+			'code' => 'medium',
+			'name' => 'text_medium'
+		),
+		'large' => array(
+			'code' => 'large',
+			'name' => 'text_large'
+		),
+		'responsive' => array(
+			'code' => 'responsive',
+			'name' => 'text_responsive'
+		)
+	),
+	'applepay_button_color' => array(
+		'black' => array(
+			'code' => 'black',
+			'name' => 'text_black'
+		),
+		'white' => array(
+			'code' => 'white',
+			'name' => 'text_white'
+		),
+		'white_outline' => array(
+			'code' => 'white-outline',
+			'name' => 'text_white_outline'
+		)
+	),
+	'applepay_button_shape' => array(
+		'pill' => array(
+			'code' => 'pill',
+			'name' => 'text_pill'
+		),
+		'rect' => array(
+			'code' => 'rect',
+			'name' => 'text_rect'
+		)
+	),
+	'applepay_button_type' => array(
+		'buy' => array(
+			'code' => 'buy',
+			'name' => 'text_buy'
+		),
+		'donate' => array(
+			'code' => 'donate',
+			'name' => 'text_donate'
+		),
+		'plain' => array(
+			'code' => 'plain',
+			'name' => 'text_plain'
+		),
+		'check-out' => array(
+			'code' => 'check-out',
+			'name' => 'text_check_out'
+		)
+	),
+	'applepay_button_width' => array(
+		'small' => '200px',
+		'medium' => '250px',
+		'large' => '350px',
+		'responsive' => ''
 	),
 	'card_align' => array(
 		'left' => array(

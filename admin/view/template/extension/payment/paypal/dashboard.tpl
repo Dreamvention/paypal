@@ -42,41 +42,48 @@
 						</div>
 					</div>
 					<div class="row row-tab">
-						<div class="col col-sm-6 col-md-4 col-lg-2 col-tab">
+						<div class="col col-sm-6 col-md-4 col-lg-3 col-tab">
 							<a href="<?php echo $href_general; ?>" class="tab">
 								<i class="tab-icon-status tab-icon-status-<?php if ($status) { ?>on<?php } else { ?>off<?php } ?>"></i>
 								<i class="tab-icon tab-icon-general"></i>
 								<span class="tab-title"><?php echo $text_tab_general; ?></span>
 							</a>
 						</div>
-						<div class="col col-sm-6 col-md-4 col-lg-2 col-tab">
+						<div class="col col-sm-6 col-md-4 col-lg-3 col-tab">
 							<a href="<?php echo $href_button; ?>" class="tab">
 								<i class="tab-icon-status tab-icon-status-<?php if ($button_status) { ?>on<?php } else { ?>off<?php } ?>"></i>
 								<i class="tab-icon tab-icon-button"></i>
 								<span class="tab-title"><?php echo $text_tab_button; ?></span>
 							</a>
 						</div>
-						<div class="col col-sm-6 col-md-4 col-lg-2 col-tab">
+						<div class="col col-sm-6 col-md-4 col-lg-3 col-tab">
+							<a href="<?php echo $href_applepay_button; ?>" class="tab">
+								<i class="tab-icon-status tab-icon-status-<?php if ($applepay_button_status) { ?>on<?php } else { ?>off<?php } ?>"></i>
+								<i class="tab-icon tab-icon-applepay-button"></i>
+								<span class="tab-title"><?php echo $text_tab_applepay_button; ?></span>
+							</a>
+						</div>
+						<div class="col col-sm-6 col-md-4 col-lg-3 col-tab">
 							<a href="<?php echo $href_card; ?>" class="tab">
 								<i class="tab-icon-status tab-icon-status-<?php if ($card_status) { ?>on<?php } else { ?>off<?php } ?>"></i>
 								<i class="tab-icon tab-icon-card"></i>
 								<span class="tab-title"><?php echo $text_tab_card; ?></span>
 							</a>
 						</div>
-						<div class="col col-sm-6 col-md-4 col-lg-2 col-tab">
+						<div class="col col-sm-6 col-md-4 col-lg-3 col-tab">
 							<a href="<?php echo $href_message; ?>" class="tab">
 								<i class="tab-icon-status tab-icon-status-<?php if ($message_status) { ?>on<?php } else { ?>off<?php } ?>"></i>
 								<i class="tab-icon tab-icon-message"></i>
 								<span class="tab-title"><?php echo $text_tab_message; ?></span>
 							</a>
 						</div>
-						<div class="col col-sm-6 col-md-4 col-lg-2 col-tab">
+						<div class="col col-sm-6 col-md-4 col-lg-3 col-tab">
 							<a href="<?php echo $href_order_status ; ?>" class="tab">
 								<i class="tab-icon tab-icon-order-status"></i>
 								<span class="tab-title"><?php echo $text_tab_order_status; ?></span>
 							</a>
 						</div>
-						<div class="col col-sm-6 col-md-4 col-lg-2 col-tab">
+						<div class="col col-sm-6 col-md-4 col-lg-3 col-tab">
 							<a href="<?php echo $href_contact; ?>" class="tab">
 								<i class="tab-icon tab-icon-contact"></i>
 								<span class="tab-title"><?php echo $text_tab_contact; ?></span>

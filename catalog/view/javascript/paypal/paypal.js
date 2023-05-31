@@ -240,6 +240,16 @@ var PayPalAPI = (function () {
 			$('#paypal_button_container').removeClass('paypal-spinner');
 		}
 		
+		if (paypal_data['components'].includes('applepay') && $('#applepay_button').length && !$('#applepay_button_container').html()) {
+			if (window.ApplePaySession && window.ApplePaySession?.supportsVersion(4) && ApplePaySession.canMakePayments()) {
+				initApplePaySDK().catch(console.log);
+			} else {
+				$('#applepay_button').remove();
+				
+				console.log('This device does not support Apple Pay');
+			}
+		}
+		
 		if (paypal_data['components'].includes('hosted-fields') && $('#paypal_card').length && !$('#paypal_card_form').find('iframe').length) {
 			$('#paypal_card').css('text-align', paypal_data['card_align']);
 			
@@ -473,6 +483,198 @@ var PayPalAPI = (function () {
 		if (paypal_callback && typeof paypal_callback == 'function') {
 			paypal_callback();
 		}
+	};
+	
+	var initApplePaySDK = async function() {
+		const ApplePaySDK = PayPalSDK.Applepay();
+		const {
+			isEligible,
+			countryCode,
+			currencyCode,
+			merchantCapabilities,
+			supportedNetworks,
+		} = await ApplePaySDK.config();
+
+		if (!isEligible) {
+			$('#applepay_button').remove();
+			
+			throw 'Apple Pay is not eligible';
+		}
+		
+		$('#applepay_button').css('text-align', paypal_data['applepay_button_align']);
+			
+		var applepay_button_style = [];
+			
+		if (paypal_data['applepay_button_width']) {
+			$('#applepay_button_container').css('display', 'inline-block');
+			$('#applepay_button_container').css('width', paypal_data['applepay_button_width']);
+		} else {
+			$('#applepay_button_container').css('display', 'block');
+			$('#applepay_button_container').css('width', 'auto');
+		}
+						
+		var applepay_button = document.createElement('apple-pay-button');
+			
+		applepay_button.setAttribute('id', 'apple-pay-button');
+		applepay_button.setAttribute('buttonstyle', paypal_data['applepay_button_color']);
+		applepay_button.setAttribute('type', paypal_data['applepay_button_type']);
+		applepay_button.setAttribute('locale', paypal_data['locale']);
+						
+		var applepay_button_style = [];
+			
+		applepay_button_style.push('display: inline-block');
+						
+		if (paypal_data['applepay_button_width']) {
+			applepay_button_style.push('--apple-pay-button-width: ' + paypal_data['applepay_button_width']);
+		} else {
+			applepay_button_style.push('--apple-pay-button-width: 100%');
+		}
+						
+		applepay_button_style.push('--apple-pay-button-height: calc(var(--apple-pay-button-width) / 7.5)');
+						
+		if (paypal_data['applepay_button_shape'] == 'pill') {
+			applepay_button_style.push('--apple-pay-button-border-radius: 1000px');
+		} else {
+			applepay_button_style.push('--apple-pay-button-border-radius: 4px');
+		}
+																		
+		applepay_button.setAttribute('style', applepay_button_style.join('; '));
+															
+		document.querySelector('#applepay_button_container').appendChild(applepay_button);
+
+		applepay_button.addEventListener('click', async function (event) {
+			event.preventDefault();
+			
+			const paymentRequest = {
+				countryCode,
+				currencyCode: paypal_data['currency_code'],
+				merchantCapabilities,
+				supportedNetworks,
+				requiredBillingContactFields: ['name', 'phone', 'email', 'postalAddress'],
+				requiredShippingContactFields: [],
+				total: {
+					label: 'Total',
+					amount: paypal_data['applepay_amount'],
+					type: 'final',
+				}
+			};
+					
+			var session = new ApplePaySession(4, paymentRequest);
+			
+			session.onvalidatemerchant = (event) => {
+				ApplePaySDK.validateMerchant({
+					validationUrl: event.validationURL,
+				}).then((payload) => {
+					session.completeMerchantValidation(payload.merchantSession);
+					console.log('Complete Merchant validation Done!', {payload});
+				}).catch((error) => {
+					console.error(error);
+					session.abort();
+				});
+			};
+			
+			session.onpaymentmethodselected = (event) => {
+				console.log('onpaymentmethodselected');
+				console.log(event.paymentMethod); // {type: "credit"}
+
+				session.completePaymentMethodSelection({
+					newTotal: paymentRequest.total
+				});
+			};
+			
+			session.onshippingcontactselected = async (event) => {
+				console.log('Your shipping contacts selected is: ' + event.shippingContact);
+				
+				const shippingContactUpdate = { 
+					newTotal: paymentRequest.total,
+					newLineItems: []
+				};
+				
+				session.completeShippingContactSelection(shippingContactUpdate);
+			};
+			
+			session.onshippingmethodselected = (event) => {
+				console.log('onshippingmethodselected');
+				console.log(JSON.stringify(event.shippingMethod, null, 4));
+				console.log('Your shipping method selected is: ', event.shippingMethod);
+      
+				var shippingMethodUpdate = { 
+					newTotal: paymentRequest.total,
+					newLineItems: []
+				}; 
+				
+				session.completeShippingMethodSelection(shippingMethodUpdate);
+			};
+			
+			session.onpaymentauthorized = async (event) => {
+				try {
+					console.log('onpaymentauthorized');
+					console.log(JSON.stringify(event, null, 4));
+										
+					paypal_order_id = false;
+						
+					$.ajax({
+						method: 'post',
+						url: 'index.php?route=extension/payment/paypal/createOrder',
+						data: {'page_code' : paypal_data['page_code'], 'payment_type' : 'applepay_button'},
+						dataType: 'json',
+						async: false,
+						success: function(json) {				
+							showPayPalAlert(json);
+								
+							paypal_order_id = json['paypal_order_id'];
+						},
+						error: function(xhr, ajaxOptions, thrownError) {
+							console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+						}
+					});
+																	
+					await ApplePaySDK.confirmOrder({
+						orderId: paypal_order_id, 
+						token: event.payment.token, 
+						billingContact: event.payment.billingContact, 
+						shippingContact: event.payment.shippingContact 
+					});
+				
+					$.ajax({
+						method: 'post',
+						url: 'index.php?route=extension/payment/paypal/approveOrder',
+						data: {'page_code' : paypal_data['page_code'], 'payment_type' : 'applepay_button', 'paypal_order_id': paypal_order_id},
+						dataType: 'json',
+						async: false,
+						success: function(json) {					
+							showPayPalAlert(json);
+													
+							if (json['url']) {
+								location = json['url'];
+							}
+						},
+						error: function(xhr, ajaxOptions, thrownError) {
+							console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+						}
+					});
+						
+					session.completePayment({
+						status: window.ApplePaySession.STATUS_SUCCESS
+					});
+				} catch (error) {
+					console.error(error);
+					
+					session.completePayment({
+						status: window.ApplePaySession.STATUS_FAILURE
+					});
+				}
+			};
+			
+			session.oncancel = (event) => {
+				console.log(event);
+				console.log('Apple Pay Cancelled!');
+			}
+
+			session.begin();
+		});
+									
+		$('#applepay_button_container').removeClass('paypal-spinner');
 	};
 	
 	var init = function(callback = '') {
