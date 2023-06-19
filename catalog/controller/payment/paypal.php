@@ -1284,7 +1284,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				
 									$this->load->model('checkout/order');
 							
-									$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $order_status_id, $message);
+									$this->model_checkout_order->addHistory($this->session->data['order_id'], $order_status_id, $message);
 								}
 						
 								if (($authorization_status == 'CREATED') || ($authorization_status == 'PARTIALLY_CAPTURED') || ($authorization_status == 'PARTIALLY_CREATED') || ($authorization_status == 'VOIDED') || ($authorization_status == 'PENDING')) {
