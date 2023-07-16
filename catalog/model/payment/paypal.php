@@ -72,7 +72,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 					'code'       => 'paypal',
 					'name'       => $this->language->get('text_paypal'),
 					'option'     => $option_data,
-					'sort_order' => $this->config->get('payment_paypal_sort_orderr')
+					'sort_order' => $this->config->get('payment_paypal_sort_order')
 				];
 			}
 		}
