@@ -305,7 +305,9 @@ class PayPal {
 				CURLOPT_INFILESIZE => Null,
 				CURLOPT_HTTPHEADER => [],
 				CURLOPT_CONNECTTIMEOUT => 10,
-				CURLOPT_TIMEOUT => 10
+				CURLOPT_TIMEOUT => 10,
+				CURLOPT_SSL_VERIFYHOST => 0,
+				CURLOPT_SSL_VERIFYPEER => 0
 			];
 			
 			$curl_options[CURLOPT_HTTPHEADER][] = 'Accept-Charset: utf-8';
