@@ -9,15 +9,14 @@ If, for some reason, any parameter was left blank, you should repeat the entire 
 
 ### 2. There is no "Go back to..." button on the final step.
 This is because you are using Apache and the .htaccess file includes the following lines:
-``` nginx
-<IfModule> ... </IfModule>
-```
+
+``` <IfModule> ... </IfModule> ```
+
 We recommend that you delete these lines from the file and then go through the authorization process again. Once you have successfully authorized, you can add the lines back in.
 
 ### 3. After I returned to my site, instead of successfully authorizing, I encountered an error.
-```
-Authentication failed due to invalid authentication credentials or a missing Authorization header.
-```
+``` Authentication failed due to invalid authentication credentials or a missing Authorization header. ``` 
+
 Please try to authorize with a different browser, such as Google Chrome.
 
 ### 4. I am using the Journal theme and the PayPal buttons and the Card Payment form do not work correctly.
