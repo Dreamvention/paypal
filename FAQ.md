@@ -1,9 +1,9 @@
 ### 1. How to connect your account?
-The most efficient way to log in is by using the Chrome browser. Ensure that your Environment is set to Production mode. 
+> We recommend using the Chrome browser for the onboarding process.
 
-Click the Connect button and input your login information. Then, follow all the steps that PayPal will require from you.
-
-At the final step click on the "Go back to..." button and you will be redirected to your site, where you will be provided with all the necessary details and can start working with the payment.
+- Ensure that your Environment is set to Production mode.
+- Click the Connect button, input your login information, and follow all the steps that PayPal will require from you.
+- At the final step click on the "Go back to..." button and you will be redirected to your site, where you will be provided with all the necessary details and can start working with the payment.
 
 If, for some reason, any parameter was left blank, you should repeat the entire authorization process again.
 
