@@ -31,6 +31,7 @@
 					<ul class="nav nav-tabs">
 						<li class="nav-tab"><a href="<?php echo $href_general; ?>" class="tab"><i class="tab-icon tab-icon-general"></i><span class="tab-title"><?php echo $text_tab_general; ?></span></a></li>
 						<li class="nav-tab"><a href="<?php echo $href_button; ?>" class="tab"><i class="tab-icon tab-icon-button"></i><span class="tab-title"><?php echo $text_tab_button; ?></span></a></li>
+						<li class="nav-tab"><a href="<?php echo $href_googlepay_button; ?>" class="tab"><i class="tab-icon tab-icon-googlepay-button"></i><span class="tab-title"><?php echo $text_tab_googlepay_button; ?></span></a></li>
 						<li class="nav-tab active"><a href="<?php echo $href_applepay_button; ?>" class="tab"><i class="tab-icon tab-icon-applepay-button"></i><span class="tab-title"><?php echo $text_tab_applepay_button; ?></span></a></li>
 						<li class="nav-tab"><a href="<?php echo $href_card; ?>" class="tab"><i class="tab-icon tab-icon-card"></i><span class="tab-title"><?php echo $text_tab_card; ?></span></a></li>
 						<li class="nav-tab"><a href="<?php echo $href_message; ?>" class="tab"><i class="tab-icon tab-icon-message"></i><span class="tab-title"><?php echo $text_tab_message; ?></span></a></li>
@@ -117,7 +118,7 @@
 											</div>
 											<div class="form-group">
 												<label class="control-label" for="input_applepay_button_size"><?php echo $entry_applepay_button_size; ?></label>
-												<select name="payment_paypal_setting[applepay_button][size]" id="input_applepay_button_size" class="form-control control-applepay-button">
+												<select name="paypal_setting[applepay_button][size]" id="input_applepay_button_size" class="form-control control-applepay-button">
 													<?php foreach ($setting['applepay_button_size'] as $applepay_button_size) { ?>
 													<?php if ($applepay_button_size['code'] == $setting['applepay_button']['size']) { ?>
 													<option value="<?php echo $applepay_button_size['code']; ?>" selected="selected"><?php echo ${$applepay_button_size['name']}; ?></option>
@@ -129,7 +130,7 @@
 											</div>
 											<div class="form-group">
 												<label class="control-label" for="input_applepay_button_color"><?php echo $entry_applepay_button_color; ?></label>
-												<select name="payment_paypal_setting[applepay_button][color]" id="input_applepay_button_color" class="form-control control-applepay-button">
+												<select name="paypal_setting[applepay_button][color]" id="input_applepay_button_color" class="form-control control-applepay-button">
 													<?php foreach ($setting['applepay_button_color'] as $applepay_button_color) { ?>
 													<?php if ($applepay_button_color['code'] == $setting['applepay_button']['color']) { ?>
 													<option value="<?php echo $applepay_button_color['code']; ?>" selected="selected"><?php echo ${$applepay_button_color['name']}; ?></option>
@@ -143,7 +144,7 @@
 										<div class="col col-md-6">
 											<div class="form-group">
 												<label class="control-label" for="input_applepay_button_shape"><?php echo $entry_applepay_button_shape; ?></label>
-												<select name="payment_paypal_setting[applepay_button][shape]" id="input_applepay_button_shape" class="form-control control-applepay-button">
+												<select name="paypal_setting[applepay_button][shape]" id="input_applepay_button_shape" class="form-control control-applepay-button">
 													<?php foreach ($setting['applepay_button_shape'] as $applepay_button_shape) { ?>
 													<?php if ($applepay_button_shape['code'] == $setting['applepay_button']['shape']) { ?>
 													<option value="<?php echo $applepay_button_shape['code']; ?>" selected="selected"><?php echo ${$applepay_button_shape['name']}; ?></option>
@@ -155,7 +156,7 @@
 											</div>
 											<div class="form-group">
 												<label class="control-label" for="input_applepay_button_type"><?php echo $entry_applepay_button_type; ?></label>
-												<select name="payment_paypal_setting[applepay_button][type]" id="input_applepay_button_type" class="form-control control-applepay-button">
+												<select name="paypal_setting[applepay_button][type]" id="input_applepay_button_type" class="form-control control-applepay-button">
 													<?php foreach ($setting['applepay_button_type'] as $applepay_button_type) { ?>
 													<?php if ($applepay_button_type['code'] == $setting['applepay_button']['type']) { ?>
 													<option value="<?php echo $applepay_button_type['code']; ?>" selected="selected"><?php echo ${$applepay_button_type['name']}; ?></option>

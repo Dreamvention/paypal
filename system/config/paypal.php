@@ -1,6 +1,6 @@
 <?php 
 $_['paypal_setting'] = array(
-	'version' => '2.0.2',
+	'version' => '2.1.0',
 	'partner' => array(
 		'production' => array(
 			'partner_id' => 'TY2Q25KP2PX9L',
@@ -107,6 +107,14 @@ $_['paypal_setting'] = array(
 				'venmo' => 0
 			),
 		)
+	),
+	'googlepay_button' => array(
+		'status' => true,
+		'align' => 'right',
+		'size' => 'large',
+		'color' => 'black',
+		'shape' => 'rect',
+		'type' => 'buy'
 	),
 	'applepay_button' => array(
 		'status' => true,
@@ -660,6 +668,86 @@ $_['paypal_setting'] = array(
 			'code' => 'venmo',
 			'name' => 'text_venmo'
 		)
+	),
+	'googlepay_button_align' => array(
+		'left' => array(
+			'code' => 'left',
+			'name' => 'text_align_left'
+		),
+		'center' => array(
+			'code' => 'center',
+			'name' => 'text_align_center'
+		),
+		'right' => array(
+			'code' => 'right',
+			'name' => 'text_align_right'
+		)
+	),
+	'googlepay_button_size' => array(
+		'small' => array(
+			'code' => 'small',
+			'name' => 'text_small'
+		),
+		'medium' => array(
+			'code' => 'medium',
+			'name' => 'text_medium'
+		),
+		'large' => array(
+			'code' => 'large',
+			'name' => 'text_large'
+		),
+		'responsive' => array(
+			'code' => 'responsive',
+			'name' => 'text_responsive'
+		)
+	),
+	'googlepay_button_color' => array(
+		'black' => array(
+			'code' => 'black',
+			'name' => 'text_black'
+		),
+		'white' => array(
+			'code' => 'white',
+			'name' => 'text_white'
+		)
+	),
+	'googlepay_button_shape' => array(
+		'pill' => array(
+			'code' => 'pill',
+			'name' => 'text_pill'
+		),
+		'rect' => array(
+			'code' => 'rect',
+			'name' => 'text_rect'
+		)
+	),
+	'googlepay_button_type' => array(
+		'buy' => array(
+			'code' => 'buy',
+			'name' => 'text_buy'
+		),
+		'donate' => array(
+			'code' => 'donate',
+			'name' => 'text_donate'
+		),
+		'plain' => array(
+			'code' => 'plain',
+			'name' => 'text_plain'
+		),
+		'pay' => array(
+			'code' => 'pay',
+			'name' => 'text_pay'
+		),
+		'checkout' => array(
+			'code' => 'checkout',
+			'name' => 'text_checkout'
+		)
+	),
+	'googlepay_button_width' => array(
+		'small' => '200px',
+		'medium' => '250px',
+		'large' => '350px',
+		'responsive' => ''
 	),
 	'applepay_button_align' => array(
 		'left' => array(
