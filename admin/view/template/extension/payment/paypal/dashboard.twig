@@ -57,6 +57,13 @@
 							</a>
 						</div>
 						<div class="col col-sm-6 col-md-4 col-lg-3 col-tab">
+							<a href="{{ href_googlepay_button }}" class="tab">
+								<i class="tab-icon-status tab-icon-status-{% if googlepay_button_status %}on{% else %}off{% endif %}"></i>
+								<i class="tab-icon tab-icon-googlepay-button"></i>
+								<span class="tab-title">{{ text_tab_googlepay_button }}</span>
+							</a>
+						</div>
+						<div class="col col-sm-6 col-md-4 col-lg-3 col-tab">
 							<a href="{{ href_applepay_button }}" class="tab">
 								<i class="tab-icon-status tab-icon-status-{% if applepay_button_status %}on{% else %}off{% endif %}"></i>
 								<i class="tab-icon tab-icon-applepay-button"></i>
