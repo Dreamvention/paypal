@@ -31,9 +31,9 @@
 					<ul class="nav nav-tabs">
 						<li class="nav-tab"><a href="<?php echo $href_general; ?>" class="tab"><i class="tab-icon tab-icon-general"></i><span class="tab-title"><?php echo $text_tab_general; ?></span></a></li>
 						<li class="nav-tab"><a href="<?php echo $href_button; ?>" class="tab"><i class="tab-icon tab-icon-button"></i><span class="tab-title"><?php echo $text_tab_button; ?></span></a></li>
-						<li class="nav-tab"><a href="<?php echo $href_googlepay_button; ?>" class="tab"><i class="tab-icon tab-icon-googlepay-button"></i><span class="tab-title"><?php echo $text_tab_googlepay_button; ?></span></a></li>
+						<li class="nav-tab active"><a href="<?php echo $href_googlepay_button; ?>" class="tab"><i class="tab-icon tab-icon-googlepay-button"></i><span class="tab-title"><?php echo $text_tab_googlepay_button; ?></span></a></li>
 						<li class="nav-tab"><a href="<?php echo $href_applepay_button; ?>" class="tab"><i class="tab-icon tab-icon-applepay-button"></i><span class="tab-title"><?php echo $text_tab_applepay_button; ?></span></a></li>
-						<li class="nav-tab active"><a href="<?php echo $href_card; ?>" class="tab"><i class="tab-icon tab-icon-card"></i><span class="tab-title"><?php echo $text_tab_card; ?></span></a></li>
+						<li class="nav-tab"><a href="<?php echo $href_card; ?>" class="tab"><i class="tab-icon tab-icon-card"></i><span class="tab-title"><?php echo $text_tab_card; ?></span></a></li>
 						<li class="nav-tab"><a href="<?php echo $href_message; ?>" class="tab"><i class="tab-icon tab-icon-message"></i><span class="tab-title"><?php echo $text_tab_message; ?></span></a></li>
 						<li class="nav-tab"><a href="<?php echo $href_order_status; ?>" class="tab"><i class="tab-icon tab-icon-order-status"></i><span class="tab-title"><?php echo $text_tab_order_status; ?></span></a></li>
 						<li class="nav-tab"><a href="<?php echo $href_contact; ?>" class="tab"><i class="tab-icon tab-icon-contact"></i><span class="tab-title"><?php echo $text_tab_contact; ?></span></a></li>
@@ -63,90 +63,91 @@
 											</div>
 										</div>
 									</div>
-									<div id="paypal_card" class="paypal-card">
-										<div id="paypal_card_container" class="paypal-card-container paypal-spinner">
-											<div id="paypal_card_form" class="paypal-card-form well">
-												<div class="card-info-number clearfix">
-													<label for="card_number" class="card-label"><?php echo $entry_card_number; ?></label>
-													<div id="card_number" class="card-input-container"><div id="card_image"></div></div>
-												</div>
-												<div class="card-info-date-cvv clearfix">
-													<div class="card-info-date">
-														<label for="expiration_date" class="card-label"><?php echo $entry_expiration_date; ?></label>
-														<div id="expiration_date" class="card-input-container"></div>
-													</div>
-													<div class="card-info-cvv">
-														<label for="cvv" class="card-label"><?php echo $entry_cvv; ?></label>
-														<div id="cvv" class="card-input-container"></div>
-													</div>
-												</div>
-												<button id="paypal_button_submit" class="btn" value="submit"><?php echo $button_pay; ?></button>
-											</div>
-										</div>
+									<div id="googlepay_button" class="googlepay-button">
+										<div id="googlepay_button_container" class="googlepay-button-container paypal-spinner"></div>
 									</div>
+									<br />
 								</div>	
 							</div>
 							<div class="col col-lg-6">
-								<div class="section-card-setting">
+								<div class="section-googlepay-button-setting">
 									<div class="row">
 										<div class="col col-md-6">
-											<legend class="legend"><?php echo $text_card_settings; ?></legend>
+											<legend class="legend"><?php echo $text_googlepay_button_settings; ?></legend>
 										</div>
 										<div class="col col-md-6">
 											<div class="form-group-status">
-												<label class="control-label" for="input_card_status"><span data-toggle="tooltip" title="<?php echo $help_card_status; ?>"><?php echo $entry_status; ?></span></label>
-												<input type="hidden" name="paypal_setting[card][status]" value="0" />
-												<input type="checkbox" name="paypal_setting[card][status]" value="1" class="switch" <?php if ($setting['card']['status']) { ?>checked="checked"<?php } ?> />
+												<label class="control-label" for="input_googlepay_button_status"><span data-toggle="tooltip" title="<?php echo $help_googlepay_button_status; ?>"><?php echo $entry_status; ?></span></label>
+												<input type="hidden" name="paypal_setting[googlepay_button][status]" value="0" />
+												<input type="checkbox" name="paypal_setting[googlepay_button][status]" value="1" class="switch" <?php if ($setting['googlepay_button']['status']) { ?>checked="checked"<?php } ?> />
 											</div>
 										</div>
 									</div>
-									<div class="form-group">
-										<label class="control-label" for="input_card_align"><?php echo $entry_card_align; ?></label>
-										<select name="paypal_setting[card][align]" id="input_card_align" class="form-control control-paypal-card">
-											<?php foreach ($setting['card_align'] as $card_align) { ?>
-											<?php if ($card_align['code'] == $setting['card']['align']) { ?>
-											<option value="<?php echo $card_align['code']; ?>" selected="selected"><?php echo ${$card_align['name']}; ?></option>
-											<?php } else { ?>
-											<option value="<?php echo $card_align['code']; ?>"><?php echo ${$card_align['name']}; ?></option>
-											<?php } ?>
-											<?php } ?>
-										</select>
-									</div>
-									<div class="form-group">
-										<label class="control-label" for="input_card_size"><?php echo $entry_card_size; ?></label>
-										<select name="paypal_setting[card][size]" id="input_card_size" class="form-control control-paypal-card">
-											<?php foreach ($setting['card_size'] as $card_size) { ?>
-											<?php if ($card_size['code'] == $setting['card']['size']) { ?>
-											<option value="<?php echo $card_size['code']; ?>" selected="selected"><?php echo ${$card_size['name']}; ?></option>
-											<?php } else { ?>
-											<option value="<?php echo $card_size['code']; ?>"><?php echo ${$card_size['name']}; ?></option>
-											<?php } ?>
-											<?php } ?>
-										</select>
-									</div>
-									<div class="form-group">
-										<label class="control-label" for="input_card_secure_status"><span data-toggle="tooltip" title="<?php echo $help_card_secure_status; ?>"><?php echo $entry_card_secure_status; ?></span></label>
-										<div id="input_secure_status">
-											<input type="hidden" name="paypal_setting[card][secure_status]" value="0" />
-											<input type="checkbox" name="paypal_setting[card][secure_status]" value="1" class="switch" <?php if ($setting['card']['secure_status']) { ?>checked="checked"<?php } ?> />
+									<div class="row">
+										<div class="col col-md-6">
+											<div class="form-group">
+												<label class="control-label" for="input_googlepay_button_align"><?php echo $entry_googlepay_button_align; ?></label>
+												<select name="paypal_setting[googlepay_button][align]" id="input_googlepay_button_align" class="form-control control-googlepay-button">
+													<?php foreach ($setting['googlepay_button_align'] as $googlepay_button_align) { ?>
+													<?php if ($googlepay_button_align['code'] == $setting['googlepay_button']['align']) { ?>
+													<option value="<?php echo $googlepay_button_align['code']; ?>" selected="selected"><?php echo ${$googlepay_button_align['name']}; ?></option>
+													<?php } else { ?>
+													<option value="<?php echo $googlepay_button_align['code']; ?>"><?php echo ${$googlepay_button_align['name']}; ?></option>
+													<?php } ?>
+													<?php } ?>
+												</select>
+											</div>
+											<div class="form-group">
+												<label class="control-label" for="input_googlepay_button_size"><?php echo $entry_googlepay_button_size; ?></label>
+												<select name="paypal_setting[googlepay_button][size]" id="input_googlepay_button_size" class="form-control control-googlepay-button">
+													<?php foreach ($setting['googlepay_button_size'] as $googlepay_button_size) { ?>
+													<?php if ($googlepay_button_size['code'] == $setting['googlepay_button']['size']) { ?>
+													<option value="<?php echo $googlepay_button_size['code']; ?>" selected="selected"><?php echo ${$googlepay_button_size['name']}; ?></option>
+													<?php } else { ?>
+													<option value="<?php echo $googlepay_button_size['code']; ?>"><?php echo ${$googlepay_button_size['name']}; ?></option>
+													<?php } ?>
+													<?php } ?>
+												</select>
+											</div>
+											<div class="form-group">
+												<label class="control-label" for="input_googlepay_button_color"><?php echo $entry_googlepay_button_color; ?></label>
+												<select name="paypal_setting[googlepay_button][color]" id="input_googlepay_button_color" class="form-control control-googlepay-button">
+													<?php foreach ($setting['googlepay_button_color'] as $googlepay_button_color) { ?>
+													<?php if ($googlepay_button_color['code'] == $setting['googlepay_button']['color']) { ?>
+													<option value="<?php echo $googlepay_button_color['code']; ?>" selected="selected"><?php echo ${$googlepay_button_color['name']}; ?></option>
+													<?php } else { ?>
+													<option value="<?php echo $googlepay_button_color['code']; ?>"><?php echo ${$googlepay_button_color['name']}; ?></option>
+													<?php } ?>
+													<?php } ?>
+												</select>
+											</div>
 										</div>
-									</div>
-									<hr class="hr" />
-									<button type="button" href="#all_settings" class="btn btn-default button-all-settings collapsed" data-toggle="collapse" role="button"><?php echo $button_all_settings; ?><i class="icon icon-all-settings"></i></button>	
-									<div id="all_settings" class="all-settings collapse">
-										<div class="form-group">
-											<label class="control-label" for="input_card_secure_scenario"><?php echo $entry_card_secure_scenario; ?></label>
-											<p class="alert alert-info"><?php echo $help_card_secure_scenario; ?></p>
+										<div class="col col-md-6">
+											<div class="form-group">
+												<label class="control-label" for="input_googlepay_button_shape"><?php echo $entry_googlepay_button_shape; ?></label>
+												<select name="paypal_setting[googlepay_button][shape]" id="input_googlepay_button_shape" class="form-control control-googlepay-button">
+													<?php foreach ($setting['googlepay_button_shape'] as $googlepay_button_shape) { ?>
+													<?php if ($googlepay_button_shape['code'] == $setting['googlepay_button']['shape']) { ?>
+													<option value="<?php echo $googlepay_button_shape['code']; ?>" selected="selected"><?php echo ${$googlepay_button_shape['name']}; ?></option>
+													<?php } else { ?>
+													<option value="<?php echo $googlepay_button_shape['code']; ?>"><?php echo ${$googlepay_button_shape['name']}; ?></option>
+													<?php } ?>
+													<?php } ?>
+												</select>
+											</div>
+											<div class="form-group">
+												<label class="control-label" for="input_googlepay_button_type"><?php echo $entry_googlepay_button_type; ?></label>
+												<select name="paypal_setting[googlepay_button][type]" id="input_googlepay_button_type" class="form-control control-googlepay-button">
+													<?php foreach ($setting['googlepay_button_type'] as $googlepay_button_type) { ?>
+													<?php if ($googlepay_button_type['code'] == $setting['googlepay_button']['type']) { ?>
+													<option value="<?php echo $googlepay_button_type['code']; ?>" selected="selected"><?php echo ${$googlepay_button_type['name']}; ?></option>
+													<?php } else { ?>
+													<option value="<?php echo $googlepay_button_type['code']; ?>"><?php echo ${$googlepay_button_type['name']}; ?></option>
+													<?php } ?>
+													<?php } ?>
+												</select>
+											</div>
 										</div>
-										<?php foreach ($setting['card_secure_scenario'] as $card_secure_scenario) { ?>
-										<div class="form-group">
-											<label class="control-label" for="input_card_secure_scenario_<?php echo $card_secure_scenario['code']; ?>"><?php echo ${$card_secure_scenario['name']}; ?></label>	
-											<select name="paypal_setting[card][secure_scenario][<?php echo $card_secure_scenario['code']; ?>]" id="input_card_secure_scenario_<?php echo $card_secure_scenario['code']; ?>" class="form-control">
-												<option value="1" <?php if ($setting['card']['secure_scenario'][$card_secure_scenario['code']]) { ?>selected="selected"<?php } ?>><?php echo $text_accept; ?><?php if ($card_secure_scenario['recommended']) { ?> <?php echo $text_recommended; ?><?php } ?></option>
-												<option value="0" <?php if (!$setting['card']['secure_scenario'][$card_secure_scenario['code']]) { ?>selected="selected"<?php } ?>><?php echo $text_decline; ?><?php if (!$card_secure_scenario['recommended']) { ?> <?php echo $text_recommended; ?><?php } ?></option>
-											</select>
-										</div>
-										<?php } ?>
 									</div>
 								</div>
 							</div>
@@ -159,9 +160,9 @@
 </div>
 <script type="text/javascript">
 
-var card_width = JSON.parse('<?php echo json_encode($setting['card_width']); ?>');
+var googlepay_button_width = JSON.parse('<?php echo json_encode($setting['googlepay_button_width']); ?>');
 
-updatePayPalCard();
+updateGooglePayButton();
 
 $('.payment-paypal .switch').bootstrapSwitch({
     'onColor': 'success',
@@ -169,8 +170,8 @@ $('.payment-paypal .switch').bootstrapSwitch({
     'offText': '<?php echo $text_off; ?>'
 });
 
-$('.payment-paypal').on('change', '.control-paypal-card', function() {
-	updatePayPalCard();
+$('.payment-paypal').on('change', '.control-googlepay-button', function() {
+	updateGooglePayButton();
 });
 
 $('.payment-paypal').on('click', '.button-save', function() {
@@ -213,7 +214,7 @@ $('.payment-paypal').on('click', '.button-agree', function() {
 	});
 });
 
-function updatePayPalCard() {								
+function updateGooglePayButton() {								
 	var paypal_data = {};
 
 	paypal_data['client_id'] = '<?php echo $client_id; ?>';
@@ -227,12 +228,14 @@ function updatePayPalCard() {
 	paypal_data['decimal_place'] = '<?php echo $decimal_place; ?>';
 	paypal_data['client_token'] = '<?php echo $client_token; ?>';
 	paypal_data['transaction_method'] = '<?php echo $setting['general']['transaction_method']; ?>';
-	paypal_data['components'] = ['hosted-fields'];
-	paypal_data['card_align'] = $('.payment-paypal #input_card_align').val();
-	paypal_data['card_size'] = $('.payment-paypal #input_card_size').val();
+	paypal_data['components'] = ['googlepay'];
+	paypal_data['googlepay_button_align'] = $('.payment-paypal #input_googlepay_button_align').val();
+	paypal_data['googlepay_button_size'] = $('.payment-paypal #input_googlepay_button_size').val();
+	paypal_data['googlepay_button_color'] = $('.payment-paypal #input_googlepay_button_color').val();
+	paypal_data['googlepay_button_shape'] = $('.payment-paypal #input_googlepay_button_shape').val();
+	paypal_data['googlepay_button_type'] = $('.payment-paypal #input_googlepay_button_type').val();
+	paypal_data['googlepay_button_width'] = googlepay_button_width[paypal_data['googlepay_button_size']];
 		
-	paypal_data['card_width'] = card_width[paypal_data['card_size']];
-			
 	PayPalAPI.init(paypal_data);
 }
 

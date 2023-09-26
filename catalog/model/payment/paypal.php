@@ -1,5 +1,6 @@
 <?php
 class ModelPaymentPayPal extends Model {
+	
 	public function getMethod($address, $total) {
 		$method_data = array();
 		
@@ -51,6 +52,24 @@ class ModelPaymentPayPal extends Model {
 		return $query->row;
 	}
 	
+	public function addOrder($data) {
+		$this->db->query("INSERT INTO `" . DB_PREFIX . "paypal_checkout_integration_order` SET `order_id` = '" . (int)$data['order_id'] . "', `transaction_id` = '" . $this->db->escape($data['transaction_id']) . "', `transaction_status` = '" . $this->db->escape($data['transaction_status']) . "', `environment` = '" . $this->db->escape($data['environment']) . "'");
+	}
+		
+	public function deleteOrder($order_id) {
+		$query = $this->db->query("DELETE FROM `" . DB_PREFIX . "paypal_checkout_integration_order` WHERE `order_id` = '" . (int)$order_id . "'");
+	}
+	
+	public function getOrder($order_id) {
+		$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "paypal_checkout_integration_order` WHERE `order_id` = '" . (int)$order_id . "'");
+		
+		if ($query->num_rows) {
+			return $query->row;
+		} else {
+			return array();
+		}
+	}
+	
 	public function getAgreeStatus() {
 		$agree_status = true;
 		
@@ -82,5 +101,30 @@ class ModelPaymentPayPal extends Model {
 			$log = new Log('paypal.log');
 			$log->write('PayPal debug (' . $title . '): ' . json_encode($data));
 		}
+	}
+	
+	public function update() {
+		$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order`");
+		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order` (`order_id` INT(11) NOT NULL, `transaction_id` VARCHAR(20) NOT NULL, `transaction_status` VARCHAR(20) NOT NULL, `environment` VARCHAR(20) NOT NULL, PRIMARY KEY (`order_id`, `transaction_id`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci");
+		
+		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_order_info'");
+		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_header'");
+		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_extension_get_extensions'");
+		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_order_delete_order'");
+		
+		$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_info', `trigger` = 'admin/view/sale/order_info/before', `action` = 'payment/paypal/order_info_before'");
+		$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_header', `trigger` = 'catalog/controller/common/header/before', `action` = 'payment/paypal/header_before'");
+		$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_extension_get_extensions', `trigger` = 'catalog/model/extension/extension/getExtensions/after', `action` = 'payment/paypal/extension_get_extensions_after'");
+		$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_delete_order', `trigger` = 'catalog/model/checkout/order/deleteOrder/before', `action` = 'payment/paypal/order_delete_order_before'");
+				
+		// Setting
+		$_config = new Config();
+		$_config->load('paypal');
+			
+		$config_setting = $_config->get('paypal_setting');
+						
+		$this->db->query("DELETE FROM `" . DB_PREFIX . "setting` WHERE store_id = '0' AND `code` = 'paypal_version'");
+
+		$this->db->query("INSERT INTO " . DB_PREFIX . "setting SET store_id = '0', `code` = 'paypal_version', `key` = 'paypal_version', `value` = '" . $this->db->escape($config_setting['version']) . "'");
 	}
 }

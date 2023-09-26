@@ -1,6 +1,15 @@
 <?php
 class ControllerPaymentPayPal extends Controller {
 	private $error = array();
+	
+	public function __construct($registry) {
+		parent::__construct($registry);
+		
+		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && ($this->config->get('paypal_version') < '2.1.0'))) {
+			$this->uninstall();
+			$this->install();
+		}
+	}
 			
 	public function index() {				
 		if (isset($this->request->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1'))) {
@@ -293,6 +302,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['text_edit'] = $this->language->get('text_edit');
 		$data['text_tab_general'] = $this->language->get('text_tab_general');
 		$data['text_tab_button'] = $this->language->get('text_tab_button');
+		$data['text_tab_googlepay_button'] = $this->language->get('text_tab_googlepay_button');
 		$data['text_tab_applepay_button'] = $this->language->get('text_tab_applepay_button');
 		$data['text_tab_card'] = $this->language->get('text_tab_card');
 		$data['text_tab_message'] = $this->language->get('text_tab_message');
@@ -336,6 +346,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['href_dashboard'] = $this->url->link('payment/paypal/dashboard', 'token=' . $this->session->data['token'], true);
 		$data['href_general'] = $this->url->link('payment/paypal/general', 'token=' . $this->session->data['token'], true);
 		$data['href_button'] = $this->url->link('payment/paypal/button', 'token=' . $this->session->data['token'], true);
+		$data['href_googlepay_button'] = $this->url->link('payment/paypal/googlepay_button', 'token=' . $this->session->data['token'], true);
 		$data['href_applepay_button'] = $this->url->link('payment/paypal/applepay_button', 'token=' . $this->session->data['token'], true);
 		$data['href_card'] = $this->url->link('payment/paypal/card', 'token=' . $this->session->data['token'], true);
 		$data['href_message'] = $this->url->link('payment/paypal/message', 'token=' . $this->session->data['token'], true);
@@ -373,6 +384,12 @@ class ControllerPaymentPayPal extends Controller {
 			$data['button_status'] = 1;
 		} else {
 			$data['button_status'] = 0;
+		}
+		
+		if ($data['setting']['googlepay_button']['status']) {
+			$data['googlepay_button_status'] = 1;
+		} else {
+			$data['googlepay_button_status'] = 0;
 		}
 		
 		if ($data['setting']['applepay_button']['status']) {
@@ -446,6 +463,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['text_tab_dashboard'] = $this->language->get('text_tab_dashboard');
 		$data['text_tab_general'] = $this->language->get('text_tab_general');
 		$data['text_tab_button'] = $this->language->get('text_tab_button');
+		$data['text_tab_googlepay_button'] = $this->language->get('text_tab_googlepay_button');
 		$data['text_tab_applepay_button'] = $this->language->get('text_tab_applepay_button');
 		$data['text_tab_card'] = $this->language->get('text_tab_card');
 		$data['text_tab_message'] = $this->language->get('text_tab_message');
@@ -538,6 +556,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['href_dashboard'] = $this->url->link('payment/paypal/dashboard', 'token=' . $this->session->data['token'], true);
 		$data['href_general'] = $this->url->link('payment/paypal/general', 'token=' . $this->session->data['token'], true);
 		$data['href_button'] = $this->url->link('payment/paypal/button', 'token=' . $this->session->data['token'], true);
+		$data['href_googlepay_button'] = $this->url->link('payment/paypal/googlepay_button', 'token=' . $this->session->data['token'], true);
 		$data['href_applepay_button'] = $this->url->link('payment/paypal/applepay_button', 'token=' . $this->session->data['token'], true);
 		$data['href_card'] = $this->url->link('payment/paypal/card', 'token=' . $this->session->data['token'], true);
 		$data['href_message'] = $this->url->link('payment/paypal/message', 'token=' . $this->session->data['token'], true);
@@ -641,6 +660,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['text_tab_dashboard'] = $this->language->get('text_tab_dashboard');
 		$data['text_tab_general'] = $this->language->get('text_tab_general');
 		$data['text_tab_button'] = $this->language->get('text_tab_button');
+		$data['text_tab_googlepay_button'] = $this->language->get('text_tab_googlepay_button');
 		$data['text_tab_applepay_button'] = $this->language->get('text_tab_applepay_button');
 		$data['text_tab_card'] = $this->language->get('text_tab_card');
 		$data['text_tab_message'] = $this->language->get('text_tab_message');
@@ -758,6 +778,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['href_dashboard'] = $this->url->link('payment/paypal/dashboard', 'token=' . $this->session->data['token'], true);
 		$data['href_general'] = $this->url->link('payment/paypal/general', 'token=' . $this->session->data['token'], true);
 		$data['href_button'] = $this->url->link('payment/paypal/button', 'token=' . $this->session->data['token'], true);
+		$data['href_googlepay_button'] = $this->url->link('payment/paypal/googlepay_button', 'token=' . $this->session->data['token'], true);
 		$data['href_applepay_button'] = $this->url->link('payment/paypal/applepay_button', 'token=' . $this->session->data['token'], true);
 		$data['href_card'] = $this->url->link('payment/paypal/card', 'token=' . $this->session->data['token'], true);
 		$data['href_message'] = $this->url->link('payment/paypal/message', 'token=' . $this->session->data['token'], true);
@@ -870,6 +891,226 @@ class ControllerPaymentPayPal extends Controller {
 		$this->response->setOutput($this->load->view('payment/paypal/button', $data));
 	}
 	
+	public function googlepay_button() {
+		if (!$this->config->get('paypal_client_id')) {
+			$this->response->redirect($this->url->link('payment/paypal', 'token=' . $this->session->data['token'], true));
+		}
+		
+		$this->load->language('payment/paypal');
+		
+		$this->load->model('payment/paypal');
+		
+		$this->document->addStyle('view/stylesheet/paypal/paypal.css');
+		$this->document->addStyle('view/stylesheet/paypal/bootstrap-switch.css');
+		
+		$this->document->addScript('view/javascript/paypal/paypal.js');
+		$this->document->addScript('view/javascript/paypal/bootstrap-switch.js');
+		$this->document->addScript('https://pay.google.com/gp/p/js/pay.js');
+
+		$this->document->setTitle($this->language->get('heading_title_main'));
+		
+		$data['heading_title_main'] = $this->language->get('heading_title_main');
+		
+		$data['text_edit'] = $this->language->get('text_edit');
+		$data['text_tab_dashboard'] = $this->language->get('text_tab_dashboard');
+		$data['text_tab_general'] = $this->language->get('text_tab_general');
+		$data['text_tab_button'] = $this->language->get('text_tab_button');
+		$data['text_tab_googlepay_button'] = $this->language->get('text_tab_googlepay_button');
+		$data['text_tab_applepay_button'] = $this->language->get('text_tab_applepay_button');
+		$data['text_tab_card'] = $this->language->get('text_tab_card');
+		$data['text_tab_message'] = $this->language->get('text_tab_message');
+		$data['text_tab_order_status'] = $this->language->get('text_tab_order_status');
+		$data['text_tab_contact'] = $this->language->get('text_tab_contact');
+		$data['text_checkout'] = $this->language->get('text_checkout');
+		$data['text_product'] = $this->language->get('text_product');
+		$data['text_cart'] = $this->language->get('text_cart');
+		$data['text_step_coupon'] = $this->language->get('text_step_coupon');
+		$data['text_step_shipping'] = $this->language->get('text_step_shipping');
+		$data['text_step_payment_method'] = $this->language->get('text_step_payment_method');
+		$data['text_step_confirm_order'] = $this->language->get('text_step_confirm_order');
+		$data['text_cart_product_price_value'] = $this->language->get('text_cart_product_price_value');
+		$data['text_cart_product_total_value'] = $this->language->get('text_cart_product_total_value');
+		$data['text_cart_sub_total'] = $this->language->get('text_cart_sub_total');
+		$data['text_cart_total'] = $this->language->get('text_cart_total');
+		$data['text_googlepay_button_settings'] = $this->language->get('text_googlepay_button_settings');
+		$data['text_on'] = $this->language->get('text_on');
+		$data['text_off'] = $this->language->get('text_off');
+		$data['text_yes'] = $this->language->get('text_yes');
+		$data['text_no'] = $this->language->get('text_no');
+		$data['text_auto'] = $this->language->get('text_auto');
+		$data['text_enabled'] = $this->language->get('text_enabled');
+		$data['text_disabled'] = $this->language->get('text_disabled');
+		$data['text_insert_prepend'] = $this->language->get('text_insert_prepend');
+		$data['text_insert_append'] = $this->language->get('text_insert_append');
+		$data['text_insert_before'] = $this->language->get('text_insert_before');
+		$data['text_insert_after'] = $this->language->get('text_insert_after');	
+		$data['text_align_left'] = $this->language->get('text_align_left');
+		$data['text_align_center'] = $this->language->get('text_align_center');
+		$data['text_align_right'] = $this->language->get('text_align_right');
+		$data['text_small'] = $this->language->get('text_small');
+		$data['text_medium'] = $this->language->get('text_medium');
+		$data['text_large'] = $this->language->get('text_large');
+		$data['text_responsive'] = $this->language->get('text_responsive');
+		$data['text_black'] = $this->language->get('text_black');
+		$data['text_white'] = $this->language->get('text_white');
+		$data['text_pill'] = $this->language->get('text_pill');
+		$data['text_rect'] = $this->language->get('text_rect');
+		$data['text_buy'] = $this->language->get('text_buy');
+		$data['text_donate'] = $this->language->get('text_donate');
+		$data['text_plain'] = $this->language->get('text_plain');
+		$data['text_pay'] = $this->language->get('text_pay');
+		$data['text_check_out'] = $this->language->get('text_check_out');
+								
+		$data['entry_status'] = $this->language->get('entry_status');
+		$data['entry_googlepay_button_align'] = $this->language->get('entry_googlepay_button_align');
+		$data['entry_googlepay_button_size'] = $this->language->get('entry_googlepay_button_size');
+		$data['entry_googlepay_button_color'] = $this->language->get('entry_googlepay_button_color');
+		$data['entry_googlepay_button_shape'] = $this->language->get('entry_googlepay_button_shape');
+		$data['entry_googlepay_button_type'] = $this->language->get('entry_googlepay_button_type');
+				
+		$data['help_googlepay_button_status'] = $this->language->get('help_googlepay_button_status');
+						
+		$data['button_save'] = $this->language->get('button_save');
+		$data['button_cancel'] = $this->language->get('button_cancel');
+		$data['button_download'] = $this->language->get('button_download');
+		$data['button_download_host'] = $this->language->get('button_download_host');
+		$data['button_cart'] = $this->language->get('button_cart');
+		$data['button_checkout'] = $this->language->get('button_checkout');
+				
+		$data['breadcrumbs'] = array();
+
+		$data['breadcrumbs'][] = array(
+			'text' => $this->language->get('text_home'),
+			'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], true)
+		);
+
+		$data['breadcrumbs'][] = array(
+			'text' => $this->language->get('text_extensions'),
+			'href' => $this->url->link('extension/payment', 'token=' . $this->session->data['token'], true)
+		);
+
+		$data['breadcrumbs'][] = array(
+			'text' => $this->language->get('heading_title_main'),
+			'href' => $this->url->link('payment/paypal', 'token=' . $this->session->data['token'], true)
+		);
+		
+		// Action
+		$data['href_dashboard'] = $this->url->link('payment/paypal/dashboard', 'token=' . $this->session->data['token'], true);
+		$data['href_general'] = $this->url->link('payment/paypal/general', 'token=' . $this->session->data['token'], true);
+		$data['href_button'] = $this->url->link('payment/paypal/button', 'token=' . $this->session->data['token'], true);
+		$data['href_googlepay_button'] = $this->url->link('payment/paypal/googlepay_button', 'token=' . $this->session->data['token'], true);
+		$data['href_applepay_button'] = $this->url->link('payment/paypal/applepay_button', 'token=' . $this->session->data['token'], true);
+		$data['href_card'] = $this->url->link('payment/paypal/card', 'token=' . $this->session->data['token'], true);
+		$data['href_message'] = $this->url->link('payment/paypal/message', 'token=' . $this->session->data['token'], true);
+		$data['href_order_status'] = $this->url->link('payment/paypal/order_status', 'token=' . $this->session->data['token'], true);
+		$data['href_contact'] = $this->url->link('payment/paypal/contact', 'token=' . $this->session->data['token'], true);
+		
+		$data['action'] = $this->url->link('payment/paypal/save', 'token=' . $this->session->data['token'], true);
+		$data['cancel'] = $this->url->link('extension/payment', 'token=' . $this->session->data['token'], true);	
+		$data['agree_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/agree', 'token=' . $this->session->data['token'], true));
+
+		if (isset($this->request->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1'))) {
+			$data['server'] = HTTPS_SERVER;
+			$data['catalog'] = HTTPS_CATALOG;
+		} else {
+			$data['server'] = HTTP_SERVER;
+			$data['catalog'] = HTTP_CATALOG;
+		}
+		
+		// Setting 		
+		$_config = new Config();
+		$_config->load('paypal');
+		
+		$data['setting'] = $_config->get('paypal_setting');
+		
+		$data['setting'] = array_replace_recursive((array)$data['setting'], (array)$this->config->get('paypal_setting'));
+		
+		$data['client_id'] = $this->config->get('paypal_client_id');
+		$data['secret'] = $this->config->get('paypal_secret');
+		$data['merchant_id'] = $this->config->get('paypal_merchant_id');
+		$data['webhook_id'] = $this->config->get('paypal_webhook_id');
+		$data['environment'] = $this->config->get('paypal_environment');
+		$data['partner_attribution_id'] = $data['setting']['partner'][$data['environment']]['partner_attribution_id'];
+
+		$country = $this->model_payment_paypal->getCountryByCode($data['setting']['general']['country_code']);
+		
+		$data['locale'] = preg_replace('/-(.+?)+/', '', $this->config->get('config_language')) . '_' . $country['iso_code_2'];
+			
+		$data['currency_code'] = $data['setting']['general']['currency_code'];
+		$data['currency_value'] = $data['setting']['general']['currency_value'];
+						
+		$data['decimal_place'] = $data['setting']['currency'][$data['currency_code']]['decimal_place'];
+				
+		if ($data['client_id'] && $data['secret']) {										
+			require_once DIR_SYSTEM . 'library/paypal/paypal.php';
+			
+			$paypal_info = array(
+				'client_id' => $data['client_id'],
+				'secret' => $data['secret'],
+				'environment' => $data['environment'],
+				'partner_attribution_id' => $data['setting']['partner'][$data['environment']]['partner_attribution_id']
+			);
+		
+			$paypal = new PayPal($paypal_info);
+			
+			$token_info = array(
+				'grant_type' => 'client_credentials'
+			);	
+				
+			$paypal->setAccessToken($token_info);
+		
+			$data['client_token'] = $paypal->getClientToken();
+														
+			if ($paypal->hasErrors()) {
+				$error_messages = array();
+				
+				$errors = $paypal->getErrors();
+								
+				foreach ($errors as $error) {
+					if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
+						$error['message'] = $this->language->get('error_timeout');
+					}
+					
+					if (isset($error['details'][0]['description'])) {
+						$error_messages[] = $error['details'][0]['description'];
+					} elseif (isset($error['message'])) {
+						$error_messages[] = $error['message'];
+					}
+					
+					$this->model_payment_paypal->log($error, $error['message']);
+				}
+				
+				$this->error['warning'] = implode(' ', $error_messages);
+			}
+		}
+		
+		$result = $this->model_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
+		
+		if (!empty($result['href'])) {
+			$data['text_version'] = sprintf($this->language->get('text_version'), $result['href']);
+		} else {
+			$data['text_version'] = '';
+		}
+		
+		$agree_status = $this->model_payment_paypal->getAgreeStatus();
+		
+		if (!$agree_status) {
+			$this->error['warning'] = $this->language->get('error_agree');
+		}		
+		
+		if (isset($this->error['warning'])) {
+			$data['error_warning'] = $this->error['warning'];
+		} else {
+			$data['error_warning'] = '';
+		}
+											
+		$data['header'] = $this->load->controller('common/header');
+		$data['column_left'] = $this->load->controller('common/column_left');
+		$data['footer'] = $this->load->controller('common/footer');
+		
+		$this->response->setOutput($this->load->view('payment/paypal/googlepay_button', $data));
+	}
+	
 	public function applepay_button() {
 		if (!$this->config->get('paypal_client_id')) {
 			$this->response->redirect($this->url->link('payment/paypal', 'token=' . $this->session->data['token'], true));
@@ -894,6 +1135,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['text_tab_dashboard'] = $this->language->get('text_tab_dashboard');
 		$data['text_tab_general'] = $this->language->get('text_tab_general');
 		$data['text_tab_button'] = $this->language->get('text_tab_button');
+		$data['text_tab_googlepay_button'] = $this->language->get('text_tab_googlepay_button');
 		$data['text_tab_applepay_button'] = $this->language->get('text_tab_applepay_button');
 		$data['text_tab_card'] = $this->language->get('text_tab_card');
 		$data['text_tab_message'] = $this->language->get('text_tab_message');
@@ -949,7 +1191,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['entry_applepay_button_shape'] = $this->language->get('entry_applepay_button_shape');
 		$data['entry_applepay_button_type'] = $this->language->get('entry_applepay_button_type');
 				
-		$data['help_button_status'] = $this->language->get('help_button_status');
+		$data['help_applepay_button_status'] = $this->language->get('help_applepay_button_status');
 						
 		$data['button_save'] = $this->language->get('button_save');
 		$data['button_cancel'] = $this->language->get('button_cancel');
@@ -979,6 +1221,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['href_dashboard'] = $this->url->link('payment/paypal/dashboard', 'token=' . $this->session->data['token'], true);
 		$data['href_general'] = $this->url->link('payment/paypal/general', 'token=' . $this->session->data['token'], true);
 		$data['href_button'] = $this->url->link('payment/paypal/button', 'token=' . $this->session->data['token'], true);
+		$data['href_googlepay_button'] = $this->url->link('payment/paypal/googlepay_button', 'token=' . $this->session->data['token'], true);
 		$data['href_applepay_button'] = $this->url->link('payment/paypal/applepay_button', 'token=' . $this->session->data['token'], true);
 		$data['href_card'] = $this->url->link('payment/paypal/card', 'token=' . $this->session->data['token'], true);
 		$data['href_message'] = $this->url->link('payment/paypal/message', 'token=' . $this->session->data['token'], true);
@@ -1117,6 +1360,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['text_tab_dashboard'] = $this->language->get('text_tab_dashboard');
 		$data['text_tab_general'] = $this->language->get('text_tab_general');
 		$data['text_tab_button'] = $this->language->get('text_tab_button');
+		$data['text_tab_googlepay_button'] = $this->language->get('text_tab_googlepay_button');
 		$data['text_tab_applepay_button'] = $this->language->get('text_tab_applepay_button');
 		$data['text_tab_card'] = $this->language->get('text_tab_card');
 		$data['text_tab_message'] = $this->language->get('text_tab_message');
@@ -1201,6 +1445,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['href_dashboard'] = $this->url->link('payment/paypal/dashboard', 'token=' . $this->session->data['token'], true);
 		$data['href_general'] = $this->url->link('payment/paypal/general', 'token=' . $this->session->data['token'], true);
 		$data['href_button'] = $this->url->link('payment/paypal/button', 'token=' . $this->session->data['token'], true);
+		$data['href_googlepay_button'] = $this->url->link('payment/paypal/googlepay_button', 'token=' . $this->session->data['token'], true);
 		$data['href_applepay_button'] = $this->url->link('payment/paypal/applepay_button', 'token=' . $this->session->data['token'], true);
 		$data['href_card'] = $this->url->link('payment/paypal/card', 'token=' . $this->session->data['token'], true);
 		$data['href_message'] = $this->url->link('payment/paypal/message', 'token=' . $this->session->data['token'], true);
@@ -1336,6 +1581,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['text_tab_dashboard'] = $this->language->get('text_tab_dashboard');
 		$data['text_tab_general'] = $this->language->get('text_tab_general');
 		$data['text_tab_button'] = $this->language->get('text_tab_button');
+		$data['text_tab_googlepay_button'] = $this->language->get('text_tab_googlepay_button');
 		$data['text_tab_applepay_button'] = $this->language->get('text_tab_applepay_button');
 		$data['text_tab_card'] = $this->language->get('text_tab_card');
 		$data['text_tab_message'] = $this->language->get('text_tab_message');
@@ -1445,6 +1691,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['href_dashboard'] = $this->url->link('payment/paypal/dashboard', 'token=' . $this->session->data['token'], true);
 		$data['href_general'] = $this->url->link('payment/paypal/general', 'token=' . $this->session->data['token'], true);
 		$data['href_button'] = $this->url->link('payment/paypal/button', 'token=' . $this->session->data['token'], true);
+		$data['href_googlepay_button'] = $this->url->link('payment/paypal/googlepay_button', 'token=' . $this->session->data['token'], true);
 		$data['href_applepay_button'] = $this->url->link('payment/paypal/applepay_button', 'token=' . $this->session->data['token'], true);
 		$data['href_card'] = $this->url->link('payment/paypal/card', 'token=' . $this->session->data['token'], true);
 		$data['href_message'] = $this->url->link('payment/paypal/message', 'token=' . $this->session->data['token'], true);
@@ -1584,6 +1831,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['text_tab_dashboard'] = $this->language->get('text_tab_dashboard');
 		$data['text_tab_general'] = $this->language->get('text_tab_general');
 		$data['text_tab_button'] = $this->language->get('text_tab_button');
+		$data['text_tab_googlepay_button'] = $this->language->get('text_tab_googlepay_button');
 		$data['text_tab_applepay_button'] = $this->language->get('text_tab_applepay_button');
 		$data['text_tab_card'] = $this->language->get('text_tab_card');
 		$data['text_tab_message'] = $this->language->get('text_tab_message');
@@ -1621,6 +1869,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['href_dashboard'] = $this->url->link('payment/paypal/dashboard', 'token=' . $this->session->data['token'], true);
 		$data['href_general'] = $this->url->link('payment/paypal/general', 'token=' . $this->session->data['token'], true);
 		$data['href_button'] = $this->url->link('payment/paypal/button', 'token=' . $this->session->data['token'], true);
+		$data['href_googlepay_button'] = $this->url->link('payment/paypal/googlepay_button', 'token=' . $this->session->data['token'], true);
 		$data['href_applepay_button'] = $this->url->link('payment/paypal/applepay_button', 'token=' . $this->session->data['token'], true);
 		$data['href_card'] = $this->url->link('payment/paypal/card', 'token=' . $this->session->data['token'], true);
 		$data['href_message'] = $this->url->link('payment/paypal/message', 'token=' . $this->session->data['token'], true);
@@ -1697,6 +1946,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['text_tab_dashboard'] = $this->language->get('text_tab_dashboard');
 		$data['text_tab_general'] = $this->language->get('text_tab_general');
 		$data['text_tab_button'] = $this->language->get('text_tab_button');
+		$data['text_tab_googlepay_button'] = $this->language->get('text_tab_googlepay_button');
 		$data['text_tab_applepay_button'] = $this->language->get('text_tab_applepay_button');
 		$data['text_tab_card'] = $this->language->get('text_tab_card');
 		$data['text_tab_message'] = $this->language->get('text_tab_message');
@@ -1755,6 +2005,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['href_dashboard'] = $this->url->link('payment/paypal/dashboard', 'token=' . $this->session->data['token'], true);
 		$data['href_general'] = $this->url->link('payment/paypal/general', 'token=' . $this->session->data['token'], true);
 		$data['href_button'] = $this->url->link('payment/paypal/button', 'token=' . $this->session->data['token'], true);
+		$data['href_googlepay_button'] = $this->url->link('payment/paypal/googlepay_button', 'token=' . $this->session->data['token'], true);
 		$data['href_applepay_button'] = $this->url->link('payment/paypal/applepay_button', 'token=' . $this->session->data['token'], true);
 		$data['href_card'] = $this->url->link('payment/paypal/card', 'token=' . $this->session->data['token'], true);
 		$data['href_message'] = $this->url->link('payment/paypal/message', 'token=' . $this->session->data['token'], true);
@@ -2053,20 +2304,512 @@ class ControllerPaymentPayPal extends Controller {
 	}
 					
 	public function install() {		
+		$this->load->model('payment/paypal');
+		
+		$this->model_payment_paypal->install();
+		
 		$this->load->model('extension/event');
 		
+		$this->model_extension_event->deleteEvent('paypal_order_info');
 		$this->model_extension_event->deleteEvent('paypal_header');
 		$this->model_extension_event->deleteEvent('paypal_extension_get_extensions');
+		$this->model_extension_event->deleteEvent('paypal_order_delete_order');
 		
+		$this->model_extension_event->addEvent('paypal_order_info', 'admin/view/sale/order_info/before', 'payment/paypal/order_info_before');
 		$this->model_extension_event->addEvent('paypal_header', 'catalog/controller/common/header/before', 'payment/paypal/header_before');
 		$this->model_extension_event->addEvent('paypal_extension_get_extensions', 'catalog/model/extension/extension/getExtensions/after', 'payment/paypal/extension_get_extensions_after');
+		$this->model_extension_event->addEvent('paypal_order_delete_order', 'catalog/model/checkout/order/deleteOrder/before', 'payment/paypal/order_delete_order_before');
+		
+		// Setting
+		$_config = new Config();
+		$_config->load('paypal');
+			
+		$config_setting = $_config->get('paypal_setting');
+				
+		$setting['paypal_version'] = $config_setting['version'];
+		
+		$this->load->model('setting/setting');
+		
+		$this->model_setting_setting->editSetting('paypal_version', $setting);
 	}
 	
 	public function uninstall() {
+		$this->load->model('payment/paypal');
+		
+		$this->model_payment_paypal->uninstall();
+		
 		$this->load->model('extension/event');
 		
+		$this->model_extension_event->deleteEvent('paypal_order_info');
 		$this->model_extension_event->deleteEvent('paypal_header');
 		$this->model_extension_event->deleteEvent('paypal_extension_get_extensions');
+		$this->model_extension_event->deleteEvent('paypal_order_delete_order');
+		
+		$this->load->model('setting/setting');
+		
+		$this->model_setting_setting->deleteSetting('paypal_version');
+	}
+	
+	public function order_info_before($route, &$data) {
+		if ($this->config->get('paypal_status') && !empty($this->request->get['order_id'])) {
+			$this->load->language('payment/paypal');
+			
+			$this->load->model('payment/paypal');
+			
+			$data['order_id'] = $this->request->get['order_id'];
+			
+			$paypal_order_info = $this->model_payment_paypal->getOrder($data['order_id']);
+				
+			if ($paypal_order_info) {
+				$data['text_transaction_id'] = $this->language->get('text_transaction_id');
+				$data['text_transaction_created'] = $this->language->get('text_transaction_created');
+				$data['text_transaction_voided'] = $this->language->get('text_transaction_voided');
+				$data['text_transaction_completed'] = $this->language->get('text_transaction_completed');
+				$data['text_transaction_declined'] = $this->language->get('text_transaction_declined');
+				$data['text_transaction_pending'] = $this->language->get('text_transaction_pending');
+				$data['text_transaction_refunded'] = $this->language->get('text_transaction_refunded');
+				$data['text_transaction_reversed'] = $this->language->get('text_transaction_reversed');			
+				
+				$data['button_capture'] = $this->language->get('button_capture');
+				$data['button_reauthorize'] = $this->language->get('button_reauthorize');
+				$data['button_void'] = $this->language->get('button_void');
+				$data['button_refund'] = $this->language->get('button_refund');
+				
+				$data['transaction_id'] = $paypal_order_info['transaction_id'];
+				$data['transaction_status'] = $paypal_order_info['transaction_status'];
+				
+				if ($paypal_order_info['environment'] == 'production') {
+					$data['transaction_url'] = 'https://www.paypal.com/activity/payment/' . $data['transaction_id'];
+				} else {
+					$data['transaction_url'] = 'https://www.sandbox.paypal.com/activity/payment/' . $data['transaction_id'];
+				}
+				
+				$data['info_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/getPaymentInfo', 'token=' . $this->session->data['token'] . '&order_id=' . $data['order_id'], true));
+				$data['capture_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/capturePayment', 'token=' . $this->session->data['token'], true));
+				$data['reauthorize_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/reauthorizePayment', 'token=' . $this->session->data['token'], true));
+				$data['void_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/voidPayment', 'token=' . $this->session->data['token'], true));
+				$data['refund_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/refundPayment', 'token=' . $this->session->data['token'], true));
+								
+				$data['tabs'][] = array(
+					'code'    => 'paypal',
+					'title'   => $this->language->get('heading_title_main'),
+					'content' => $this->load->view('payment/paypal/order', $data)
+				);
+			}
+		}
+	}
+	
+	public function getPaymentInfo() {
+		$content = '';
+		
+		if ($this->config->get('paypal_status') && !empty($this->request->get['order_id'])) {
+			$this->load->language('payment/paypal');
+			
+			$this->load->model('payment/paypal');
+			
+			$data['order_id'] = $this->request->get['order_id'];
+			
+			$paypal_order_info = $this->model_payment_paypal->getOrder($data['order_id']);
+				
+			if ($paypal_order_info) {
+				$data['text_transaction_id'] = $this->language->get('text_transaction_id');
+				$data['text_transaction_created'] = $this->language->get('text_transaction_created');
+				$data['text_transaction_voided'] = $this->language->get('text_transaction_voided');
+				$data['text_transaction_completed'] = $this->language->get('text_transaction_completed');
+				$data['text_transaction_declined'] = $this->language->get('text_transaction_declined');
+				$data['text_transaction_pending'] = $this->language->get('text_transaction_pending');
+				$data['text_transaction_refunded'] = $this->language->get('text_transaction_refunded');
+				$data['text_transaction_reversed'] = $this->language->get('text_transaction_reversed');			
+				
+				$data['button_capture'] = $this->language->get('button_capture');
+				$data['button_reauthorize'] = $this->language->get('button_reauthorize');
+				$data['button_void'] = $this->language->get('button_void');
+				$data['button_refund'] = $this->language->get('button_refund');
+				
+				$data['transaction_id'] = $paypal_order_info['transaction_id'];
+				$data['transaction_status'] = $paypal_order_info['transaction_status'];
+				
+				if ($paypal_order_info['environment'] == 'production') {
+					$data['transaction_url'] = 'https://www.paypal.com/activity/payment/' . $data['transaction_id'];
+				} else {
+					$data['transaction_url'] = 'https://www.sandbox.paypal.com/activity/payment/' . $data['transaction_id'];
+				}
+				
+				$data['info_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/getPaymentInfo', 'token=' . $this->session->data['token'] . '&order_id=' . $data['order_id'], true));
+				$data['capture_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/capturePayment', 'token=' . $this->session->data['token'], true));
+				$data['reauthorize_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/reauthorizePayment', 'token=' . $this->session->data['token'], true));
+				$data['void_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/voidPayment', 'token=' . $this->session->data['token'], true));
+				$data['refund_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/refundPayment', 'token=' . $this->session->data['token'], true));
+								
+				$content = $this->load->view('payment/paypal/order', $data);
+			}
+		}
+		
+		$this->response->setOutput($content);
+	}
+	
+	public function capturePayment() {						
+		if ($this->config->get('paypal_status') && !empty($this->request->post['order_id']) && !empty($this->request->post['transaction_id'])) {
+			$this->load->language('payment/paypal');
+			
+			$this->load->model('payment/paypal');
+			
+			$order_id = $this->request->post['order_id'];
+			$transaction_id = $this->request->post['transaction_id'];
+			
+			// Setting
+			$_config = new Config();
+			$_config->load('paypal');
+			
+			$config_setting = $_config->get('paypal_setting');
+		
+			$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('paypal_setting'));
+				
+			$client_id = $this->config->get('paypal_client_id');
+			$secret = $this->config->get('paypal_secret');
+			$environment = $this->config->get('paypal_environment');
+			$partner_id = $setting['partner'][$environment]['partner_id'];
+			$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
+			$transaction_method = $setting['general']['transaction_method'];
+			
+			require_once DIR_SYSTEM . 'library/paypal/paypal.php';
+		
+			$paypal_info = array(
+				'partner_id' => $partner_id,
+				'client_id' => $client_id,
+				'secret' => $secret,
+				'environment' => $environment,
+				'partner_attribution_id' => $partner_attribution_id
+			);
+		
+			$paypal = new PayPal($paypal_info);
+		
+			$token_info = array(
+				'grant_type' => 'client_credentials'
+			);	
+						
+			$paypal->setAccessToken($token_info);
+
+			$result = $paypal->setPaymentCapture($transaction_id);
+							
+			if ($paypal->hasErrors()) {
+				$error_messages = array();
+				
+				$errors = $paypal->getErrors();
+								
+				foreach ($errors as $error) {
+					if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
+						$error['message'] = $this->language->get('error_timeout');
+					}
+				
+					if (isset($error['details'][0]['description'])) {
+						$error_messages[] = $error['details'][0]['description'];
+					} elseif (isset($error['message'])) {
+						$error_messages[] = $error['message'];
+					}
+					
+					$this->model_payment_paypal->log($error, $error['message']);
+				}
+				
+				$this->error['warning'] = implode(' ', $error_messages);
+			}
+						
+			if (isset($result['id']) && isset($result['status']) && !$this->error) {
+				$transaction_id = $result['id'];
+				$transaction_status = 'completed';
+				
+				$this->model_payment_paypal->deleteOrder($order_id);
+										
+				$paypal_data = array(
+					'order_id' => $order_id,
+					'transaction_id' => $transaction_id,
+					'transaction_status' => $transaction_status,
+					'environment' => $environment
+				);
+
+				$this->model_payment_paypal->addOrder($paypal_data);
+								
+				$data['success'] = $this->language->get('success_capture');
+			}
+		}
+				
+		$data['error'] = $this->error;
+				
+		$this->response->addHeader('Content-Type: application/json');
+		$this->response->setOutput(json_encode($data));
+	}
+	
+	public function reauthorizePayment() {
+		if ($this->config->get('paypal_status') && !empty($this->request->post['order_id']) && !empty($this->request->post['transaction_id'])) {
+			$this->load->language('payment/paypal');
+			
+			$this->load->model('payment/paypal');
+			
+			$order_id = $this->request->post['order_id'];
+			$transaction_id = $this->request->post['transaction_id'];
+			
+			// Setting
+			$_config = new Config();
+			$_config->load('paypal');
+			
+			$config_setting = $_config->get('paypal_setting');
+		
+			$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('paypal_setting'));
+				
+			$client_id = $this->config->get('paypal_client_id');
+			$secret = $this->config->get('paypal_secret');
+			$environment = $this->config->get('paypal_environment');
+			$partner_id = $setting['partner'][$environment]['partner_id'];
+			$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
+			$transaction_method = $setting['general']['transaction_method'];
+			
+			require_once DIR_SYSTEM . 'library/paypal/paypal.php';
+		
+			$paypal_info = array(
+				'partner_id' => $partner_id,
+				'client_id' => $client_id,
+				'secret' => $secret,
+				'environment' => $environment,
+				'partner_attribution_id' => $partner_attribution_id
+			);
+		
+			$paypal = new PayPal($paypal_info);
+		
+			$token_info = array(
+				'grant_type' => 'client_credentials'
+			);	
+						
+			$paypal->setAccessToken($token_info);
+		
+			$result = $paypal->setPaymentReauthorize($transaction_id);
+								
+			if ($paypal->hasErrors()) {
+				$error_messages = array();
+				
+				$errors = $paypal->getErrors();
+					
+				foreach ($errors as $error) {
+					if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
+						$error['message'] = $this->language->get('error_timeout');
+					}
+				
+					if (isset($error['details'][0]['description'])) {
+						$error_messages[] = $error['details'][0]['description'];
+					} elseif (isset($error['message'])) {
+						$error_messages[] = $error['message'];
+					}
+					
+					$this->model_payment_paypal->log($error, $error['message']);
+				}
+			
+				$this->error['warning'] = implode(' ', $error_messages);
+			}
+							
+			if (isset($result['id']) && isset($result['status']) && !$this->error) {
+				$transaction_id = $result['id'];
+				$transaction_status = 'created';
+				
+				$this->model_payment_paypal->deleteOrder($order_id);
+										
+				$paypal_data = array(
+					'order_id' => $order_id,
+					'transaction_id' => $transaction_id,
+					'transaction_status' => $transaction_status,
+					'environment' => $environment
+				);
+
+				$this->model_payment_paypal->addOrder($paypal_data);
+								
+				$data['success'] = $this->language->get('success_reauthorize');
+			}
+		}
+						
+		$data['error'] = $this->error;
+				
+		$this->response->addHeader('Content-Type: application/json');
+		$this->response->setOutput(json_encode($data));
+	}
+	
+	public function voidPayment() {
+		if ($this->config->get('paypal_status') && !empty($this->request->post['order_id']) && !empty($this->request->post['transaction_id'])) {
+			$this->load->language('payment/paypal');
+			
+			$this->load->model('payment/paypal');
+			
+			$order_id = $this->request->post['order_id'];
+			$transaction_id = $this->request->post['transaction_id'];
+			
+			// Setting
+			$_config = new Config();
+			$_config->load('paypal');
+			
+			$config_setting = $_config->get('paypal_setting');
+		
+			$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('paypal_setting'));
+				
+			$client_id = $this->config->get('paypal_client_id');
+			$secret = $this->config->get('paypal_secret');
+			$environment = $this->config->get('paypal_environment');
+			$partner_id = $setting['partner'][$environment]['partner_id'];
+			$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
+			$transaction_method = $setting['general']['transaction_method'];
+			
+			require_once DIR_SYSTEM . 'library/paypal/paypal.php';
+		
+			$paypal_info = array(
+				'partner_id' => $partner_id,
+				'client_id' => $client_id,
+				'secret' => $secret,
+				'environment' => $environment,
+				'partner_attribution_id' => $partner_attribution_id
+			);
+		
+			$paypal = new PayPal($paypal_info);
+		
+			$token_info = array(
+				'grant_type' => 'client_credentials'
+			);	
+						
+			$paypal->setAccessToken($token_info);
+		
+			$result = $paypal->setPaymentVoid($transaction_id);
+				
+			$this->log->write($result);
+				
+			if ($paypal->hasErrors()) {
+				$error_messages = array();
+				
+				$errors = $paypal->getErrors();
+								
+				foreach ($errors as $error) {
+					if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
+						$error['message'] = $this->language->get('error_timeout');
+					}
+				
+					if (isset($error['details'][0]['description'])) {
+						$error_messages[] = $error['details'][0]['description'];
+					} elseif (isset($error['message'])) {
+						$error_messages[] = $error['message'];
+					}
+					
+					$this->model_payment_paypal->log($error, $error['message']);
+				}
+				
+				$this->error['warning'] = implode(' ', $error_messages);
+			}
+			
+			if (!$this->error) {
+				$transaction_status = 'voided';
+				
+				$this->model_payment_paypal->deleteOrder($order_id);
+										
+				$paypal_data = array(
+					'order_id' => $order_id,
+					'transaction_id' => $transaction_id,
+					'transaction_status' => $transaction_status,
+					'environment' => $environment
+				);
+
+				$this->model_payment_paypal->addOrder($paypal_data);
+								
+				$data['success'] = $this->language->get('success_void');
+			}
+		}
+						
+		$data['error'] = $this->error;
+				
+		$this->response->addHeader('Content-Type: application/json');
+		$this->response->setOutput(json_encode($data));
+	}
+	
+	public function refundPayment() {
+		if ($this->config->get('paypal_status') && !empty($this->request->post['order_id']) && !empty($this->request->post['transaction_id'])) {
+			$this->load->language('payment/paypal');
+			
+			$this->load->model('payment/paypal');
+			
+			$order_id = $this->request->post['order_id'];
+			$transaction_id = $this->request->post['transaction_id'];
+			
+			// Setting
+			$_config = new Config();
+			$_config->load('paypal');
+			
+			$config_setting = $_config->get('paypal_setting');
+		
+			$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('paypal_setting'));
+				
+			$client_id = $this->config->get('paypal_client_id');
+			$secret = $this->config->get('paypal_secret');
+			$environment = $this->config->get('paypal_environment');
+			$partner_id = $setting['partner'][$environment]['partner_id'];
+			$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
+			$transaction_method = $setting['general']['transaction_method'];
+			
+			require_once DIR_SYSTEM . 'library/paypal/paypal.php';
+		
+			$paypal_info = array(
+				'partner_id' => $partner_id,
+				'client_id' => $client_id,
+				'secret' => $secret,
+				'environment' => $environment,
+				'partner_attribution_id' => $partner_attribution_id
+			);
+		
+			$paypal = new PayPal($paypal_info);
+		
+			$token_info = array(
+				'grant_type' => 'client_credentials'
+			);	
+						
+			$paypal->setAccessToken($token_info);
+
+			$result = $paypal->setPaymentRefund($transaction_id);
+							
+			if ($paypal->hasErrors()) {
+				$error_messages = array();
+				
+				$errors = $paypal->getErrors();
+								
+				foreach ($errors as $error) {
+					if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
+						$error['message'] = $this->language->get('error_timeout');
+					}
+				
+					if (isset($error['details'][0]['description'])) {
+						$error_messages[] = $error['details'][0]['description'];
+					} elseif (isset($error['message'])) {
+						$error_messages[] = $error['message'];
+					}
+					
+					$this->model_payment_paypal->log($error, $error['message']);
+				}
+				
+				$this->error['warning'] = implode(' ', $error_messages);
+			}
+		
+			if (isset($result['id']) && isset($result['status']) && !$this->error) {
+				$transaction_status = 'refunded';
+				
+				$this->model_payment_paypal->deleteOrder($order_id);
+										
+				$paypal_data = array(
+					'order_id' => $order_id,
+					'transaction_id' => $transaction_id,
+					'transaction_status' => $transaction_status,
+					'environment' => $environment
+				);
+
+				$this->model_payment_paypal->addOrder($paypal_data);
+								
+				$data['success'] = $this->language->get('success_refund');
+			}
+		}
+						
+		$data['error'] = $this->error;
+				
+		$this->response->addHeader('Content-Type: application/json');
+		$this->response->setOutput(json_encode($data));
 	}
 	
 	private function validate() {

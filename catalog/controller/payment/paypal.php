@@ -9,6 +9,10 @@ class ControllerPaymentPayPal extends Controller {
 			ini_set('precision', 14);
 			ini_set('serialize_precision', 14);
 		}
+		
+		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && ($this->config->get('paypal_version') < '2.1.0'))) {
+			$this->update();
+		}
 	}
 	
 	public function index() {
@@ -38,6 +42,10 @@ class ControllerPaymentPayPal extends Controller {
 			
 			if ($setting['button']['checkout']['status']) {
 				$data['button_status'] = $setting['button']['checkout']['status'];
+			}
+			
+			if ($setting['googlepay_button']['status']) {										
+				$data['googlepay_button_status'] = $setting['googlepay_button']['status'];
 			}
 			
 			if ($setting['applepay_button']['status']) {										
@@ -128,6 +136,10 @@ class ControllerPaymentPayPal extends Controller {
 			
 		if ($setting['button']['checkout']['status']) {
 			$data['button_status'] = $setting['button']['checkout']['status'];
+		}
+		
+		if ($setting['googlepay_button']['status']) {										
+			$data['googlepay_button_status'] = $setting['googlepay_button']['status'];
 		}
 		
 		if ($setting['applepay_button']['status']) {										
@@ -414,6 +426,33 @@ class ControllerPaymentPayPal extends Controller {
 					}
 				}
 				
+				if ($setting['googlepay_button']['status']) {
+					$data['components'][] = 'googlepay';
+					$data['googlepay_button_status'] = $setting['googlepay_button']['status'];
+					$data['googlepay_button_align'] = $setting['googlepay_button']['align'];
+					$data['googlepay_button_size'] = $setting['googlepay_button']['size'];
+					$data['googlepay_button_width'] = $setting['googlepay_button_width'][$data['googlepay_button_size']];
+					$data['googlepay_button_color'] = $setting['googlepay_button']['color'];
+					$data['googlepay_button_shape'] = $setting['googlepay_button']['shape'];
+					$data['googlepay_button_type'] = $setting['googlepay_button']['type'];
+					
+					if (!empty($this->session->data['order_id'])) {
+						$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
+		
+						$data['googlepay_amount'] = number_format($order_info['total'] * $data['currency_value'], $data['decimal_place'], '.', '');
+					} else {
+						$item_total = 0;
+								
+						foreach ($this->cart->getProducts() as $product) {
+							$product_price = $this->tax->calculate($product['price'], $product['tax_class_id'], true);
+									
+							$item_total += $product_price * $product['quantity'];
+						}
+			
+						$data['googlepay_amount'] = number_format($item_total * $data['currency_value'], $data['decimal_place'], '.', '');
+					}
+				}
+				
 				if ($setting['applepay_button']['status']) {
 					$data['components'][] = 'applepay';
 					$data['applepay_button_status'] = $setting['applepay_button']['status'];
@@ -662,6 +701,12 @@ class ControllerPaymentPayPal extends Controller {
 				$currency_value = $this->currency->getValue($this->session->data['currency']);
 				
 				if (($payment_type == 'button') && empty($setting['currency'][$currency_code]['status'])) {
+					$currency_code = $setting['general']['currency_code'];
+					$currency_value = $setting['general']['currency_value'];
+				}
+				
+				if (($payment_type == 'googlepay_button') && empty($setting['currency'][$currency_code]['status'])) {
+					$transaction_method = 'capture';
 					$currency_code = $setting['general']['currency_code'];
 					$currency_value = $setting['general']['currency_value'];
 				}
@@ -1069,7 +1114,7 @@ class ControllerPaymentPayPal extends Controller {
 					$data['url'] = $this->url->link('payment/paypal/confirmOrder', '', true);			
 				}
 			} else {
-				if ((($payment_type == 'button') || ($payment_type == 'applepay_button')) && !empty($this->request->post['paypal_order_id'])) {
+				if ((($payment_type == 'button') || ($payment_type == 'googlepay_button') || ($payment_type == 'applepay_button')) && !empty($this->request->post['paypal_order_id'])) {
 					$paypal_order_id = $this->request->post['paypal_order_id'];
 				}
 		
@@ -2654,33 +2699,41 @@ class ControllerPaymentPayPal extends Controller {
 				$order_id = reset($invoice_id);
 				
 				$order_status_id = 0;
+				$transaction_status = '';
 					
 				if ($webhook_event['event_type'] == 'PAYMENT.AUTHORIZATION.CREATED') {
 					$order_status_id = $setting['order_status']['pending']['id'];
+					$transaction_status = 'created';
 				}
 		
 				if ($webhook_event['event_type'] == 'PAYMENT.AUTHORIZATION.VOIDED') {
 					$order_status_id = $setting['order_status']['voided']['id'];
+					$transaction_status = 'voided';
 				}
 			
 				if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.COMPLETED') {
 					$order_status_id = $setting['order_status']['completed']['id'];
+					$transaction_status = 'completed';
 				}
 		
 				if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.DENIED') {
 					$order_status_id = $setting['order_status']['denied']['id'];
+					$transaction_status = 'denied';
 				}
 		
 				if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.PENDING') {
 					$order_status_id = $setting['order_status']['pending']['id'];
+					$transaction_status = 'pending';
 				}
 		
 				if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.REFUNDED') {
 					$order_status_id = $setting['order_status']['refunded']['id'];
+					$transaction_status = 'refunded';
 				}
 		
 				if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.REVERSED') {
 					$order_status_id = $setting['order_status']['reversed']['id'];
+					$transaction_status = 'reversed';
 				}
 		
 				if ($webhook_event['event_type'] == 'CHECKOUT.ORDER.COMPLETED') {
@@ -2692,6 +2745,29 @@ class ControllerPaymentPayPal extends Controller {
 
 					$this->model_checkout_order->addOrderHistory($order_id, $order_status_id, '', true);
 				}
+				
+				if (isset($webhook_event['resource']['id']) && $transaction_status) {
+					$transaction_id = $webhook_event['resource']['id'];
+
+					if (($transaction_status == 'refunded') || ($transaction_status == 'reversed')) {
+						$paypal_order_info = $this->model_payment_paypal->getOrder($order_id);
+					
+						if ($paypal_order_info) {
+							$transaction_id = $paypal_order_info['transaction_id'];
+						}
+					}
+					
+					$this->model_payment_paypal->deleteOrder($order_id);
+										
+					$paypal_data = array(
+						'order_id' => $order_id,
+						'transaction_id' => $transaction_id,
+						'transaction_status' => $transaction_status,
+						'environment' => $environment
+					);
+
+					$this->model_payment_paypal->addOrder($paypal_data);
+				}
 			}
 			
 			return true;
@@ -2700,12 +2776,26 @@ class ControllerPaymentPayPal extends Controller {
 		return false;
 	}
 	
+	public function update() {
+		$this->load->model('payment/paypal');
+		
+		$this->model_payment_paypal->update();
+	}
+	
 	public function header_before($route, &$data) {
 		$this->load->model('payment/paypal');
 		
 		$agree_status = $this->model_payment_paypal->getAgreeStatus();
 		
 		if ($this->config->get('paypal_status') && $this->config->get('paypal_client_id') && $this->config->get('paypal_secret') && $agree_status) {
+			// Setting
+			$_config = new Config();
+			$_config->load('paypal');
+			
+			$config_setting = $_config->get('paypal_setting');
+		
+			$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
+			
 			if (isset($this->request->get['route'])) {
 				$route = $this->request->get['route'];
 			} else {
@@ -2714,20 +2804,20 @@ class ControllerPaymentPayPal extends Controller {
 			
 			$params = array();
 			
-			if ($route == 'common/home') {
+			if (($route == 'common/home') && $setting['message']['home']['status']) {
 				$params['page_code'] = 'home';
 			}
 			
-			if (($route == 'product/product') && !empty($this->request->get['product_id'])) {
+			if (($route == 'product/product') && !empty($this->request->get['product_id']) && ($setting['button']['product']['status'] || $setting['message']['product']['status'])) {
 				$params['page_code'] = 'product';
 				$params['product_id'] = $this->request->get['product_id'];
 			}
 			
-			if ($route == 'checkout/cart') {
+			if (($route == 'checkout/cart') && ($setting['button']['cart']['status'] || $setting['message']['cart']['status'])) {
 				$params['page_code'] = 'cart';
 			}
 			
-			if ($route == 'checkout/checkout') {
+			if (($route == 'checkout/checkout') && ($setting['button']['checkout']['status'] || $setting['googlepay_button']['status'] || $setting['applepay_button']['status'] || $setting['card']['status'] || $setting['message']['checkout']['status'])) {
 				$params['page_code'] = 'checkout';
 			}
 			
@@ -2741,13 +2831,21 @@ class ControllerPaymentPayPal extends Controller {
 				}
 				
 				if ($params['page_code'] == 'checkout') {			
-					if (file_exists(DIR_TEMPLATE . $theme . '/stylesheet/paypal/card.css')) {
-						$this->document->addStyle('catalog/view/theme/' . $theme . '/stylesheet/paypal/card.css');
-					} else {
-						$this->document->addStyle('catalog/view/theme/default/stylesheet/paypal/card.css');
+					if ($setting['card']['status']) {					
+						if (file_exists(DIR_TEMPLATE . $theme . '/stylesheet/paypal/card.css')) {
+							$this->document->addStyle('catalog/view/theme/' . $theme . '/stylesheet/paypal/card.css');
+						} else {
+							$this->document->addStyle('catalog/view/theme/default/stylesheet/paypal/card.css');
+						}
 					}
 					
-					$this->document->addScript('https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js');
+					if ($setting['googlepay_button']['status']) {
+						$this->document->addScript('https://pay.google.com/gp/p/js/pay.js');
+					}
+				
+					if ($setting['applepay_button']['status']) {
+						$this->document->addScript('https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js');
+					}
 				}
 			
 				$this->document->addScript('catalog/view/javascript/paypal/paypal.js?' . http_build_query($params));
@@ -2779,6 +2877,12 @@ class ControllerPaymentPayPal extends Controller {
 				}
 			}
 		}			
+	}
+	
+	public function order_delete_order_before($route, $order_id) {
+		$this->load->model('payment/paypal');
+
+		$this->model_payment_paypal->deleteOrder($order_id);
 	}
 	
 	private function validateShipping($code) {

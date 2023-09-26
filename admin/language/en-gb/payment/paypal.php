@@ -14,6 +14,7 @@ $_['text_version']							= 'New PayPal Checkout Integration version available. Y
 $_['text_tab_dashboard']					= 'Back to the dashboard';
 $_['text_tab_general']				 		= 'General';
 $_['text_tab_button']						= 'Buttons';
+$_['text_tab_googlepay_button']				= 'GooglePay';
 $_['text_tab_applepay_button']				= 'ApplePay';
 $_['text_tab_card']							= 'Advanced Cards';
 $_['text_tab_message']						= 'Pay Later messaging';
@@ -26,6 +27,7 @@ $_['text_panel_sale_analytics']				= 'Sales Analytics';
 $_['text_statistic_title']					= 'The platform that grows with you';
 $_['text_statistic_description']			= 'The platform has 416 million customers';
 $_['text_button_settings']					= 'Button settings';
+$_['text_googlepay_button_settings']		= 'GooglePay Button settings';
 $_['text_applepay_button_settings']			= 'ApplePay Button settings';
 $_['text_card_settings']					= 'Card settings';
 $_['text_message_settings']					= 'Message settings';
@@ -188,6 +190,14 @@ $_['text_step_coupon']						= 'Use Coupon Code';
 $_['text_step_shipping']					= 'Estimate Shipping & Taxes';
 $_['text_step_payment_method']				= 'Step 5: Payment Method';
 $_['text_step_confirm_order']				= 'Step 6: Confirm Order';
+$_['text_transaction_id']   				= 'Transaction ID';
+$_['text_transaction_created']				= 'Payment authorization was created.';
+$_['text_transaction_voided']				= 'Payment authorization was voided.';
+$_['text_transaction_completed']			= 'Payment capture was completed.';
+$_['text_transaction_declined']				= 'Payment capture was declined.';
+$_['text_transaction_pending']				= 'The state of a payment capture was changed to pending.';
+$_['text_transaction_refunded']				= 'A merchant refunded the payment capture.';
+$_['text_transaction_reversed']				= 'PayPal reversed the payment capture.';
 
 // Entry
 $_['entry_connect']	 						= 'Connect';
@@ -213,6 +223,11 @@ $_['entry_button_color'] 					= 'Button Color';
 $_['entry_button_shape'] 					= 'Button Shape';
 $_['entry_button_label'] 					= 'Button Label';
 $_['entry_button_tagline'] 					= 'Button Tagline';
+$_['entry_googlepay_button_align']     		= 'Button Align';
+$_['entry_googlepay_button_size'] 			= 'Button Size';
+$_['entry_googlepay_button_color'] 			= 'Button Color';
+$_['entry_googlepay_button_shape'] 			= 'Button Shape';
+$_['entry_googlepay_button_type'] 			= 'Button Type';
 $_['entry_applepay_button_align']     		= 'Button Align';
 $_['entry_applepay_button_size'] 			= 'Button Size';
 $_['entry_applepay_button_color'] 			= 'Button Color';
@@ -251,6 +266,7 @@ $_['entry_contact_send'] 					= 'Submit Form';
 // Help
 $_['help_status']		 					= 'Enable/Disable extension.';
 $_['help_button_status']					= 'When activated PayPal will display personalized Smart Buttons avalible to your customers based on their location.';
+$_['help_googlepay_button_status']			= 'PayPal verifies if you are eligible for Google Pay payment and will display this option on the checkout step if available.';
 $_['help_applepay_button_status']			= 'PayPal verifies if you are eligible for Apple Pay payment and will display this option on the checkout step if available.';
 $_['help_card_status']						= 'PayPal verifies if you are eligible for advanced card payment and will display this option on the checkout step if available.';
 $_['help_message_status']					= 'Add pay later messaging to your site.';
@@ -274,12 +290,20 @@ $_['button_send']							= 'Submit';
 $_['button_cart']							= 'Add to cart';
 $_['button_checkout']						= 'Checkout';
 $_['button_pay']							= 'Pay with Card';
+$_['button_capture']						= 'Capture';
+$_['button_reauthorize']					= 'Reauthorize';
+$_['button_void']							= 'Void';
+$_['button_refund']							= 'Refund';
 
 // Success
 $_['success_save']		 					= 'Success: You have modified PayPal!';
 $_['success_send']		 					= 'Success: Your contact details have been successfully sent to paypal!';
 $_['success_download_host']					= 'Success: Association file has been successfully uploaded and hosted!';
 $_['success_agree']		 					= 'Success: Deactivation was successful!';
+$_['success_capture']						= 'Payment capture was completed.';
+$_['success_reauthorize']					= 'Payment authorization was reauthorized.';
+$_['success_void']							= 'Payment authorization was voided.';
+$_['success_refund']						= 'Payment capture was refunded.';
 
 // Error
 $_['error_permission']	 					= 'Warning: You do not have permission to modify payment PayPal!';
