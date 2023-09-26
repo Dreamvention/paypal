@@ -278,6 +278,58 @@ class PayPal {
 			return false;
 		}
 	}
+	
+	//IN:  transaction id
+	public function setPaymentCapture($transaction_id) {
+		$command = '/v2/payments/authorizations/' . $transaction_id . '/capture';
+						
+		$result = $this->execute('POST', $command);
+		
+		if (!empty($result['id'])) {
+			return $result;
+		} else {
+			return false;
+		}
+	}
+	
+	//IN:  transaction id
+	public function setPaymentReauthorize($transaction_id) {
+		$command = '/v2/payments/authorizations/' . $transaction_id . '/reauthorize';
+						
+		$result = $this->execute('POST', $command);
+		
+		if (!empty($result['id'])) {
+			return $result;
+		} else {
+			return false;
+		}
+	}
+	
+	//IN:  transaction id
+	public function setPaymentVoid($transaction_id) {
+		$command = '/v2/payments/authorizations/' . $transaction_id . '/void';
+						
+		$result = $this->execute('POST', $command);
+		
+		if (!empty($result['id'])) {
+			return $result;
+		} else {
+			return false;
+		}
+	}
+	
+	//IN:  transaction id
+	public function setPaymentRefund($transaction_id) {
+		$command = '/v2/payments/captures/' . $transaction_id . '/refund';
+						
+		$result = $this->execute('POST', $command);
+		
+		if (!empty($result['id'])) {
+			return $result;
+		} else {
+			return false;
+		}
+	}
 				
 	//OUT: number of errors
 	public function hasErrors(): int {

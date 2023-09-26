@@ -1,6 +1,7 @@
 <?php
 namespace Opencart\Catalog\Model\Extension\PayPal\Payment;
 class PayPal extends \Opencart\System\Engine\Model {
+	
 	public function getMethod(array $address): array {
 		$method_data = [];
 		
@@ -98,6 +99,24 @@ class PayPal extends \Opencart\System\Engine\Model {
 		return $query->row;
 	}
 	
+	public function addOrder(array $data): void {
+		$this->db->query("INSERT INTO `" . DB_PREFIX . "paypal_checkout_integration_order` SET `order_id` = '" . (int)$data['order_id'] . "', `transaction_id` = '" . $this->db->escape($data['transaction_id']) . "', `transaction_status` = '" . $this->db->escape($data['transaction_status']) . "', `environment` = '" . $this->db->escape($data['environment']) . "'");
+	}
+		
+	public function deleteOrder(int $order_id): void {
+		$query = $this->db->query("DELETE FROM `" . DB_PREFIX . "paypal_checkout_integration_order` WHERE `order_id` = '" . (int)$order_id . "'");
+	}
+	
+	public function getOrder(int $order_id): array {
+		$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "paypal_checkout_integration_order` WHERE `order_id` = '" . (int)$order_id . "'");
+		
+		if ($query->num_rows) {
+			return $query->row;
+		} else {
+			return [];
+		}
+	}
+	
 	public function getAgreeStatus(): bool {
 		$agree_status = true;
 		
@@ -129,5 +148,47 @@ class PayPal extends \Opencart\System\Engine\Model {
 			$log = new \Opencart\System\Library\Log('paypal.log');
 			$log->write('PayPal debug (' . $title . '): ' . json_encode($data));
 		}
+	}
+	
+	public function update(): void {
+		$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order`");
+		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order` (`order_id` INT(11) NOT NULL, `transaction_id` VARCHAR(20) NOT NULL, `transaction_status` VARCHAR(20) NOT NULL, `environment` VARCHAR(20) NOT NULL, PRIMARY KEY (`order_id`, `transaction_id`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci");
+		
+		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_order_info'");
+		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_header'");
+		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_extension_get_extensions_by_type'");
+		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_extension_get_extension_by_code'");
+		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_order_delete_order'");
+		
+		if (VERSION >= '4.0.2.0') {
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_info', `description` = '', `trigger` = 'admin/view/sale/order_info/before', `action` = 'extension/paypal/payment/paypal.order_info_before', `status` = '1', `sort_order` = '1'");
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_header', `description` = '', `trigger` = 'catalog/controller/common/header/before', `action` = 'extension/paypal/payment/paypal.header_before', `status` = '1', `sort_order` = '2'");
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_delete_order', `description` = '', `trigger` = 'catalog/model/checkout/order/deleteOrder/before', `action` = 'extension/paypal/payment/paypal.order_delete_order_before', `status` = '1', `sort_order` = '3'");
+		} elseif (VERSION >= '4.0.1.0') {
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_info', `description` = '', `trigger` = 'admin/view/sale/order_info/before', `action` = 'extension/paypal/payment/paypal|order_info_before', `status` = '1', `sort_order` = '1'");
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_header', `description` = '', `trigger` = 'catalog/controller/common/header/before', `action` = 'extension/paypal/payment/paypal|header_before', `status` = '1', `sort_order` = '2'");
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_extension_get_extensions_by_type', `description` = '', `trigger` = 'catalog/model/setting/extension/getExtensionsByType/after', `action` = 'extension/paypal/payment/paypal|extension_get_extensions_by_type_after', `status` = '1', `sort_order` = '3'");
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_extension_get_extension_by_code', `description` = '', `trigger` = 'catalog/model/setting/extension/getExtensionByCode/after', `action` = 'extension/paypal/payment/paypal|extension_get_extension_by_code_after', `status` = '1', `sort_order` = '4'");
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_delete_order', `description` = '', `trigger` = 'catalog/model/checkout/order/deleteOrder/before', `action` = 'extension/paypal/payment/paypal|order_delete_order_before', `status` = '1', `sort_order` = '5'");
+		} else {
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_info', `description` = '', `trigger` = 'admin/view/sale/order_info/before', `action` = 'extension/paypal/payment/paypal|order_info_before', `status` = '1', `sort_order` = '1'");
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_header', `description` = '', `trigger` = 'catalog/controller/common/header/before', `action` = 'extension/paypal/payment/paypal|header_before', `status` = '1', `sort_order` = '2'");
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_extension_get_extensions_by_type', `description` = '', `trigger` = 'catalog/model/setting/extension/getExtensionsByType/after', `action` = 'extension/paypal/payment/paypal|extension_get_extensions_by_type_after', `status` = '1', `sort_order` = '3'");
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_extension_get_extension_by_code', `description` = '', `trigger` = 'catalog/model/setting/extension/getExtensionByCode/after', `action` = 'extension/paypal/payment/paypal|extension_get_extension_by_code_after', `status` = '1', `sort_order` = '4'");
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_delete_order', `description` = '', `trigger` = 'catalog/model/checkout/order/deleteOrder/before', `action` = 'extension/paypal/payment/paypal|order_delete_order_before', `status` = '1', `sort_order` = '5'");
+		}
+								
+		// Setting
+		$_config = new \Opencart\System\Engine\Config();
+		$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
+		$_config->load('paypal');
+		
+		$config_setting = $_config->get('paypal_setting');
+						
+		$this->db->query("DELETE FROM `" . DB_PREFIX . "setting` WHERE store_id = '0' AND `code` = 'paypal_version'");
+
+		$this->db->query("INSERT INTO " . DB_PREFIX . "setting SET store_id = '0', `code` = 'paypal_version', `key` = 'paypal_version', `value` = '" . $this->db->escape($config_setting['version']) . "'");
+		
+		$this->db->query("UPDATE `" . DB_PREFIX . "setting` SET `value` = 'Lax', `serialized` = '0'  WHERE `code` = 'config' AND `key` = 'config_session_samesite' AND `store_id` = '0'");
 	}
 }

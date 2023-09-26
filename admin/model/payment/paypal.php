@@ -166,6 +166,24 @@ class PayPal extends \Opencart\System\Engine\Model {
 		return $query->row;
 	}
 	
+	public function addOrder(array $data): void {
+		$this->db->query("INSERT INTO `" . DB_PREFIX . "paypal_checkout_integration_order` SET `order_id` = '" . (int)$data['order_id'] . "', `transaction_id` = '" . $this->db->escape($data['transaction_id']) . "', `transaction_status` = '" . $this->db->escape($data['transaction_status']) . "', `environment` = '" . $this->db->escape($data['environment']) . "'");
+	}
+		
+	public function deleteOrder(int $order_id): void {
+		$query = $this->db->query("DELETE FROM `" . DB_PREFIX . "paypal_checkout_integration_order` WHERE `order_id` = '" . (int)$order_id . "'");
+	}
+	
+	public function getOrder(int $order_id): array {
+		$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "paypal_checkout_integration_order` WHERE `order_id` = '" . (int)$order_id . "'");
+		
+		if ($query->num_rows) {
+			return $query->row;
+		} else {
+			return [];
+		}
+	}
+	
 	public function setAgreeStatus(): void {
 		$this->db->query("UPDATE " . DB_PREFIX . "country SET status = '0' WHERE (iso_code_2 = 'CU' OR iso_code_2 = 'IR' OR iso_code_2 = 'SY' OR iso_code_2 = 'KP')");
 		$this->db->query("UPDATE " . DB_PREFIX . "zone SET status = '0' WHERE country_id = '220' AND (`code` = '43' OR `code` = '14' OR `code` = '09')");
@@ -245,5 +263,13 @@ class PayPal extends \Opencart\System\Engine\Model {
 			$log = new \Opencart\System\Library\Log('paypal.log');
 			$log->write('PayPal debug (' . $title . '): ' . json_encode($data));
 		}
+	}
+	
+	public function install(): void {
+		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order` (`order_id` INT(11) NOT NULL, `transaction_id` VARCHAR(20) NOT NULL, `transaction_status` VARCHAR(20) NOT NULL, `environment` VARCHAR(20) NOT NULL, PRIMARY KEY (`order_id`, `transaction_id`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci");
+	}
+	
+	public function uninstall(): void {
+		$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order`");
 	}
 }

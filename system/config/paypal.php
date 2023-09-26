@@ -1,6 +1,6 @@
 <?php 
 $_['paypal_setting'] = [
-	'version' => '2.0.2',
+	'version' => '2.1.0',
 	'partner' => [
 		'production' => [
 			'partner_id' => 'TY2Q25KP2PX9L',
@@ -107,6 +107,14 @@ $_['paypal_setting'] = [
 				'venmo' => 0
 			],
 		]
+	],
+	'googlepay_button' => [
+		'status' => true,
+		'align' => 'right',
+		'size' => 'large',
+		'color' => 'black',
+		'shape' => 'rect',
+		'type' => 'buy'
 	],
 	'applepay_button' => [
 		'status' => true,
@@ -660,6 +668,86 @@ $_['paypal_setting'] = [
 			'code' => 'venmo',
 			'name' => 'text_venmo'
 		]
+	],
+	'googlepay_button_align' => [
+		'left' => [
+			'code' => 'left',
+			'name' => 'text_align_left'
+		],
+		'center' => [
+			'code' => 'center',
+			'name' => 'text_align_center'
+		],
+		'right' => [
+			'code' => 'right',
+			'name' => 'text_align_right'
+		]
+	],
+	'googlepay_button_size' => [
+		'small' => [
+			'code' => 'small',
+			'name' => 'text_small'
+		],
+		'medium' => [
+			'code' => 'medium',
+			'name' => 'text_medium'
+		],
+		'large' => [
+			'code' => 'large',
+			'name' => 'text_large'
+		],
+		'responsive' => [
+			'code' => 'responsive',
+			'name' => 'text_responsive'
+		]
+	],
+	'googlepay_button_color' => [
+		'black' => [
+			'code' => 'black',
+			'name' => 'text_black'
+		],
+		'white' => [
+			'code' => 'white',
+			'name' => 'text_white'
+		]
+	],
+	'googlepay_button_shape' => [
+		'pill' => [
+			'code' => 'pill',
+			'name' => 'text_pill'
+		],
+		'rect' => [
+			'code' => 'rect',
+			'name' => 'text_rect'
+		]
+	],
+	'googlepay_button_type' => [
+		'buy' => [
+			'code' => 'buy',
+			'name' => 'text_buy'
+		],
+		'donate' => [
+			'code' => 'donate',
+			'name' => 'text_donate'
+		],
+		'plain' => [
+			'code' => 'plain',
+			'name' => 'text_plain'
+		],
+		'pay' => [
+			'code' => 'pay',
+			'name' => 'text_pay'
+		],
+		'checkout' => [
+			'code' => 'checkout',
+			'name' => 'text_checkout'
+		]
+	],
+	'googlepay_button_width' => [
+		'small' => '200px',
+		'medium' => '250px',
+		'large' => '350px',
+		'responsive' => ''
 	],
 	'applepay_button_align' => [
 		'left' => [
