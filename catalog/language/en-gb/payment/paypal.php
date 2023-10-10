@@ -3,6 +3,8 @@
 $_['text_paypal']							= 'PayPal';
 $_['text_paypal_title']						= 'PayPal (Pay with PayPal, Card)';
 $_['text_paypal_paylater_title']			= 'Buy Now Pay Later with PayPal';
+$_['text_paypal_googlepay_title']			= 'Google Pay';
+$_['text_paypal_applepay_title']			= 'Apple Pay';
 $_['text_checkout_payment_address']  		= 'Billing Details';
 $_['text_checkout_shipping_address'] 		= 'Delivery Details';
 $_['text_checkout_shipping_method']  		= 'Delivery Method';
