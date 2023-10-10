@@ -34,6 +34,14 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					if ($this->session->data['payment_method']['code'] == 'paypal.paylater') {
 						return $this->load->controller('extension/paypal/payment/paypal_paylater');
 					}
+					
+					if ($this->session->data['payment_method']['code'] == 'paypal.googlepay') {
+						return $this->load->controller('extension/paypal/payment/paypal_googlepay');
+					}
+					
+					if ($this->session->data['payment_method']['code'] == 'paypal.applepay') {
+						return $this->load->controller('extension/paypal/payment/paypal_applepay');
+					}
 				}
 			}
 		
@@ -2880,6 +2888,28 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						'code' => 'paypal_paylater'
 					];
 				}
+				
+				if ($setting['googlepay_button']['status']) {
+					$this->config->set('payment_paypal_googlepay_status', 1);
+					
+					$output[] = [
+						'extension_id' => 0,
+						'extension' => 'paypal',
+						'type' => 'payment',
+						'code' => 'paypal_googlepay'
+					];
+				}
+				
+				if ($setting['applepay_button']['status'] && $this->isApple()) {
+					$this->config->set('payment_paypal_applepay_status', 1);
+					
+					$output[] = [
+						'extension_id' => 0,
+						'extension' => 'paypal',
+						'type' => 'payment',
+						'code' => 'paypal_applepay'
+					];
+				}
 			}
 			
 		}			
@@ -2890,7 +2920,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$type = $data[0];
 			$code = $data[1];
 			
-			if (($type == 'payment') && ($code == 'paypal_paylater')) {			
+			if ($type == 'payment') {			
 				// Setting
 				$_config = new \Opencart\System\Engine\Config();
 				$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
@@ -2900,7 +2930,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		
 				$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
 				
-				if (!empty($setting['paylater_country'][$setting['general']['country_code']]) && ($setting['button']['checkout']['funding']['paylater'] != 2)) {
+				if (($code == 'paypal_paylater') && !empty($setting['paylater_country'][$setting['general']['country_code']]) && ($setting['button']['checkout']['funding']['paylater'] != 2)) {
 					$this->config->set('payment_paypal_paylater_status', 1);
 					
 					$output = [
@@ -2908,6 +2938,28 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						'extension' => 'paypal',
 						'type' => 'payment',
 						'code' => 'paypal_paylater'
+					];
+				}
+				
+				if (($code == 'paypal_googlepay') && $setting['googlepay_button']['status']) {
+					$this->config->set('payment_paypal_googlepay_status', 1);
+					
+					$output = [
+						'extension_id' => 0,
+						'extension' => 'paypal',
+						'type' => 'payment',
+						'code' => 'paypal_googlepay'
+					];
+				}
+				
+				if (($code == 'paypal_applepay') && $setting['applepay_button']['status'] && $this->isApple()) {
+					$this->config->set('payment_paypal_applepay_status', 1);
+					
+					$output = [
+						'extension_id' => 0,
+						'extension' => 'paypal',
+						'type' => 'payment',
+						'code' => 'paypal_applepay'
 					];
 				}
 			}
@@ -3134,6 +3186,22 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		parse_str($str, $data);
 		
 		return $data;
+	}
+	
+	private function isApple(): bool {
+		if (!empty($this->request->server['HTTP_USER_AGENT'])) {
+			$user_agent = $this->request->server['HTTP_USER_AGENT'];
+			
+			$apple_agents = ['ipod', 'iphone', 'ipad'];
+
+            foreach ($apple_agents as $apple_agent){
+                if (stripos($user_agent, $apple_agent)) {
+                    return true;
+                }
+			}
+        }
+		
+		return false;
 	}
 	
 	private function strlen(string $str): int {

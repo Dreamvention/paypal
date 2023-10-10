@@ -59,15 +59,40 @@ class PayPal extends \Opencart\System\Engine\Model {
 			}
 
 			if ($status) {
+				// Setting
+				$_config = new \Opencart\System\Engine\Config();
+				$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
+				$_config->load('paypal');
+			
+				$config_setting = $_config->get('paypal_setting');
+		
+				$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
+				
 				$option_data['paypal'] = [
 					'code' => 'paypal.paypal',
 					'name' => $this->language->get('text_paypal_title')
 				];
 				
-				$option_data['paylater'] = [
-					'code' => 'paypal.paylater',
-					'name' => $this->language->get('text_paypal_paylater_title')
-				];
+				if (!empty($setting['paylater_country'][$setting['general']['country_code']]) && ($setting['button']['checkout']['funding']['paylater'] != 2)) {
+					$option_data['paylater'] = [
+						'code' => 'paypal.paylater',
+						'name' => $this->language->get('text_paypal_paylater_title')
+					];
+				}
+				
+				if ($setting['googlepay_button']['status']) {
+					$option_data['googlepay'] = [
+						'code' => 'paypal.googlepay',
+						'name' => $this->language->get('text_paypal_googlepay_title')
+					];
+				}
+				
+				if ($setting['applepay_button']['status'] && $this->isApple()) {
+					$option_data['applepay'] = [
+						'code' => 'paypal.applepay',
+						'name' => $this->language->get('text_paypal_applepay_title')
+					];
+				}
 
 				$method_data = [
 					'code'       => 'paypal',
@@ -190,5 +215,21 @@ class PayPal extends \Opencart\System\Engine\Model {
 		$this->db->query("INSERT INTO " . DB_PREFIX . "setting SET store_id = '0', `code` = 'paypal_version', `key` = 'paypal_version', `value` = '" . $this->db->escape($config_setting['version']) . "'");
 		
 		$this->db->query("UPDATE `" . DB_PREFIX . "setting` SET `value` = 'Lax', `serialized` = '0'  WHERE `code` = 'config' AND `key` = 'config_session_samesite' AND `store_id` = '0'");
+	}
+	
+	private function isApple(): bool {
+		if (!empty($this->request->server['HTTP_USER_AGENT'])) {
+			$user_agent = $this->request->server['HTTP_USER_AGENT'];
+			
+			$apple_agents = ['ipod', 'iphone', 'ipad'];
+
+            foreach ($apple_agents as $apple_agent){
+                if (stripos($user_agent, $apple_agent)) {
+                    return true;
+                }
+			}
+        }
+		
+		return false;
 	}
 }
