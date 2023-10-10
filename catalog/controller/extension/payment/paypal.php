@@ -2788,6 +2788,26 @@ class ControllerExtensionPaymentPayPal extends Controller {
 						'code' => 'paypal_paylater'
 					);
 				}
+				
+				if ($setting['googlepay_button']['status']) {
+					$this->config->set('payment_paypal_googlepay_status', 1);
+					
+					$output[] = array(
+						'extension_id' => 0,
+						'type' => 'payment',
+						'code' => 'paypal_googlepay'
+					);
+				}
+				
+				if ($setting['applepay_button']['status'] && $this->isApple()) {
+					$this->config->set('payment_paypal_applepay_status', 1);
+					
+					$output[] = array(
+						'extension_id' => 0,
+						'type' => 'payment',
+						'code' => 'paypal_applepay'
+					);
+				}
 			}
 		}			
 	}
@@ -3006,6 +3026,22 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			
 			return false;
 		}
+	}
+	
+	private function isApple() {
+		if (!empty($this->request->server['HTTP_USER_AGENT'])) {
+			$user_agent = $this->request->server['HTTP_USER_AGENT'];
+			
+			$apple_agents = array('ipod', 'iphone', 'ipad');
+
+            foreach ($apple_agents as $apple_agent){
+                if (stripos($user_agent, $apple_agent)) {
+                    return true;
+                }
+			}
+        }
+		
+		return false;
 	}
 	
 	private function unserialize($str) {
