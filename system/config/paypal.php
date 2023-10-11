@@ -109,7 +109,7 @@ $_['paypal_setting'] = [
 		]
 	],
 	'googlepay_button' => [
-		'status' => true,
+		'status' => false,
 		'align' => 'right',
 		'size' => 'large',
 		'color' => 'black',
@@ -117,7 +117,7 @@ $_['paypal_setting'] = [
 		'type' => 'buy'
 	],
 	'applepay_button' => [
-		'status' => true,
+		'status' => false,
 		'align' => 'right',
 		'size' => 'large',
 		'color' => 'black',
