@@ -78,44 +78,6 @@
 											</div>
 										</div>
 										{% endif %}
-										{% if (message['page_code'] == 'home') %}
-										<div class="section-home">
-											<div class="section-title">{{ text_home }}</div>
-											<div class="table-menu">
-												<div class="table-row">
-													<div class="table-col">{{ text_menu_desktops }}</div>
-													<div class="table-col">{{ text_menu_laptops }}</div>
-													<div class="table-col">{{ text_menu_components }}</div>
-													<div class="table-col">{{ text_menu_tablets }}</div>
-													<div class="table-col">{{ text_menu_software }}</div>
-													<div class="table-col">{{ text_menu_cameras }}</div>
-												</div>
-											</div>
-											<div id="paypal_message_home" class="paypal-message">
-												<div id="paypal_message_home_container" class="paypal-message-container paypal-spinner"></div>
-											</div>	
-										</div>
-										{% endif %}
-										{% if (message['page_code'] == 'product') %}
-										<div class="section-product">
-											<div class="row">
-												<div class="col col-sm-6">
-													<div class="product-image"></div>
-												</div>
-												<div class="col col-sm-6">
-													<div class="product-name">{{ text_product_name }}</div>
-													<div class="product-price">{{ text_product_price }}</div>
-													<div id="paypal_message_product" class="paypal-message">
-														<div id="paypal_message_product_container" class="paypal-message-container paypal-spinner"></div>
-													</div>
-													<div class="product-manufacturer">{{ text_product_manufacturer }}</div>
-													<div class="product-model">{{ text_product_model }}</div>
-													<div class="product-stock">{{ text_product_stock }}</div>
-													<button type="button" class="btn button-cart">{{ button_cart }}</button>												
-												</div>
-											</div>
-										</div>
-										{% endif %}
 										{% if (message['page_code'] == 'cart') %}
 										<div class="section-cart">
 											<div class="section-title">{{ text_cart }}</div>
@@ -167,6 +129,45 @@
 											</div>												
 										</div>
 										{% endif %}
+										{% if (message['page_code'] == 'product') %}
+										<div class="section-product">
+											<div class="row">
+												<div class="col col-sm-6">
+													<div class="product-image"></div>
+												</div>
+												<div class="col col-sm-6">
+													<div class="product-name">{{ text_product_name }}</div>
+													<div class="product-price">{{ text_product_price }}</div>
+													<div id="paypal_message_product" class="paypal-message">
+														<div id="paypal_message_product_container" class="paypal-message-container paypal-spinner"></div>
+													</div>
+													<div class="product-manufacturer">{{ text_product_manufacturer }}</div>
+													<div class="product-model">{{ text_product_model }}</div>
+													<div class="product-stock">{{ text_product_stock }}</div>
+													<button type="button" class="btn button-cart">{{ button_cart }}</button>												
+												</div>
+											</div>
+										</div>
+										{% endif %}
+										{% if (message['page_code'] == 'home') %}
+										<div class="section-home">
+											<div class="section-title">{{ text_home }}</div>
+											<div class="table-menu">
+												<div class="table-row">
+													<div class="table-col">{{ text_menu_desktops }}</div>
+													<div class="table-col">{{ text_menu_laptops }}</div>
+													<div class="table-col">{{ text_menu_components }}</div>
+													<div class="table-col">{{ text_menu_tablets }}</div>
+													<div class="table-col">{{ text_menu_software }}</div>
+													<div class="table-col">{{ text_menu_cameras }}</div>
+												</div>
+											</div>
+											<div id="paypal_message_home" class="paypal-message">
+												<div id="paypal_message_home_container" class="paypal-message-container paypal-spinner"></div>
+											</div>	
+										</div>
+										{% endif %}
+										
 									</div>
 									<div class="col col-lg-6">
 										<div class="section-message-setting">

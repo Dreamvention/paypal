@@ -40,22 +40,11 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$data['checkout_mode'] = $setting['general']['checkout_mode'];
 			$data['transaction_method'] = $setting['general']['transaction_method'];
 			
-			if ($setting['button']['checkout']['status']) {
-				$data['button_status'] = $setting['button']['checkout']['status'];
-			}
-			
-			if ($setting['googlepay_button']['status']) {										
-				$data['googlepay_button_status'] = $setting['googlepay_button']['status'];
-			}
-			
-			if ($setting['applepay_button']['status']) {										
-				$data['applepay_button_status'] = $setting['applepay_button']['status'];
-			}
-				
-			if ($setting['card']['status']) {										
-				$data['card_status'] = $setting['card']['status'];
-			}
-							
+			$data['button_status'] = $setting['button']['checkout']['status'];
+			$data['googlepay_button_status'] = $setting['googlepay_button']['status'];
+			$data['applepay_button_status'] = $setting['applepay_button']['status'];
+			$data['card_status'] = $setting['card']['status'];
+										
 			require_once DIR_SYSTEM .'library/paypal/paypal.php';
 		
 			$paypal_info = array(
@@ -125,21 +114,10 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['partner_attribution_id'] = $setting['partner'][$data['environment']]['partner_attribution_id'];
 		$data['transaction_method'] = $setting['general']['transaction_method'];
 			
-		if ($setting['button']['checkout']['status']) {
-			$data['button_status'] = $setting['button']['checkout']['status'];
-		}
-		
-		if ($setting['googlepay_button']['status']) {										
-			$data['googlepay_button_status'] = $setting['googlepay_button']['status'];
-		}
-		
-		if ($setting['applepay_button']['status']) {										
-			$data['applepay_button_status'] = $setting['applepay_button']['status'];
-		}
-				
-		if ($setting['card']['status']) {										
-			$data['card_status'] = $setting['card']['status'];
-		}
+		$data['button_status'] = $setting['button']['checkout']['status'];
+		$data['googlepay_button_status'] = $setting['googlepay_button']['status'];
+		$data['applepay_button_status'] = $setting['applepay_button']['status'];
+		$data['card_status'] = $setting['card']['status'];
 							
 		require_once DIR_SYSTEM .'library/paypal/paypal.php';
 		
@@ -276,19 +254,6 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					$data['button_shape'] = $setting['button']['product']['shape'];
 					$data['button_label'] = $setting['button']['product']['label'];
 					$data['button_tagline'] = $setting['button']['product']['tagline'];	
-													
-					$data['button_enable_funding'] = array();
-					$data['button_disable_funding'] = array();
-				
-					foreach ($setting['button_funding'] as $button_funding) {
-						if ($setting['button']['product']['funding'][$button_funding['code']] == 1) {
-							$data['button_enable_funding'][] = $button_funding['code'];
-						} 
-				
-						if ($setting['button']['product']['funding'][$button_funding['code']] == 2) {
-							$data['button_disable_funding'][] = $button_funding['code'];
-						}
-					}
 				}
 				
 				if ($setting['message']['product']['status'] && ($data['currency_code'] == $setting['general']['currency_code'])) {
@@ -338,19 +303,6 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					$data['button_shape'] = $setting['button']['cart']['shape'];
 					$data['button_label'] = $setting['button']['cart']['label'];
 					$data['button_tagline'] = $setting['button']['cart']['tagline'];	
-									
-					$data['button_enable_funding'] = array();
-					$data['button_disable_funding'] = array();
-				
-					foreach ($setting['button_funding'] as $button_funding) {
-						if ($setting['button']['cart']['funding'][$button_funding['code']] == 1) {
-							$data['button_enable_funding'][] = $button_funding['code'];
-						} 
-				
-						if ($setting['button']['cart']['funding'][$button_funding['code']] == 2) {
-							$data['button_disable_funding'][] = $button_funding['code'];
-						}
-					}
 				}
 
 				if ($setting['message']['cart']['status'] && ($data['currency_code'] == $setting['general']['currency_code'])) {
@@ -380,6 +332,10 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			}
 			
 			if (($this->request->post['page_code'] == 'checkout') && $this->cart->getTotal()) {
+				if (!empty($this->session->data['order_id'])) {
+					$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
+				}
+				
 				if ($setting['button']['checkout']['status']) {
 					$data['components'][] = 'buttons';
 					$data['components'][] = 'funding-eligibility';
@@ -419,9 +375,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					$data['googlepay_button_shape'] = $setting['googlepay_button']['shape'];
 					$data['googlepay_button_type'] = $setting['googlepay_button']['type'];
 					
-					if (!empty($this->session->data['order_id'])) {
-						$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
-		
+					if (!empty($order_info)) {
 						$data['googlepay_amount'] = number_format($order_info['total'] * $data['currency_value'], $data['decimal_place'], '.', '');
 					} else {
 						$item_total = 0;
@@ -446,9 +400,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					$data['applepay_button_shape'] = $setting['applepay_button']['shape'];
 					$data['applepay_button_type'] = $setting['applepay_button']['type'];
 					
-					if (!empty($this->session->data['order_id'])) {
-						$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
-		
+					if (!empty($order_info)) {
 						$data['applepay_amount'] = number_format($order_info['total'] * $data['currency_value'], $data['decimal_place'], '.', '');
 					} else {
 						$item_total = 0;
@@ -484,9 +436,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					$data['message_flex_color'] = $setting['message']['checkout']['flex_color'];
 					$data['message_flex_ratio'] = $setting['message']['checkout']['flex_ratio'];
 									
-					if (!empty($this->session->data['order_id'])) {
-						$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
-		
+					if (!empty($order_info)) {
 						$data['message_amount'] = number_format($order_info['total'] * $data['currency_value'], $data['decimal_place'], '.', '');
 					} else {
 						$item_total = 0;
