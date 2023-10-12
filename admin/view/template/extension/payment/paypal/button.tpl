@@ -81,26 +81,6 @@
 											</div>
 										</div>
 										<?php } ?>
-										<?php if ($button['page_code'] == 'product') { ?>
-										<div class="section-product">
-											<div class="row">
-												<div class="col col-sm-6">
-													<div class="product-image"></div>
-												</div>
-												<div class="col col-sm-6">
-													<div class="product-name"><?php echo $text_product_name; ?></div>
-													<div class="product-price"><?php echo $text_product_price; ?></div>
-													<div class="product-manufacturer"><?php echo $text_product_manufacturer; ?></div>
-													<div class="product-model"><?php echo $text_product_model; ?></div>
-													<div class="product-stock"><?php echo $text_product_stock; ?></div>
-													<button type="button" class="btn button-cart"><?php echo $button_cart; ?></button>
-													<div id="paypal_button_product" class="paypal-button">
-														<div id="paypal_button_product_container" class="paypal-button-container paypal-spinner"></div>
-													</div>
-												</div>
-											</div>
-										</div>
-										<?php } ?>
 										<?php if ($button['page_code'] == 'cart') { ?>
 										<div class="section-cart">
 											<div class="section-title"><?php echo $text_cart; ?></div>
@@ -149,6 +129,26 @@
 											</div>
 											<div id="paypal_button_cart" class="paypal-button">
 												<div id="paypal_button_cart_container" class="paypal-button-container paypal-spinner"></div>
+											</div>
+										</div>
+										<?php } ?>
+										<?php if ($button['page_code'] == 'product') { ?>
+										<div class="section-product">
+											<div class="row">
+												<div class="col col-sm-6">
+													<div class="product-image"></div>
+												</div>
+												<div class="col col-sm-6">
+													<div class="product-name"><?php echo $text_product_name; ?></div>
+													<div class="product-price"><?php echo $text_product_price; ?></div>
+													<div class="product-manufacturer"><?php echo $text_product_manufacturer; ?></div>
+													<div class="product-model"><?php echo $text_product_model; ?></div>
+													<div class="product-stock"><?php echo $text_product_stock; ?></div>
+													<button type="button" class="btn button-cart"><?php echo $button_cart; ?></button>
+													<div id="paypal_button_product" class="paypal-button">
+														<div id="paypal_button_product_container" class="paypal-button-container paypal-spinner"></div>
+													</div>
+												</div>
 											</div>
 										</div>
 										<?php } ?>
@@ -271,6 +271,7 @@
 													<?php } ?>
 												</div>
 											</div>
+											<?php if ($button['page_code'] == 'checkout') { ?>
 											<hr class="hr" />
 											<button type="button" href="#all_settings_<?php echo $button['page_code']; ?>" class="btn btn-default button-all-settings collapsed" data-toggle="collapse" role="button"><?php echo $button_all_settings; ?><i class="icon icon-all-settings"></i></button>	
 											<div id="all_settings_<?php echo $button['page_code']; ?>" class="all-settings collapse">
@@ -291,6 +292,7 @@
 													<?php } ?>
 												</div>
 											</div>
+											<?php } ?>
 										</div>
 									</div>
 								</div>
