@@ -81,44 +81,6 @@
 											</div>
 										</div>
 										<?php } ?>
-										<?php if ($message['page_code'] == 'home') { ?>
-										<div class="section-home">
-											<div class="section-title"><?php echo $text_home; ?></div>
-											<div class="table-menu">
-												<div class="table-row">
-													<div class="table-col"><?php echo $text_menu_desktops; ?></div>
-													<div class="table-col"><?php echo $text_menu_laptops; ?></div>
-													<div class="table-col"><?php echo $text_menu_components; ?></div>
-													<div class="table-col"><?php echo $text_menu_tablets; ?></div>
-													<div class="table-col"><?php echo $text_menu_software; ?></div>
-													<div class="table-col"><?php echo $text_menu_cameras; ?></div>
-												</div>
-											</div>
-											<div id="paypal_message_home" class="paypal-message">
-												<div id="paypal_message_home_container" class="paypal-message-container paypal-spinner"></div>
-											</div>	
-										</div>
-										<?php } ?>
-										<?php if ($message['page_code'] == 'product') { ?>
-										<div class="section-product">
-											<div class="row">
-												<div class="col col-sm-6">
-													<div class="product-image"></div>
-												</div>
-												<div class="col col-sm-6">
-													<div class="product-name"><?php echo $text_product_name; ?></div>
-													<div class="product-price"><?php echo $text_product_price; ?></div>
-													<div id="paypal_message_product" class="paypal-message">
-														<div id="paypal_message_product_container" class="paypal-message-container paypal-spinner"></div>
-													</div>
-													<div class="product-manufacturer"><?php echo $text_product_manufacturer; ?></div>
-													<div class="product-model"><?php echo $text_product_model; ?></div>
-													<div class="product-stock"><?php echo $text_product_stock; ?></div>
-													<button type="button" class="btn button-cart"><?php echo $button_cart; ?></button>												
-												</div>
-											</div>
-										</div>
-										<?php } ?>
 										<?php if ($message['page_code'] == 'cart') { ?>
 										<div class="section-cart">
 											<div class="section-title"><?php echo $text_cart; ?></div>
@@ -168,6 +130,44 @@
 											<div id="paypal_message_cart" class="paypal-message">
 												<div id="paypal_message_cart_container" class="paypal-message-container paypal-spinner"></div>
 											</div>												
+										</div>
+										<?php } ?>
+										<?php if ($message['page_code'] == 'product') { ?>
+										<div class="section-product">
+											<div class="row">
+												<div class="col col-sm-6">
+													<div class="product-image"></div>
+												</div>
+												<div class="col col-sm-6">
+													<div class="product-name"><?php echo $text_product_name; ?></div>
+													<div class="product-price"><?php echo $text_product_price; ?></div>
+													<div id="paypal_message_product" class="paypal-message">
+														<div id="paypal_message_product_container" class="paypal-message-container paypal-spinner"></div>
+													</div>
+													<div class="product-manufacturer"><?php echo $text_product_manufacturer; ?></div>
+													<div class="product-model"><?php echo $text_product_model; ?></div>
+													<div class="product-stock"><?php echo $text_product_stock; ?></div>
+													<button type="button" class="btn button-cart"><?php echo $button_cart; ?></button>												
+												</div>
+											</div>
+										</div>
+										<?php } ?>
+										<?php if ($message['page_code'] == 'home') { ?>
+										<div class="section-home">
+											<div class="section-title"><?php echo $text_home; ?></div>
+											<div class="table-menu">
+												<div class="table-row">
+													<div class="table-col"><?php echo $text_menu_desktops; ?></div>
+													<div class="table-col"><?php echo $text_menu_laptops; ?></div>
+													<div class="table-col"><?php echo $text_menu_components; ?></div>
+													<div class="table-col"><?php echo $text_menu_tablets; ?></div>
+													<div class="table-col"><?php echo $text_menu_software; ?></div>
+													<div class="table-col"><?php echo $text_menu_cameras; ?></div>
+												</div>
+											</div>
+											<div id="paypal_message_home" class="paypal-message">
+												<div id="paypal_message_home_container" class="paypal-message-container paypal-spinner"></div>
+											</div>	
 										</div>
 										<?php } ?>
 									</div>
