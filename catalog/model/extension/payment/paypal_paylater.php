@@ -24,7 +24,6 @@ class ModelExtensionPaymentPayPalPayLater extends Model {
 			}
 
 			if ($status) {
-				// Setting
 				$_config = new Config();
 				$_config->load('paypal');
 			
