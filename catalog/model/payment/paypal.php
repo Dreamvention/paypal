@@ -88,8 +88,7 @@ class ModelPaymentPayPal extends Model {
 		return $agree_status;
 	}
 	
-	public function log($data, $title = null) {
-		// Setting
+	public function log($data, $title = '') {
 		$_config = new Config();
 		$_config->load('paypal');
 			
@@ -117,7 +116,6 @@ class ModelPaymentPayPal extends Model {
 		$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_extension_get_extensions', `trigger` = 'catalog/model/extension/extension/getExtensions/after', `action` = 'payment/paypal/extension_get_extensions_after'");
 		$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_delete_order', `trigger` = 'catalog/model/checkout/order/deleteOrder/before', `action` = 'payment/paypal/order_delete_order_before'");
 				
-		// Setting
 		$_config = new Config();
 		$_config->load('paypal');
 			

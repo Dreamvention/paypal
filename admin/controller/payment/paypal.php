@@ -20,7 +20,6 @@ class ControllerPaymentPayPal extends Controller {
 			$catalog = HTTP_CATALOG;
 		}
 		
-		// Setting 		
 		$_config = new Config();
 		$_config->load('paypal');
 		
@@ -225,7 +224,6 @@ class ControllerPaymentPayPal extends Controller {
 			$data['catalog'] = HTTP_CATALOG;
 		}
 		
-		// Setting 		
 		$_config = new Config();
 		$_config->load('paypal');
 		
@@ -366,7 +364,6 @@ class ControllerPaymentPayPal extends Controller {
 			$data['catalog'] = HTTP_CATALOG;
 		}
 		
-		// Setting 		
 		$_config = new Config();
 		$_config->load('paypal');
 		
@@ -576,7 +573,6 @@ class ControllerPaymentPayPal extends Controller {
 			$data['catalog'] = HTTP_CATALOG;
 		}
 		
-		// Setting 		
 		$_config = new Config();
 		$_config->load('paypal');
 		
@@ -797,7 +793,6 @@ class ControllerPaymentPayPal extends Controller {
 			$data['catalog'] = HTTP_CATALOG;
 		}
 		
-		// Setting 		
 		$_config = new Config();
 		$_config->load('paypal');
 		
@@ -1017,7 +1012,6 @@ class ControllerPaymentPayPal extends Controller {
 			$data['catalog'] = HTTP_CATALOG;
 		}
 		
-		// Setting 		
 		$_config = new Config();
 		$_config->load('paypal');
 		
@@ -1242,7 +1236,6 @@ class ControllerPaymentPayPal extends Controller {
 			$data['catalog'] = HTTP_CATALOG;
 		}
 		
-		// Setting 		
 		$_config = new Config();
 		$_config->load('paypal');
 		
@@ -1464,7 +1457,6 @@ class ControllerPaymentPayPal extends Controller {
 			$data['catalog'] = HTTP_CATALOG;
 		}
 		
-		// Setting 		
 		$_config = new Config();
 		$_config->load('paypal');
 		
@@ -1709,8 +1701,7 @@ class ControllerPaymentPayPal extends Controller {
 			$data['server'] = HTTP_SERVER;
 			$data['catalog'] = HTTP_CATALOG;
 		}
-		
-		// Setting 		
+		 		
 		$_config = new Config();
 		$_config->load('paypal');
 		
@@ -1887,8 +1878,7 @@ class ControllerPaymentPayPal extends Controller {
 			$data['server'] = HTTP_SERVER;
 			$data['catalog'] = HTTP_CATALOG;
 		}
-		
-		// Setting 		
+				
 		$_config = new Config();
 		$_config->load('paypal');
 		
@@ -2025,7 +2015,6 @@ class ControllerPaymentPayPal extends Controller {
 			$data['catalog'] = HTTP_CATALOG;
 		}
 		
-		// Setting 		
 		$_config = new Config();
 		$_config->load('paypal');
 		
@@ -2320,7 +2309,6 @@ class ControllerPaymentPayPal extends Controller {
 		$this->model_extension_event->addEvent('paypal_extension_get_extensions', 'catalog/model/extension/extension/getExtensions/after', 'payment/paypal/extension_get_extensions_after');
 		$this->model_extension_event->addEvent('paypal_order_delete_order', 'catalog/model/checkout/order/deleteOrder/before', 'payment/paypal/order_delete_order_before');
 		
-		// Setting
 		$_config = new Config();
 		$_config->load('paypal');
 			
@@ -2457,7 +2445,6 @@ class ControllerPaymentPayPal extends Controller {
 			$order_id = $this->request->post['order_id'];
 			$transaction_id = $this->request->post['transaction_id'];
 			
-			// Setting
 			$_config = new Config();
 			$_config->load('paypal');
 			
@@ -2548,7 +2535,6 @@ class ControllerPaymentPayPal extends Controller {
 			$order_id = $this->request->post['order_id'];
 			$transaction_id = $this->request->post['transaction_id'];
 			
-			// Setting
 			$_config = new Config();
 			$_config->load('paypal');
 			
@@ -2639,7 +2625,6 @@ class ControllerPaymentPayPal extends Controller {
 			$order_id = $this->request->post['order_id'];
 			$transaction_id = $this->request->post['transaction_id'];
 			
-			// Setting
 			$_config = new Config();
 			$_config->load('paypal');
 			
@@ -2731,7 +2716,6 @@ class ControllerPaymentPayPal extends Controller {
 			$order_id = $this->request->post['order_id'];
 			$transaction_id = $this->request->post['transaction_id'];
 			
-			// Setting
 			$_config = new Config();
 			$_config->load('paypal');
 			

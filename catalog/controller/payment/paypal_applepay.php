@@ -10,7 +10,6 @@ class ControllerPaymentPayPalApplePay extends Controller {
 		if ($this->config->get('paypal_status') && $this->config->get('paypal_client_id') && $this->config->get('paypal_secret') && $agree_status) {
 			$this->load->language('payment/paypal');
 							
-			// Setting
 			$_config = new Config();
 			$_config->load('paypal');
 			
@@ -85,12 +84,13 @@ class ControllerPaymentPayPalApplePay extends Controller {
 
 			return $this->load->view('payment/paypal/paypal_applepay', $data);
 		}
+		
+		return '';
 	}
 	
 	public function modal() {
 		$this->load->language('payment/paypal');
 							
-		// Setting
 		$_config = new Config();
 		$_config->load('paypal');
 			
