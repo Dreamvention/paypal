@@ -22,7 +22,6 @@ class PayPalGooglePay extends \Opencart\System\Engine\Controller {
 		if ($this->config->get('payment_paypal_status') && $this->config->get('payment_paypal_client_id') && $this->config->get('payment_paypal_secret') && $agree_status) {
 			$this->load->language('extension/paypal/payment/paypal');
 			
-			// Setting
 			$_config = new \Opencart\System\Engine\Config();
 			$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 			$_config->load('paypal');
@@ -105,7 +104,6 @@ class PayPalGooglePay extends \Opencart\System\Engine\Controller {
 	public function modal(): void {
 		$this->load->language('extension/paypal/payment/paypal');
 			
-		// Setting
 		$_config = new \Opencart\System\Engine\Config();
 		$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 		$_config->load('paypal');

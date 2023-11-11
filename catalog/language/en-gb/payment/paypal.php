@@ -13,7 +13,6 @@ $_['text_your_details']              		= 'Your Personal Details';
 $_['text_your_address']              		= 'Your Address';
 $_['text_cart']               				= 'Shopping Cart';
 $_['text_shipping_updated']   				= 'Shipping service updated';
-$_['text_order_message']					= 'PayPal Seller Protection - %s';
 $_['text_day']                 				= 'day';
 $_['text_week']                				= 'week';
 $_['text_semi_month']          				= 'half-month';

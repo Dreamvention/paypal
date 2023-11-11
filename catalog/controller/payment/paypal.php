@@ -47,7 +47,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		
 			$this->load->language('extension/paypal/payment/paypal');
 			
-			// Setting
 			$_config = new \Opencart\System\Engine\Config();
 			$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 			$_config->load('paypal');
@@ -132,7 +131,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
 	public function modal(): void {
 		$this->load->language('extension/paypal/payment/paypal');
 			
-		// Setting
 		$_config = new \Opencart\System\Engine\Config();
 		$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 		$_config->load('paypal');
@@ -219,7 +217,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$this->load->model('localisation/country');
 			$this->load->model('checkout/order');
 		
-			// Setting
 			$_config = new \Opencart\System\Engine\Config();
 			$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 			$_config->load('paypal');
@@ -275,6 +272,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 									
 						$item_total += $product_price * $product['quantity'];
 					}
+					
+					if (!empty($this->session->data['vouchers'])) {
+						foreach ($this->session->data['vouchers'] as $voucher) {
+							$item_total += $voucher['amount'];
+						}
+					}
 			
 					$data['message_amount'] = number_format($item_total * $data['currency_value'], $data['decimal_place'], '.', '');
 				}
@@ -329,7 +332,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				}
 			}
 			
-			if (($this->request->post['page_code'] == 'cart') && $this->cart->getTotal()) {
+			if (($this->request->post['page_code'] == 'cart') && ($this->cart->hasProducts() || !empty($this->session->data['vouchers']))) {
 				if ($setting['button']['cart']['status']) {
 					$data['components'][] = 'buttons';
 					$data['button_status'] = $setting['button']['cart']['status'];
@@ -365,12 +368,18 @@ class PayPal extends \Opencart\System\Engine\Controller {
 									
 						$item_total += $product_price * $product['quantity'];
 					}
+					
+					if (!empty($this->session->data['vouchers'])) {
+						foreach ($this->session->data['vouchers'] as $voucher) {
+							$item_total += $voucher['amount'];
+						}
+					}
 			
 					$data['message_amount'] = number_format($item_total * $data['currency_value'], $data['decimal_place'], '.', '');
 				}
 			}
 			
-			if (($this->request->post['page_code'] == 'checkout') && $this->cart->getTotal()) {
+			if (($this->request->post['page_code'] == 'checkout') && ($this->cart->hasProducts() || !empty($this->session->data['vouchers']))) {
 				if (!empty($this->session->data['order_id'])) {
 					$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
 				}
@@ -430,6 +439,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 									
 							$item_total += $product_price * $product['quantity'];
 						}
+						
+						if (!empty($this->session->data['vouchers'])) {
+							foreach ($this->session->data['vouchers'] as $voucher) {
+								$item_total += $voucher['amount'];
+							}
+						}
 			
 						$data['googlepay_amount'] = number_format($item_total * $data['currency_value'], $data['decimal_place'], '.', '');
 					}
@@ -454,6 +469,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 							$product_price = $this->tax->calculate($product['price'], $product['tax_class_id'], true);
 									
 							$item_total += $product_price * $product['quantity'];
+						}
+						
+						if (!empty($this->session->data['vouchers'])) {
+							foreach ($this->session->data['vouchers'] as $voucher) {
+								$item_total += $voucher['amount'];
+							}
 						}
 			
 						$data['applepay_amount'] = number_format($item_total * $data['currency_value'], $data['decimal_place'], '.', '');
@@ -490,6 +511,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 							$product_price = $this->tax->calculate($product['price'], $product['tax_class_id'], true);
 									
 							$item_total += $product_price * $product['quantity'];
+						}
+						
+						if (!empty($this->session->data['vouchers'])) {
+							foreach ($this->session->data['vouchers'] as $voucher) {
+								$item_total += $voucher['amount'];
+							}
 						}
 			
 						$data['message_amount'] = number_format($item_total * $data['currency_value'], $data['decimal_place'], '.', '');
@@ -662,7 +689,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			}
 
 			if (!$errors) {					
-				// Setting
 				$_config = new \Opencart\System\Engine\Config();
 				$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 				$_config->load('paypal');
@@ -677,28 +703,20 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				$environment = $this->config->get('payment_paypal_environment');
 				$partner_id = $setting['partner'][$environment]['partner_id'];
 				$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
-				$transaction_method = $setting['general']['transaction_method'];	
+				$transaction_method = $setting['general']['transaction_method'];
+
+				if (($payment_type == 'googlepay_button') || ($payment_type == 'applepay_button')) {
+					$transaction_method = 'capture';
+				}					
 						
 				$currency_code = $this->session->data['currency'];
 				$currency_value = $this->currency->getValue($this->session->data['currency']);
 				
-				if (($payment_type == 'button') && empty($setting['currency'][$currency_code]['status'])) {
+				if ((($payment_type == 'button') || ($payment_type == 'googlepay_button') || ($payment_type == 'applepay_button')) && empty($setting['currency'][$currency_code]['status'])) {
 					$currency_code = $setting['general']['currency_code'];
 					$currency_value = $setting['general']['currency_value'];
 				}
-				
-				if (($payment_type == 'googlepay_button') && empty($setting['currency'][$currency_code]['status'])) {
-					$transaction_method = 'capture';
-					$currency_code = $setting['general']['currency_code'];
-					$currency_value = $setting['general']['currency_value'];
-				}
-				
-				if (($payment_type == 'applepay_button') && empty($setting['currency'][$currency_code]['status'])) {
-					$transaction_method = 'capture';
-					$currency_code = $setting['general']['currency_code'];
-					$currency_value = $setting['general']['currency_value'];
-				}
-				
+
 				if (($payment_type == 'card') && empty($setting['currency'][$currency_code]['card_status'])) {
 					$currency_code = $setting['general']['card_currency_code'];
 					$currency_value = $setting['general']['card_currency_value'];
@@ -751,6 +769,21 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						foreach ($tax_rates as $tax_rate) {
 							$tax_total += ($tax_rate['amount'] * $product['quantity']);
 						}
+					}
+				}
+				
+				if (!empty($this->session->data['vouchers'])) {
+					foreach ($this->session->data['vouchers'] as $voucher) {
+						$item_info[] = array(
+							'name' => $voucher['description'],
+							'quantity' => 1,
+							'unit_amount' => array(
+								'currency_code' => $currency_code,
+								'value' => $voucher['amount']
+							)
+						);
+					
+						$item_total += $voucher['amount'];
 					}
 				}
 				
@@ -939,7 +972,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				}
 			}
 			
-			// Setting
 			$_config = new \Opencart\System\Engine\Config();
 			$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 			$_config->load('paypal');
@@ -1423,11 +1455,11 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 		$this->load->model('tool/upload');
 
-		$products = $this->cart->getProducts();
-
-		if (empty($products)) {
+		if (!$this->cart->hasProducts() && empty($this->session->data['vouchers'])) {
 			$this->response->redirect($this->url->link('checkout/cart', 'language=' . $this->config->get('config_language')));
 		}
+		
+		$products = $this->cart->getProducts();
 		
 		foreach ($products as $product) {
 			$product_total = 0;
@@ -2075,7 +2107,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 			$this->session->data['order_id'] = $this->model_checkout_order->addOrder($order_data);
 			
-			// Setting
 			$_config = new \Opencart\System\Engine\Config();
 			$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 			$_config->load('paypal');
@@ -2183,6 +2214,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					foreach ($tax_rates as $tax_rate) {
 						$tax_total += ($tax_rate['amount'] * $product['quantity']);
 					}
+				}
+			}
+			
+			if (!empty($this->session->data['vouchers'])) {
+				foreach ($this->session->data['vouchers'] as $voucher) {
+					$item_total += $voucher['amount'];
 				}
 			}
 												
@@ -2600,7 +2637,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			
 			$webhook_event_id = $webhook_info['id'];
 			
-			// Setting
 			$_config = new \Opencart\System\Engine\Config();
 			$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 			$_config->load('paypal');
@@ -2750,7 +2786,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$agree_status = $this->model_extension_paypal_payment_paypal->getAgreeStatus();
 		
 		if ($this->config->get('payment_paypal_status') && $this->config->get('payment_paypal_client_id') && $this->config->get('payment_paypal_secret') && $agree_status) {
-			// Setting
 			$_config = new \Opencart\System\Engine\Config();
 			$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 			$_config->load('paypal');
@@ -2813,7 +2848,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$type = $data[0];
 			
 			if ($type == 'payment') {			
-				// Setting
 				$_config = new \Opencart\System\Engine\Config();
 				$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 				$_config->load('paypal');
@@ -2865,7 +2899,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$code = $data[1];
 			
 			if ($type == 'payment') {			
-				// Setting
 				$_config = new \Opencart\System\Engine\Config();
 				$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 				$_config->load('paypal');

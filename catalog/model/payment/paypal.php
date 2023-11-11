@@ -59,7 +59,6 @@ class PayPal extends \Opencart\System\Engine\Model {
 			}
 
 			if ($status) {
-				// Setting
 				$_config = new \Opencart\System\Engine\Config();
 				$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 				$_config->load('paypal');
@@ -203,7 +202,6 @@ class PayPal extends \Opencart\System\Engine\Model {
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_delete_order', `description` = '', `trigger` = 'catalog/model/checkout/order/deleteOrder/before', `action` = 'extension/paypal/payment/paypal|order_delete_order_before', `status` = '1', `sort_order` = '5'");
 		}
 								
-		// Setting
 		$_config = new \Opencart\System\Engine\Config();
 		$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 		$_config->load('paypal');

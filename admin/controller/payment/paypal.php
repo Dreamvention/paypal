@@ -20,7 +20,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
     }
 	
 	public function index(): void {
-		// Setting 		
 		$_config = new \Opencart\System\Engine\Config();
 		$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 		$_config->load('paypal');
@@ -191,7 +190,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 		$data['breadcrumbs'][] = [
 			'text' => $this->language->get('text_extensions'),
-			'href' => $this->url->link('marketplace/opencart/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
+			'href' => $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
 		];
 
 		$data['breadcrumbs'][] = [
@@ -204,7 +203,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['callback_url'] = str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'callback', 'user_token=' . $this->session->data['user_token']));
 		$data['agree_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'agree', 'user_token=' . $this->session->data['user_token']));
 		
-		// Setting 		
 		$_config = new \Opencart\System\Engine\Config();
 		$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 		$_config->load('paypal');
@@ -286,7 +284,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 		$data['breadcrumbs'][] = [
 			'text' => $this->language->get('text_extensions'),
-			'href' => $this->url->link('marketplace/opencart/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
+			'href' => $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
 		];
 
 		$data['breadcrumbs'][] = [
@@ -297,7 +295,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['href_dashboard'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'dashboard', 'user_token=' . $this->session->data['user_token']);
 		$data['href_general'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'general', 'user_token=' . $this->session->data['user_token']);
 		$data['href_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'button', 'user_token=' . $this->session->data['user_token']);
-		$data['href_googlepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'googlepay_button', 'user_token=' . $this->session->data['user_token'], true);
+		$data['href_googlepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'googlepay_button', 'user_token=' . $this->session->data['user_token']);
 		$data['href_applepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'applepay_button', 'user_token=' . $this->session->data['user_token']);
 		$data['href_card'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'card', 'user_token=' . $this->session->data['user_token']);
 		$data['href_message'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'message', 'user_token=' . $this->session->data['user_token']);
@@ -309,7 +307,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['sale_analytics_url'] = str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'getSaleAnalytics', 'user_token=' . $this->session->data['user_token']));
 		$data['agree_url'] = str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'agree', 'user_token=' . $this->session->data['user_token']));			
 		
-		// Setting 		
 		$_config = new \Opencart\System\Engine\Config();
 		$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 		$_config->load('paypal');
@@ -411,7 +408,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 		$data['breadcrumbs'][] = [
 			'text' => $this->language->get('text_extensions'),
-			'href' => $this->url->link('marketplace/opencart/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
+			'href' => $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
 		];
 
 		$data['breadcrumbs'][] = [
@@ -423,7 +420,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['href_dashboard'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'dashboard', 'user_token=' . $this->session->data['user_token']);
 		$data['href_general'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'general', 'user_token=' . $this->session->data['user_token']);
 		$data['href_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'button', 'user_token=' . $this->session->data['user_token']);
-		$data['href_googlepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'googlepay_button', 'user_token=' . $this->session->data['user_token'], true);
+		$data['href_googlepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'googlepay_button', 'user_token=' . $this->session->data['user_token']);
 		$data['href_applepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'applepay_button', 'user_token=' . $this->session->data['user_token']);
 		$data['href_card'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'card', 'user_token=' . $this->session->data['user_token']);
 		$data['href_message'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'message', 'user_token=' . $this->session->data['user_token']);
@@ -434,8 +431,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['back'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment');
 		$data['disconnect_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'disconnect', 'user_token=' . $this->session->data['user_token']));
 		$data['agree_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'agree', 'user_token=' . $this->session->data['user_token']));			
-		
-		// Setting 		
+			
 		$_config = new \Opencart\System\Engine\Config();
 		$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 		$_config->load('paypal');
@@ -522,7 +518,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 		$data['breadcrumbs'][] = [
 			'text' => $this->language->get('text_extensions'),
-			'href' => $this->url->link('marketplace/opencart/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
+			'href' => $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
 		];
 
 		$data['breadcrumbs'][] = [
@@ -534,7 +530,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['href_dashboard'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'dashboard', 'user_token=' . $this->session->data['user_token']);
 		$data['href_general'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'general', 'user_token=' . $this->session->data['user_token']);
 		$data['href_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'button', 'user_token=' . $this->session->data['user_token']);
-		$data['href_googlepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'googlepay_button', 'user_token=' . $this->session->data['user_token'], true);
+		$data['href_googlepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'googlepay_button', 'user_token=' . $this->session->data['user_token']);
 		$data['href_applepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'applepay_button', 'user_token=' . $this->session->data['user_token']);
 		$data['href_card'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'card', 'user_token=' . $this->session->data['user_token']);
 		$data['href_message'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'message', 'user_token=' . $this->session->data['user_token']);
@@ -544,8 +540,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['save'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'save', 'user_token=' . $this->session->data['user_token']);
 		$data['back'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment');
 		$data['agree_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'agree', 'user_token=' . $this->session->data['user_token']));
-								
-		// Setting 		
+									
 		$_config = new \Opencart\System\Engine\Config();
 		$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 		$_config->load('paypal');
@@ -667,7 +662,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 		$data['breadcrumbs'][] = [
 			'text' => $this->language->get('text_extensions'),
-			'href' => $this->url->link('marketplace/opencart/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
+			'href' => $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
 		];
 
 		$data['breadcrumbs'][] = [
@@ -679,7 +674,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['href_dashboard'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'dashboard', 'user_token=' . $this->session->data['user_token']);
 		$data['href_general'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'general', 'user_token=' . $this->session->data['user_token']);
 		$data['href_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'button', 'user_token=' . $this->session->data['user_token']);
-		$data['href_googlepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'googlepay_button', 'user_token=' . $this->session->data['user_token'], true);
+		$data['href_googlepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'googlepay_button', 'user_token=' . $this->session->data['user_token']);
 		$data['href_applepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'applepay_button', 'user_token=' . $this->session->data['user_token']);
 		$data['href_card'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'card', 'user_token=' . $this->session->data['user_token']);
 		$data['href_message'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'message', 'user_token=' . $this->session->data['user_token']);
@@ -689,8 +684,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['save'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'save', 'user_token=' . $this->session->data['user_token']);
 		$data['back'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment');
 		$data['agree_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'agree', 'user_token=' . $this->session->data['user_token']));
-				
-		// Setting 		
+					
 		$_config = new \Opencart\System\Engine\Config();
 		$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 		$_config->load('paypal');
@@ -812,7 +806,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 		$data['breadcrumbs'][] = [
 			'text' => $this->language->get('text_extensions'),
-			'href' => $this->url->link('marketplace/opencart/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
+			'href' => $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
 		];
 
 		$data['breadcrumbs'][] = [
@@ -824,7 +818,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['href_dashboard'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'dashboard', 'user_token=' . $this->session->data['user_token']);
 		$data['href_general'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'general', 'user_token=' . $this->session->data['user_token']);
 		$data['href_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'button', 'user_token=' . $this->session->data['user_token']);
-		$data['href_googlepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'googlepay_button', 'user_token=' . $this->session->data['user_token'], true);
+		$data['href_googlepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'googlepay_button', 'user_token=' . $this->session->data['user_token']);
 		$data['href_applepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'applepay_button', 'user_token=' . $this->session->data['user_token']);
 		$data['href_card'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'card', 'user_token=' . $this->session->data['user_token']);
 		$data['href_message'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'message', 'user_token=' . $this->session->data['user_token']);
@@ -833,11 +827,10 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		
 		$data['save'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'save', 'user_token=' . $this->session->data['user_token']);
 		$data['back'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment');
-		$data['applepay_download_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'downloadAssociationFile', 'user_token=' . $this->session->data['user_token'], true));
-		$data['applepay_download_host_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'downloadHostAssociationFile', 'user_token=' . $this->session->data['user_token'], true));
+		$data['applepay_download_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'downloadAssociationFile', 'user_token=' . $this->session->data['user_token']));
+		$data['applepay_download_host_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'downloadHostAssociationFile', 'user_token=' . $this->session->data['user_token']));
 		$data['agree_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'agree', 'user_token=' . $this->session->data['user_token']));
-				
-		// Setting 		
+					
 		$_config = new \Opencart\System\Engine\Config();
 		$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 		$_config->load('paypal');
@@ -959,7 +952,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 		$data['breadcrumbs'][] = [
 			'text' => $this->language->get('text_extensions'),
-			'href' => $this->url->link('marketplace/opencart/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
+			'href' => $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
 		];
 
 		$data['breadcrumbs'][] = [
@@ -971,7 +964,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['href_dashboard'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'dashboard', 'user_token=' . $this->session->data['user_token']);
 		$data['href_general'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'general', 'user_token=' . $this->session->data['user_token']);
 		$data['href_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'button', 'user_token=' . $this->session->data['user_token']);
-		$data['href_googlepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'googlepay_button', 'user_token=' . $this->session->data['user_token'], true);
+		$data['href_googlepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'googlepay_button', 'user_token=' . $this->session->data['user_token']);
 		$data['href_applepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'applepay_button', 'user_token=' . $this->session->data['user_token']);
 		$data['href_card'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'card', 'user_token=' . $this->session->data['user_token']);
 		$data['href_message'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'message', 'user_token=' . $this->session->data['user_token']);
@@ -981,8 +974,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['save'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'save', 'user_token=' . $this->session->data['user_token']);
 		$data['back'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment');
 		$data['agree_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'agree', 'user_token=' . $this->session->data['user_token']));
-				
-		// Setting 		
+					
 		$_config = new \Opencart\System\Engine\Config();
 		$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 		$_config->load('paypal');
@@ -1103,7 +1095,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 		$data['breadcrumbs'][] = [
 			'text' => $this->language->get('text_extensions'),
-			'href' => $this->url->link('marketplace/opencart/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
+			'href' => $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
 		];
 
 		$data['breadcrumbs'][] = [
@@ -1115,7 +1107,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['href_dashboard'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'dashboard', 'user_token=' . $this->session->data['user_token']);
 		$data['href_general'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'general', 'user_token=' . $this->session->data['user_token']);
 		$data['href_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'button', 'user_token=' . $this->session->data['user_token']);
-		$data['href_googlepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'googlepay_button', 'user_token=' . $this->session->data['user_token'], true);
+		$data['href_googlepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'googlepay_button', 'user_token=' . $this->session->data['user_token']);
 		$data['href_applepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'applepay_button', 'user_token=' . $this->session->data['user_token']);
 		$data['href_card'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'card', 'user_token=' . $this->session->data['user_token']);
 		$data['href_message'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'message', 'user_token=' . $this->session->data['user_token']);
@@ -1125,8 +1117,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['save'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'save', 'user_token=' . $this->session->data['user_token']);
 		$data['back'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment');
 		$data['agree_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'agree', 'user_token=' . $this->session->data['user_token']));
-				
-		// Setting 		
+					
 		$_config = new \Opencart\System\Engine\Config();
 		$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 		$_config->load('paypal');
@@ -1251,7 +1242,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 		$data['breadcrumbs'][] = [
 			'text' => $this->language->get('text_extensions'),
-			'href' => $this->url->link('marketplace/opencart/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
+			'href' => $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
 		];
 
 		$data['breadcrumbs'][] = [
@@ -1263,7 +1254,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['href_dashboard'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'dashboard', 'user_token=' . $this->session->data['user_token']);
 		$data['href_general'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'general', 'user_token=' . $this->session->data['user_token']);
 		$data['href_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'button', 'user_token=' . $this->session->data['user_token']);
-		$data['href_googlepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'googlepay_button', 'user_token=' . $this->session->data['user_token'], true);
+		$data['href_googlepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'googlepay_button', 'user_token=' . $this->session->data['user_token']);
 		$data['href_applepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'applepay_button', 'user_token=' . $this->session->data['user_token']);
 		$data['href_card'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'card', 'user_token=' . $this->session->data['user_token']);
 		$data['href_message'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'message', 'user_token=' . $this->session->data['user_token']);
@@ -1273,8 +1264,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['save'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'save', 'user_token=' . $this->session->data['user_token']);
 		$data['back'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment');
 		$data['agree_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'agree', 'user_token=' . $this->session->data['user_token']));
-				
-		// Setting 		
+					
 		$_config = new \Opencart\System\Engine\Config();
 		$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 		$_config->load('paypal');
@@ -1336,7 +1326,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 		$data['breadcrumbs'][] = [
 			'text' => $this->language->get('text_extensions'),
-			'href' => $this->url->link('marketplace/opencart/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
+			'href' => $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment')
 		];
 
 		$data['breadcrumbs'][] = [
@@ -1348,7 +1338,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['href_dashboard'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'dashboard', 'user_token=' . $this->session->data['user_token']);
 		$data['href_general'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'general', 'user_token=' . $this->session->data['user_token']);
 		$data['href_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'button', 'user_token=' . $this->session->data['user_token']);
-		$data['href_googlepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'googlepay_button', 'user_token=' . $this->session->data['user_token'], true);
+		$data['href_googlepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'googlepay_button', 'user_token=' . $this->session->data['user_token']);
 		$data['href_applepay_button'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'applepay_button', 'user_token=' . $this->session->data['user_token']);
 		$data['href_card'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'card', 'user_token=' . $this->session->data['user_token']);
 		$data['href_message'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'message', 'user_token=' . $this->session->data['user_token']);
@@ -1360,7 +1350,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['contact_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'sendContact', 'user_token=' . $this->session->data['user_token']));
 		$data['agree_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'agree', 'user_token=' . $this->session->data['user_token']));
 				
-		// Setting 		
 		$_config = new \Opencart\System\Engine\Config();
 		$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 		$_config->load('paypal');
@@ -1670,7 +1659,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$this->model_setting_event->addEvent('paypal_order_delete_order', '', 'catalog/model/checkout/order/deleteOrder/before', 'extension/paypal/payment/paypal|order_delete_order_before', true, 5);
 		}
 				
-		// Setting
 		$_config = new \Opencart\System\Engine\Config();
 		$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 		$_config->load('paypal');
@@ -1792,7 +1780,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$order_id = $this->request->post['order_id'];
 			$transaction_id = $this->request->post['transaction_id'];
 			
-			// Setting
 			$_config = new \Opencart\System\Engine\Config();
 			$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 			$_config->load('paypal');
@@ -1884,7 +1871,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$order_id = $this->request->post['order_id'];
 			$transaction_id = $this->request->post['transaction_id'];
 			
-			// Setting
 			$_config = new \Opencart\System\Engine\Config();
 			$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 			$_config->load('paypal');
@@ -1976,7 +1962,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$order_id = $this->request->post['order_id'];
 			$transaction_id = $this->request->post['transaction_id'];
 			
-			// Setting
 			$_config = new \Opencart\System\Engine\Config();
 			$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 			$_config->load('paypal');
@@ -2067,7 +2052,6 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$order_id = $this->request->post['order_id'];
 			$transaction_id = $this->request->post['transaction_id'];
 			
-			// Setting
 			$_config = new \Opencart\System\Engine\Config();
 			$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 			$_config->load('paypal');
