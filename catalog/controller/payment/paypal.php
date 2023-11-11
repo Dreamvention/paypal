@@ -1459,6 +1459,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$this->response->redirect($this->url->link('checkout/cart', 'language=' . $this->config->get('config_language')));
 		}
 		
+		$data['products'] = [];
+		
 		$products = $this->cart->getProducts();
 		
 		foreach ($products as $product) {
