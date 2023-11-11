@@ -1435,6 +1435,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$this->response->redirect($this->url->link('checkout/cart', '', true));
 		}
 		
+		$data['products'] = array();
+		
 		$products = $this->cart->getProducts();
 
 		foreach ($products as $product) {
@@ -1771,9 +1773,9 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$data['attention'] = '';
 		}
 
-		$data['coupon'] = $this->load->controller('extension/total/coupon');
-		$data['voucher'] = $this->load->controller('extension/total/voucher');
-		$data['reward'] = $this->load->controller('extension/total/reward');
+		$data['total_coupon'] = $this->load->controller('extension/total/coupon');
+		$data['total_voucher'] = $this->load->controller('extension/total/voucher');
+		$data['total_reward'] = $this->load->controller('extension/total/reward');
 		$data['column_left'] = $this->load->controller('common/column_left');
 		$data['column_right'] = $this->load->controller('common/column_right');
 		$data['content_top'] = $this->load->controller('common/content_top');

@@ -193,8 +193,8 @@
 				</table>
 			</div>
 			<br />
-			<?php if ($coupon || $voucher || $reward) { ?>
-			<div class="panel-group" id="accordion"><?php echo $coupon; ?><?php echo $voucher; ?><?php echo $reward; ?></div><br />
+			<?php if ($total_coupon || $total_voucher || $total_reward) { ?>
+			<div class="panel-group" id="accordion"><?php echo $total_coupon; ?><?php echo $total_voucher; ?><?php echo $total_reward; ?></div><br />
 			<?php } ?>
 			<div class="row">
 				<div class="col-sm-4 col-sm-offset-8">
