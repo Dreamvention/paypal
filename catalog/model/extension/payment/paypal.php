@@ -88,7 +88,7 @@ class ModelExtensionPaymentPayPal extends Model {
 		return $agree_status;
 	}
 	
-	public function log($data, $title = null) {
+	public function log($data, $title = '') {
 		// Setting
 		$_config = new Config();
 		$_config->load('paypal');

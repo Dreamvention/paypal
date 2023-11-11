@@ -230,7 +230,6 @@ class ModelExtensionPaymentPayPal extends Model {
 	}
 	
 	public function log($data, $title = null) {
-		// Setting
 		$_config = new Config();
 		$_config->load('paypal');
 			
