@@ -1560,15 +1560,9 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		if (!empty($this->session->data['vouchers'])) {
 			foreach ($this->session->data['vouchers'] as $key => $voucher) {
 				$data['vouchers'][] = [
-					'code'             => $voucher['code'],
-					'description'      => $voucher['description'],
-					'from_name'        => $voucher['from_name'],
-					'from_email'       => $voucher['from_email'],
-					'to_name'          => $voucher['to_name'],
-					'to_email'         => $voucher['to_email'],
-					'voucher_theme_id' => $voucher['voucher_theme_id'],
-					'message'          => $voucher['message'],
-					'amount'           => $voucher['amount']
+					'key'         	   => $key,
+					'description' 	   => $voucher['description'],
+					'amount'      	   => $this->currency->format($voucher['amount'], $this->session->data['currency'])
 				];
 			}
 		}
@@ -2038,23 +2032,18 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$order_data['vouchers'] = [];
 
 			if (!empty($this->session->data['vouchers'])) {
-				foreach ($this->session->data['vouchers'] as $voucher) {
-					$order_data['vouchers'][] = [
-						'description'      => $voucher['description'],
-						'code'             => token(10),
-						'to_name'          => $voucher['to_name'],
-						'to_email'         => $voucher['to_email'],
-						'from_name'        => $voucher['from_name'],
-						'from_email'       => $voucher['from_email'],
-						'voucher_theme_id' => $voucher['voucher_theme_id'],
-						'message'          => $voucher['message'],
-						'amount'           => $voucher['amount']
-					];
-				}
+				$order_data['vouchers'] = $this->session->data['vouchers'];
 			}
 
 			$order_data['comment'] = (isset($this->session->data['comment']) ? $this->session->data['comment'] : '');
-			$order_data['total'] = $total;
+						
+			$total_data = [
+				'totals' => $totals,
+				'taxes'  => $taxes,
+				'total'  => $total
+			];
+
+			$order_data = array_merge($order_data, $total_data);
 			
 			$order_data['affiliate_id'] = 0;
 			$order_data['commission'] = 0;
