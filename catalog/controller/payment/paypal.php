@@ -675,10 +675,6 @@ class ControllerPaymentPayPal extends Controller {
 				$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
 				$transaction_method = $setting['general']['transaction_method'];	
 				
-				if (($payment_type == 'googlepay_button') || ($payment_type == 'applepay_button')) {
-					$transaction_method = 'capture';
-				}
-						
 				$currency_code = $this->session->data['currency'];
 				$currency_value = $this->currency->getValue($this->session->data['currency']);
 				
