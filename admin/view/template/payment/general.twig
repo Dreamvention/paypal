@@ -195,6 +195,16 @@
 										</div>
 									</div>
 								</div>
+								<div class="col col-12">
+									<div class="row mb-3">
+										<label class="col-form-label" for="input_cron_url"><span data-bs-toggle="tooltip" title="{{ help_cron_url }}">{{ entry_cron_url }}</span></label>
+										<input type="hidden" name="payment_paypal_setting[general][cron_token]" value="{{ setting['general']['cron_token'] }}" />
+										<div class="input-group">
+											<input type="text" value="{{ cron_url }}" readonly="readonly" id="input_cron_url" class="form-control" />
+											<button type="button" data-bs-toggle="tooltip" title="{{ button_copy_url }}" class="btn btn-light copy-cron-url" field_id="input_cron_url"><i class="fas fa-clipboard"></i></button>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -209,6 +219,12 @@ $('.payment-paypal .switch').bootstrapSwitch({
     'onColor': 'success',
     'onText': '{{ text_on }}',
     'offText': '{{ text_off }}'
+});
+
+$('.payment-paypal').delegate('.copy-cron-url', 'click', function(event) {
+	event.preventDefault();
+	
+	navigator.clipboard.writeText($('#' + $(this).attr('field_id')).val());
 });
 
 $('.payment-paypal').on('click', '.button-disconnect', function() {

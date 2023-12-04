@@ -13,7 +13,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$this->separator = '|';
 		}
 		
-		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && ($this->config->get('paypal_version') < '2.1.0'))) {
+		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && ($this->config->get('paypal_version') < '2.2.0'))) {
 			$this->uninstall();
 			$this->install();
 		}
@@ -25,8 +25,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$_config->load('paypal');
 		
 		$config_setting = $_config->get('paypal_setting');
-		
-		if (!empty($this->session->data['environment']) && !empty($this->session->data['authorization_code']) && !empty($this->session->data['shared_id']) && !empty($this->session->data['seller_nonce']) && !empty($this->request->get['merchantIdInPayPal'])) {	
+				
+		if (!empty($this->session->data['environment']) && !empty($this->session->data['authorization_code']) && !empty($this->session->data['shared_id']) && !empty($this->session->data['seller_nonce']) && !empty($this->request->get['merchantIdInPayPal'])) {
 			$this->load->language('extension/paypal/payment/paypal');
 		
 			$this->load->model('extension/paypal/payment/paypal');
@@ -76,9 +76,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			];	
 		
 			$paypal->setAccessToken($token_info);
+			
+			$webhook_token = sha1(uniqid(mt_rand(), 1));
+			$cron_token = sha1(uniqid(mt_rand(), 1));
 						
 			$webhook_info = [
-				'url' => HTTP_CATALOG . 'index.php?route=extension/paypal/payment/paypal',
+				'url' => HTTP_CATALOG . 'index.php?route=extension/paypal/payment/paypal&webhook_token=' . $webhook_token,
 				'event_types' => [
 					['name' => 'PAYMENT.AUTHORIZATION.CREATED'],
 					['name' => 'PAYMENT.AUTHORIZATION.VOIDED'],
@@ -120,7 +123,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				
 				$this->error['warning'] = implode(' ', $error_messages);
 			}
-			
+		
 			$merchant_id = $this->request->get['merchantIdInPayPal'];
 			
 			$setting = $this->model_setting_setting->getSetting('payment_paypal');
@@ -134,6 +137,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$setting['payment_paypal_total'] = 0;
 			$setting['payment_paypal_geo_zone_id'] = 0;
 			$setting['payment_paypal_sort_order'] = 0;
+			$setting['payment_paypal_setting']['general']['webhook_token'] = $webhook_token;
+			$setting['payment_paypal_setting']['general']['cron_token'] = $cron_token;
 			
 			$this->load->model('localisation/country');
 		
@@ -219,12 +224,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		
 		$data['configure_url'] = [
 			'production' => [
-				'ppcp' => 'https://www.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['production']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['production']['client_id'] . '&features=PAYMENT,REFUND,ACCESS_MERCHANT_INFORMATION&product=ppcp&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce'],
-				'express_checkout' => 'https://www.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['production']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['production']['client_id'] . '&features=PAYMENT,REFUND,ACCESS_MERCHANT_INFORMATION&product=EXPRESS_CHECKOUT&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce']
+				'ppcp' => 'https://www.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['production']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['production']['client_id'] . '&features=PAYMENT,REFUND,ACCESS_MERCHANT_INFORMATION,VAULT,BILLING_AGREEMENT&product=PPCP,ADVANCED_VAULTING&capabilities=PAYPAL_WALLET_VAULTING_ADVANCED&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce'],
+				'express_checkout' => 'https://www.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['production']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['production']['client_id'] . '&features=PAYMENT,REFUND,ACCESS_MERCHANT_INFORMATION,VAULT,BILLING_AGREEMENT&product=EXPRESS_CHECKOUT,ADVANCED_VAULTING&capabilities=PAYPAL_WALLET_VAULTING_ADVANCED&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce']
 			],
 			'sandbox' => [
-				'ppcp' => 'https://www.sandbox.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['sandbox']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['sandbox']['client_id'] . '&features=PAYMENT,REFUND,ACCESS_MERCHANT_INFORMATION&product=ppcp&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce'],
-				'express_checkout' => 'https://www.sandbox.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['sandbox']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['sandbox']['client_id'] . '&features=PAYMENT,REFUND,ACCESS_MERCHANT_INFORMATION&product=EXPRESS_CHECKOUT&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce']
+				'ppcp' => 'https://www.sandbox.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['sandbox']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['sandbox']['client_id'] . '&features=PAYMENT,REFUND,ACCESS_MERCHANT_INFORMATION,VAULT,BILLING_AGREEMENT&product=PPCP,ADVANCED_VAULTING&capabilities=PAYPAL_WALLET_VAULTING_ADVANCED&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce'],
+				'express_checkout' => 'https://www.sandbox.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['sandbox']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['sandbox']['client_id'] . '&features=PAYMENT,REFUND,ACCESS_MERCHANT_INFORMATION,VAULT,BILLING_AGREEMENT&product=EXPRESS_CHECKOUT,ADVANCED_VAULTING&capabilities=PAYPAL_WALLET_VAULTING_ADVANCED&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce']
 			]
 		];
 		
@@ -464,6 +469,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$this->load->model('localisation/country');
 
 		$data['countries'] = $this->model_localisation_country->getCountries();
+		
+		$data['cron_url'] = HTTP_CATALOG . 'index.php?route=extension/paypal/payment/paypal&cron_token=' . $data['setting']['general']['cron_token'];
 		
 		$result = $this->model_extension_paypal_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
 		
@@ -1650,7 +1657,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$this->model_setting_event->addEvent(['code' => 'paypal_header', 'description' => '', 'trigger' => 'catalog/controller/common/header/before', 'action' => 'extension/paypal/payment/paypal|header_before', 'status' => true, 'sort_order' => 2]);
 			$this->model_setting_event->addEvent(['code' => 'paypal_extension_get_extensions_by_type', 'description' => '', 'trigger' => 'catalog/model/setting/extension/getExtensionsByType/after', 'action' => 'extension/paypal/payment/paypal|extension_get_extensions_by_type_after', 'status' => true, 'sort_order' => 3]);
 			$this->model_setting_event->addEvent(['code' => 'paypal_extension_get_extension_by_code', 'description' => '', 'trigger' => 'catalog/model/setting/extension/getExtensionByCode/after', 'action' => 'extension/paypal/payment/paypal|extension_get_extension_by_code_after', 'status' => true, 'sort_order' => 4]);
-			$this->model_setting_event->addEvent(['code' => 'paypal_order_delete_order', 'description' => '', 'trigger' => 'catalog/model/checkout/order/deleteOrder/before', 'action' => 'extension/paypal/payment/paypal|order_delete_order_before', 'status' => true, 'sort_order' => 5]);
+			$this->model_setting_event->addEvent(['code' => 'paypal_order_delete_order', 'description' => '', 'trigger' => 'catalog/model/checkout/order/deleteOrder/before', 'action' => 'extension/paypal/payment/paypal|order_delete_order_before', 'status' => true, 'sort_order' => 6]);
 		} else {
 			$this->model_setting_event->addEvent('paypal_order_info', '', 'admin/view/sale/order_info/before', 'extension/paypal/payment/paypal|order_info_before', true, 1);
 			$this->model_setting_event->addEvent('paypal_header', '', 'catalog/controller/common/header/before', 'extension/paypal/payment/paypal|header_before', true, 2);
@@ -1707,7 +1714,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			
 			$data['order_id'] = $this->request->get['order_id'];
 			
-			$paypal_order_info = $this->model_extension_paypal_payment_paypal->getOrder($data['order_id']);
+			$paypal_order_info = $this->model_extension_paypal_payment_paypal->getPayPalOrder($data['order_id']);
 				
 			if ($paypal_order_info) {
 				$data['transaction_id'] = $paypal_order_info['transaction_id'];
@@ -1719,11 +1726,11 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					$data['transaction_url'] = 'https://www.sandbox.paypal.com/activity/payment/' . $data['transaction_id'];
 				}
 				
-				$data['info_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'getPaymentInfo', 'user_token=' . $this->session->data['user_token'] . '&order_id=' . $data['order_id']));
-				$data['capture_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'capturePayment', 'user_token=' . $this->session->data['user_token']));
-				$data['reauthorize_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'reauthorizePayment', 'user_token=' . $this->session->data['user_token']));
-				$data['void_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'voidPayment', 'user_token=' . $this->session->data['user_token']));
-				$data['refund_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'refundPayment', 'user_token=' . $this->session->data['user_token']));
+				$data['info_url'] = str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'getPaymentInfo', 'user_token=' . $this->session->data['user_token'] . '&order_id=' . $data['order_id']));
+				$data['capture_url'] = str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'capturePayment', 'user_token=' . $this->session->data['user_token']));
+				$data['reauthorize_url'] = str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'reauthorizePayment', 'user_token=' . $this->session->data['user_token']));
+				$data['void_url'] = str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'voidPayment', 'user_token=' . $this->session->data['user_token']));
+				$data['refund_url'] = str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'refundPayment', 'user_token=' . $this->session->data['user_token']));
 							
 				$data['tabs'][] = [
 					'code'    => 'paypal',
@@ -1746,7 +1753,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			
 			$data['order_id'] = $this->request->get['order_id'];
 			
-			$paypal_order_info = $this->model_extension_paypal_payment_paypal->getOrder($data['order_id']);
+			$paypal_order_info = $this->model_extension_paypal_payment_paypal->getPayPalOrder($data['order_id']);
 				
 			if ($paypal_order_info) {
 				$data['transaction_id'] = $paypal_order_info['transaction_id'];
@@ -1758,11 +1765,11 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					$data['transaction_url'] = 'https://www.sandbox.paypal.com/activity/payment/' . $data['transaction_id'];
 				}
 				
-				$data['info_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'getPaymentInfo', 'user_token=' . $this->session->data['user_token'] . '&order_id=' . $data['order_id']));
-				$data['capture_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'capturePayment', 'user_token=' . $this->session->data['user_token']));
-				$data['reauthorize_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'reauthorizePayment', 'user_token=' . $this->session->data['user_token']));
-				$data['void_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'voidPayment', 'user_token=' . $this->session->data['user_token']));
-				$data['refund_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'refundPayment', 'user_token=' . $this->session->data['user_token']));
+				$data['info_url'] = str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'getPaymentInfo', 'user_token=' . $this->session->data['user_token'] . '&order_id=' . $data['order_id']));
+				$data['capture_url'] = str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'capturePayment', 'user_token=' . $this->session->data['user_token']));
+				$data['reauthorize_url'] = str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'reauthorizePayment', 'user_token=' . $this->session->data['user_token']));
+				$data['void_url'] = str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'voidPayment', 'user_token=' . $this->session->data['user_token']));
+				$data['refund_url'] = str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'refundPayment', 'user_token=' . $this->session->data['user_token']));
 								
 				$content = $this->load->view('extension/paypal/payment/order', $data);
 			}
@@ -1841,18 +1848,15 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				$transaction_id = $result['id'];
 				$transaction_status = 'completed';
 				
-				$this->model_extension_paypal_payment_paypal->deleteOrder($order_id);
-										
-				$paypal_data = [
+				$paypal_order_data = [
 					'order_id' => $order_id,
 					'transaction_id' => $transaction_id,
-					'transaction_status' => $transaction_status,
-					'environment' => $environment
+					'transaction_status' => $transaction_status
 				];
 
-				$this->model_extension_paypal_payment_paypal->addOrder($paypal_data);
+				$this->model_extension_paypal_payment_paypal->editPayPalOrder($paypal_order_data);
 								
-				$data['success'] = $this->language->get('success_capture');
+				$data['success'] = $this->language->get('success_capture_payment');
 			}
 		}
 				
@@ -1932,18 +1936,15 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				$transaction_id = $result['id'];
 				$transaction_status = 'created';
 				
-				$this->model_extension_paypal_payment_paypal->deleteOrder($order_id);
-										
-				$paypal_data = [
+				$paypal_order_data = [
 					'order_id' => $order_id,
 					'transaction_id' => $transaction_id,
-					'transaction_status' => $transaction_status,
-					'environment' => $environment
+					'transaction_status' => $transaction_status
 				];
 
-				$this->model_extension_paypal_payment_paypal->addOrder($paypal_data);
+				$this->model_extension_paypal_payment_paypal->editPayPalOrder($paypal_order_data);
 								
-				$data['success'] = $this->language->get('success_reauthorize');
+				$data['success'] = $this->language->get('success_reauthorize_payment');
 			}
 		}
 						
@@ -2022,18 +2023,14 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			if (!$this->error) {
 				$transaction_status = 'voided';
 				
-				$this->model_extension_paypal_payment_paypal->deleteOrder($order_id);
-										
-				$paypal_data = [
+				$paypal_order_data = [
 					'order_id' => $order_id,
-					'transaction_id' => $transaction_id,
-					'transaction_status' => $transaction_status,
-					'environment' => $environment
+					'transaction_status' => $transaction_status
 				];
 
-				$this->model_extension_paypal_payment_paypal->addOrder($paypal_data);
+				$this->model_extension_paypal_payment_paypal->editPayPalOrder($paypal_order_data);
 								
-				$data['success'] = $this->language->get('success_void');
+				$data['success'] = $this->language->get('success_void_payment');
 			}
 		}
 						
@@ -2112,18 +2109,14 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			if (isset($result['id']) && isset($result['status']) && !$this->error) {
 				$transaction_status = 'refunded';
 				
-				$this->model_extension_paypal_payment_paypal->deleteOrder($order_id);
-										
-				$paypal_data = [
+				$paypal_order_data = [
 					'order_id' => $order_id,
-					'transaction_id' => $transaction_id,
-					'transaction_status' => $transaction_status,
-					'environment' => $environment
+					'transaction_status' => $transaction_status
 				];
 
-				$this->model_extension_paypal_payment_paypal->addOrder($paypal_data);
+				$this->model_extension_paypal_payment_paypal->editPayPalOrder($paypal_order_data);
 								
-				$data['success'] = $this->language->get('success_refund');
+				$data['success'] = $this->language->get('success_refund_payment');
 			}
 		}
 						
@@ -2132,7 +2125,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($data));
 	}
-	
+
 	private function validate(): array|bool {
 		if (!$this->user->hasPermission('modify', 'extension/paypal/payment/paypal')) {
 			$this->error['warning'] = $this->language->get('error_permission');

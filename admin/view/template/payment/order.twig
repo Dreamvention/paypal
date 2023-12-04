@@ -1,16 +1,16 @@
 <div class="transaction-id">{{ text_transaction_id }}: <a href="{{ transaction_url }}" target="_blank">{{ transaction_id }}</a></div><br />
 <div class="transaction-status">{{ attribute(_context, 'text_transaction_' ~ transaction_status) }}</div><br />
 {% if (transaction_status == 'created') %}
-<button type="button" class="btn btn-primary button-capture">{{ button_capture }}</button>
-<button type="button" class="btn btn-primary button-reauthorize">{{ button_reauthorize }}</button>
-<button type="button" class="btn btn-primary button-void">{{ button_void }}</button>
+<button type="button" class="btn btn-primary button-capture-payment">{{ button_capture_payment }}</button>
+<button type="button" class="btn btn-primary button-reauthorize-payment">{{ button_reauthorize_payment }}</button>
+<button type="button" class="btn btn-primary button-void-payment">{{ button_void_payment }}</button>
 {% endif %}
 {% if (transaction_status == 'completed') %}
-<button type="button" class="btn btn-primary button-refund">{{ button_refund }}</button>
+<button type="button" class="btn btn-primary button-refund-payment">{{ button_refund_payment }}</button>
 {% endif %}
 <script type="text/javascript">
 
-$('#tab-paypal').on('click', '.button-capture', function() {
+$('#tab-paypal').on('click', '.button-capture-payment', function() {
 	$.ajax({
 		type: 'post',
 		url: '{{ capture_url }}',
@@ -42,7 +42,7 @@ $('#tab-paypal').on('click', '.button-capture', function() {
 });
 
 
-$('#tab-paypal').on('click', '.button-reauthorize', function() {
+$('#tab-paypal').on('click', '.button-reauthorize-payment', function() {
 	$.ajax({
 		type: 'post',
 		url: '{{ reauthorize_url }}',
@@ -74,7 +74,7 @@ $('#tab-paypal').on('click', '.button-reauthorize', function() {
 });
 
 
-$('#tab-paypal').on('click', '.button-void', function() {
+$('#tab-paypal').on('click', '.button-void-payment', function() {
 	$.ajax({
 		type: 'post',
 		url: '{{ void_url }}',
@@ -105,7 +105,7 @@ $('#tab-paypal').on('click', '.button-void', function() {
 	});
 });
 
-$('#tab-paypal').on('click', '.button-refund', function() {
+$('#tab-paypal').on('click', '.button-refund-payment', function() {
 	$.ajax({
 		type: 'post',
 		url: '{{ refund_url }}',

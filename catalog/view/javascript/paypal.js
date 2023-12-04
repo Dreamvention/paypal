@@ -5,17 +5,17 @@ var PayPalAPI = (function () {
 	var paypal_callback;
 	
 	var showPaypalAlert = function(data) {
-		$('#paypal_form .alert').remove();
+		$('.alert-dismissible').remove();
 		
 		if (data['error'] && data['error']['warning']) {
 			if ($('#paypal_form').length) {
-				$('#paypal_form').prepend('<div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> ' + data['error']['warning'] + '</div>');						
+				$('#paypal_form').prepend('<div class="alert alert-danger alert-dismissible"><i class="fas fa-exclamation-circle"></i> ' + data['error']['warning'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
 			} else {
-				alert(data['error']['warning']);
+				$('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fas fa-exclamation-circle"></i> ' + data['error']['warning'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
 			}
 		}
 	};
-	
+		
 	var getQueryParams = function(url) {
 		const param_arr = url.slice(url.indexOf('?') + 1).split('&');
 		const params = {};

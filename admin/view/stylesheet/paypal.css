@@ -192,6 +192,14 @@
 	border: 1px solid #919697;
 	border-radius: 3px;
 }
+.payment-paypal .card .input-group .form-control:first-child {
+    border-bottom-right-radius: 0px;
+    border-top-right-radius: 0px;
+}
+.payment-paypal .card .input-group .form-control:last-child {
+    border-bottom-left-radius: 0px;
+    border-top-left-radius: 0px;
+}
 .payment-paypal .card .form-control:focus, .payment-paypal .card .form-select:focus {
 	border-color: #488DE6;
 	-webkit-box-shadow: none;
@@ -199,6 +207,27 @@
 }
 .payment-paypal .card textarea.form-control, .payment-paypal .card .form-select[multiple] {
 	height: auto;
+}
+.payment-paypal .card .input-group-text, .payment-paypal .card .input-group > .btn {
+	font-size: 13px;
+	color: #000000;
+	border: 1px solid #919697;
+	border-radius: 3px;
+}
+.payment-paypal .card .input-group > .btn {
+	height: 42px;
+	padding: 11px 22px;
+}
+.payment-paypal .card .input-group-text:first-child, .payment-paypal .card .input-group > .btn:first-child {
+    border-right: 0px;
+	border-bottom-right-radius: 0px;
+    border-top-right-radius: 0px;
+}
+.payment-paypal .card .input-group-text:last-child, .payment-paypal .card .input-group > .btn:last-child {
+    margin-left: 0px !important;
+	border-left: 0px;
+	border-bottom-left-radius: 0px;
+    border-top-left-radius: 0px;
 }
 .payment-paypal .card .form-check-input {
 	display: inline-block;

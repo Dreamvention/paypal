@@ -18,7 +18,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			ini_set('serialize_precision', 14);
 		}
 		
-		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && ($this->config->get('paypal_version') < '2.1.0'))) {
+		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && ($this->config->get('paypal_version') < '2.2.0'))) {
 			$this->update();
 		}
 	}
@@ -28,7 +28,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		
 		$agree_status = $this->model_extension_paypal_payment_paypal->getAgreeStatus();
 		
-		if ($this->config->get('payment_paypal_status') && $this->config->get('payment_paypal_client_id') && $this->config->get('payment_paypal_secret') && !$this->webhook() && $agree_status) {
+		if ($this->config->get('payment_paypal_status') && $this->config->get('payment_paypal_client_id') && $this->config->get('payment_paypal_secret') && !$this->webhook() && !$this->cron() && $agree_status) {
 			if (VERSION >= '4.0.2.0') {
 				if (!empty($this->session->data['payment_method']['code'])) {
 					if ($this->session->data['payment_method']['code'] == 'paypal.paylater') {
@@ -626,8 +626,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						}
 					}
 				
-					if (isset($this->request->post['subscription_plan_id'])) {
-						$subscription_plan_id = (int)$this->request->post['subscription_plan_id'];
+					if (isset($product['subscription_plan_id'])) {
+						$subscription_plan_id = (int)$product['subscription_plan_id'];
 					} else {
 						$subscription_plan_id = 0;
 					}
@@ -770,14 +770,14 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				
 				if (!empty($this->session->data['vouchers'])) {
 					foreach ($this->session->data['vouchers'] as $voucher) {
-						$item_info[] = array(
+						$item_info[] = [
 							'name' => $voucher['description'],
 							'quantity' => 1,
-							'unit_amount' => array(
+							'unit_amount' => [
 								'currency_code' => $currency_code,
 								'value' => $voucher['amount']
-							)
-						);
+							]
+						];
 					
 						$item_total += $voucher['amount'];
 					}
@@ -873,6 +873,31 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				}
 	
 				$paypal_order_info['application_context']['shipping_preference'] = $shipping_preference;
+				
+				if ($this->cart->hasSubscription()) {					
+					$payment_method = '';
+					
+					if ($payment_type == 'button') {
+						$payment_method = 'paypal';
+					}
+					
+					if ($payment_type == 'card') {
+						$payment_method = 'card';
+					}
+					
+					if ($payment_method) {
+						$paypal_order_info['payment_source'][$payment_method]['attributes']['vault'] = [
+							'store_in_vault' => 'ON_SUCCESS',
+							'usage_type' => 'MERCHANT',
+							'customer_type' => 'CONSUMER'
+						];
+					
+						$paypal_order_info['payment_source']['paypal']['experience_context'] = [
+							'return_url' => $this->url->link('checkout/success', 'language=' . $this->config->get('config_language')),
+							'cancel_url' => $this->url->link('checkout/success', 'language=' . $this->config->get('config_language'))
+						];
+					}
+				}
 				
 				$result = $paypal->createOrder($paypal_order_info);
 			
@@ -1270,20 +1295,38 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					}
 			
 					if (!$this->error) {	
+						$this->load->model('checkout/order');
+				
+						$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
+												
 						if ($transaction_method == 'authorize') {
 							$this->model_extension_paypal_payment_paypal->log($result, 'Authorize Order');
 					
 							if (isset($result['purchase_units'][0]['payments']['authorizations'][0]['status']) && isset($result['purchase_units'][0]['payments']['authorizations'][0]['seller_protection']['status'])) {
+								$authorization_id = $result['purchase_units'][0]['payments']['authorizations'][0]['id'];
 								$authorization_status = $result['purchase_units'][0]['payments']['authorizations'][0]['status'];
 								$seller_protection_status = $result['purchase_units'][0]['payments']['authorizations'][0]['seller_protection']['status'];
 								$order_status_id = 0;
+								$transaction_status = '';
+								$payment_method = '';
+								$vault_id = '';
+								$vault_customer_id = '';
 						
 								if (!$this->cart->hasShipping()) {
 									$seller_protection_status = 'NOT_ELIGIBLE';
 								}
+								
+								foreach ($result['payment_source'] as $payment_source_key => $payment_source) {
+									$vault_id = (isset($payment_source['attributes']['vault']['id']) ? $payment_source['attributes']['vault']['id'] : '');
+									$vault_customer_id = (isset($payment_source['attributes']['vault']['customer']['id']) ? $payment_source['attributes']['vault']['customer']['id'] : '');
+									$payment_method = $payment_source_key;
+									
+									break;
+								}
 						
 								if ($authorization_status == 'CREATED') {
 									$order_status_id = $setting['order_status']['pending']['id'];
+									$transaction_status = 'created';
 								}
 
 								if ($authorization_status == 'CAPTURED') {
@@ -1292,6 +1335,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						
 								if ($authorization_status == 'DENIED') {
 									$order_status_id = $setting['order_status']['denied']['id'];
+									$transaction_status = 'denied';
 							
 									$this->error['warning'] = $this->language->get('error_authorization_denied');
 								}
@@ -1302,14 +1346,37 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						
 								if ($authorization_status == 'PENDING') {
 									$order_status_id = $setting['order_status']['pending']['id'];
+									$transaction_status = 'pending';
 								}
 						
 								if (($authorization_status == 'CREATED') || ($authorization_status == 'DENIED') || ($authorization_status == 'PENDING')) {
 									$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
-				
-									$this->load->model('checkout/order');
-							
+											
 									$this->model_checkout_order->addHistory($this->session->data['order_id'], $order_status_id, $message);
+								}
+								
+								if (($authorization_status == 'CREATED') || ($authorization_status == 'DENIED') || ($authorization_status == 'PENDING')) {
+									$this->model_extension_paypal_payment_paypal->deletePayPalOrder($this->session->data['order_id']);
+									
+									$paypal_order_data = [
+										'order_id' => $this->session->data['order_id'],
+										'transaction_id' => $authorization_id,
+										'transaction_status' => $transaction_status,
+										'payment_method' => $payment_method,
+										'vault_id' => $vault_id,
+										'vault_customer_id' => $vault_customer_id,
+										'environment' => $environment
+									];
+
+									$this->model_extension_paypal_payment_paypal->addPayPalOrder($paypal_order_data);
+								}
+								
+								if (($authorization_status == 'CREATED') || ($authorization_status == 'PENDING')) {
+									$subscriptions = $this->model_extension_paypal_payment_paypal->getSubscriptionsByOrderId($this->session->data['order_id']);
+					
+									foreach ($subscriptions as $subscription) {
+										$this->model_extension_paypal_payment_paypal->subscriptionPayment($subscription, $order_info, $paypal_order_data);
+									} 
 								}
 						
 								if (($authorization_status == 'CREATED') || ($authorization_status == 'PARTIALLY_CAPTURED') || ($authorization_status == 'PARTIALLY_CREATED') || ($authorization_status == 'VOIDED') || ($authorization_status == 'PENDING')) {
@@ -1320,20 +1387,35 @@ class PayPal extends \Opencart\System\Engine\Controller {
 							$this->model_extension_paypal_payment_paypal->log($result, 'Capture Order');
 					
 							if (isset($result['purchase_units'][0]['payments']['captures'][0]['status']) && isset($result['purchase_units'][0]['payments']['captures'][0]['seller_protection']['status'])) {
+								$capture_id = $result['purchase_units'][0]['payments']['captures'][0]['id'];
 								$capture_status = $result['purchase_units'][0]['payments']['captures'][0]['status'];
 								$seller_protection_status = $result['purchase_units'][0]['payments']['captures'][0]['seller_protection']['status'];
 								$order_status_id = 0;
+								$transaction_status = '';
+								$payment_method = '';
+								$vault_id = '';
+								$vault_customer_id = '';
 						
 								if (!$this->cart->hasShipping()) {
 									$seller_protection_status = 'NOT_ELIGIBLE';
 								}
+								
+								foreach ($result['payment_source'] as $payment_source_key => $payment_source) {
+									$vault_id = (isset($payment_source['attributes']['vault']['id']) ? $payment_source['attributes']['vault']['id'] : '');
+									$vault_customer_id = (isset($payment_source['attributes']['vault']['customer']['id']) ? $payment_source['attributes']['vault']['customer']['id'] : '');
+									$payment_method = $payment_source_key;
+									
+									break;
+								}
 						
 								if ($capture_status == 'COMPLETED') {
 									$order_status_id = $setting['order_status']['completed']['id'];
+									$transaction_status = 'completed';
 								}
 						
 								if ($capture_status == 'DECLINED') {
 									$order_status_id = $setting['order_status']['denied']['id'];
+									$transaction_status = 'denied';
 							
 									$this->error['warning'] = $this->language->get('error_capture_declined');
 								}
@@ -1344,14 +1426,37 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						
 								if ($capture_status == 'PENDING') {
 									$order_status_id = $setting['order_status']['pending']['id'];
+									$transaction_status = 'pending';
 								}
 						
 								if (($capture_status == 'COMPLETED') || ($capture_status == 'DECLINED') || ($capture_status == 'PENDING')) {
 									$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
-				
-									$this->load->model('checkout/order');
-							
+											
 									$this->model_checkout_order->addHistory($this->session->data['order_id'], $order_status_id, $message);
+								}
+								
+								if (($capture_status == 'COMPLETED') || ($capture_status == 'DECLINED') || ($capture_status == 'PENDING')) {
+									$this->model_extension_paypal_payment_paypal->deletePayPalOrder($this->session->data['order_id']);
+									
+									$paypal_order_data = [
+										'order_id' => $this->session->data['order_id'],
+										'transaction_id' => $capture_id,
+										'transaction_status' => $transaction_status,
+										'payment_method' => $payment_method,
+										'vault_id' => $vault_id,
+										'vault_customer_id' => $vault_customer_id,
+										'environment' => $environment
+									];
+
+									$this->model_extension_paypal_payment_paypal->addPayPalOrder($paypal_order_data);
+								}
+								
+								if (($capture_status == 'COMPLETED') || ($capture_status == 'PENDING')) {
+									$subscriptions = $this->model_extension_paypal_payment_paypal->getSubscriptionsByOrderId($this->session->data['order_id']);
+					
+									foreach ($subscriptions as $subscription) {
+										$this->model_extension_paypal_payment_paypal->subscriptionPayment($subscription, $order_info, $paypal_order_data);
+									}
 								}
 						
 								if (($capture_status == 'COMPLETED') || ($capture_status == 'PARTIALLY_REFUNDED') || ($capture_status == 'REFUNDED') || ($capture_status == 'PENDING')) {
@@ -2006,6 +2111,29 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						'type'                    => $option['type']
 					];
 				}
+				
+				$subscription_data = [];
+
+				if ((VERSION >= '4.0.2.0') && $product['subscription']) {
+					$subscription_data = [
+						'subscription_plan_id' => $product['subscription']['subscription_plan_id'],
+						'name'                 => $product['subscription']['name'],
+						'trial_price'          => $product['subscription']['trial_price'],
+						'trial_tax'            => $this->tax->getTax($product['subscription']['trial_price'], $product['tax_class_id']),
+						'trial_frequency'      => $product['subscription']['trial_frequency'],
+						'trial_cycle'          => $product['subscription']['trial_cycle'],
+						'trial_duration'       => $product['subscription']['trial_duration'],
+						'trial_remaining'      => $product['subscription']['trial_remaining'],
+						'trial_status'         => $product['subscription']['trial_status'],
+						'price'                => $product['subscription']['price'],
+						'tax'                  => $this->tax->getTax($product['subscription']['price'], $product['tax_class_id']),
+						'frequency'            => $product['subscription']['frequency'],
+						'cycle'                => $product['subscription']['cycle'],
+						'duration'             => $product['subscription']['duration']
+					];
+				} else {
+					$subscription_data = $product['subscription'];
+				}
 
 				$order_data['products'][] = [
 					'product_id' 	=> $product['product_id'],
@@ -2013,7 +2141,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					'name'       	=> $product['name'],
 					'model'      	=> $product['model'],
 					'option'     	=> $option_data,
-					'subscription' 	=> $product['subscription'],
+					'subscription' 	=> $subscription_data,
 					'download'   	=> $product['download'],
 					'quantity'   	=> $product['quantity'],
 					'subtract'   	=> $product['subtract'],
@@ -2094,6 +2222,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 
 			$this->session->data['order_id'] = $this->model_checkout_order->addOrder($order_data);
 			
+			$order_data['order_id'] = $this->session->data['order_id'];
+									
 			$_config = new \Opencart\System\Engine\Config();
 			$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 			$_config->load('paypal');
@@ -2348,9 +2478,22 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						$this->model_extension_paypal_payment_paypal->log($result, 'Authorize Order');
 			
 						if (isset($result['purchase_units'][0]['payments']['authorizations'][0]['status']) && isset($result['purchase_units'][0]['payments']['authorizations'][0]['seller_protection']['status'])) {
+							$authorization_id = $result['purchase_units'][0]['payments']['authorizations'][0]['id'];
 							$authorization_status = $result['purchase_units'][0]['payments']['authorizations'][0]['status'];
 							$seller_protection_status = $result['purchase_units'][0]['payments']['authorizations'][0]['seller_protection']['status'];
 							$order_status_id = 0;
+							$transaction_status = '';
+							$payment_method = '';
+							$vault_id = '';
+							$vault_customer_id = '';
+							
+							foreach ($result['payment_source'] as $payment_source_key => $payment_source) {
+								$vault_id = (isset($payment_source['attributes']['vault']['id']) ? $payment_source['attributes']['vault']['id'] : '');
+								$vault_customer_id = (isset($payment_source['attributes']['vault']['customer']['id']) ? $payment_source['attributes']['vault']['customer']['id'] : '');
+								$payment_method = $payment_source_key;
+									
+								break;
+							}
 						
 							if (!$this->cart->hasShipping()) {
 								$seller_protection_status = 'NOT_ELIGIBLE';
@@ -2358,6 +2501,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						
 							if ($authorization_status == 'CREATED') {
 								$order_status_id = $setting['order_status']['pending']['id'];
+								$transaction_status = 'created';
 							}
 
 							if ($authorization_status == 'CAPTURED') {
@@ -2366,6 +2510,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						
 							if ($authorization_status == 'DENIED') {
 								$order_status_id = $setting['order_status']['denied']['id'];
+								$transaction_status = 'denied';
 							
 								$this->error['warning'] = $this->language->get('error_authorization_denied');
 							}
@@ -2376,12 +2521,37 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						
 							if ($authorization_status == 'PENDING') {
 								$order_status_id = $setting['order_status']['pending']['id'];
+								$transaction_status = 'pending';
 							}
 						
 							if (($authorization_status == 'CREATED') || ($authorization_status == 'DENIED') || ($authorization_status == 'PENDING')) {
 								$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
 				
 								$this->model_checkout_order->addHistory($this->session->data['order_id'], $order_status_id, $message);
+							}
+							
+							if (($authorization_status == 'CREATED') || ($authorization_status == 'DENIED') || ($authorization_status == 'PENDING')) {
+								$this->model_extension_paypal_payment_paypal->deletePayPalOrder($this->session->data['order_id']);
+								
+								$paypal_order_data = [
+									'order_id' => $this->session->data['order_id'],
+									'transaction_id' => $authorization_id,
+									'transaction_status' => $transaction_status,
+									'payment_method' => $payment_method,
+									'vault_id' => $vault_id,
+									'vault_customer_id' => $vault_customer_id,
+									'environment' => $environment
+								];
+
+								$this->model_extension_paypal_payment_paypal->addPayPalOrder($paypal_order_data);
+							}
+								
+							if (($authorization_status == 'CREATED') || ($authorization_status == 'PENDING')) {
+								$subscriptions = $this->model_extension_paypal_payment_paypal->getSubscriptionsByOrderId($this->session->data['order_id']);
+					
+								foreach ($subscriptions as $subscription) {
+									$this->model_extension_paypal_payment_paypal->subscriptionPayment($subscription, $order_data, $paypal_order_data);
+								}
 							}
 						
 							if (($authorization_status == 'CREATED') || ($authorization_status == 'PARTIALLY_CAPTURED') || ($authorization_status == 'PARTIALLY_CREATED') || ($authorization_status == 'VOIDED') || ($authorization_status == 'PENDING')) {
@@ -2392,20 +2562,35 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						$this->model_extension_paypal_payment_paypal->log($result, 'Capture Order');
 					
 						if (isset($result['purchase_units'][0]['payments']['captures'][0]['status']) && isset($result['purchase_units'][0]['payments']['captures'][0]['seller_protection']['status'])) {
+							$capture_id = $result['purchase_units'][0]['payments']['captures'][0]['id'];
 							$capture_status = $result['purchase_units'][0]['payments']['captures'][0]['status'];
 							$seller_protection_status = $result['purchase_units'][0]['payments']['captures'][0]['seller_protection']['status'];
 							$order_status_id = 0;
+							$transaction_status = '';
+							$payment_method = '';
+							$vault_id = '';
+							$vault_customer_id = '';
 
 							if (!$this->cart->hasShipping()) {
 								$seller_protection_status = 'NOT_ELIGIBLE';
 							}
+							
+							foreach ($result['payment_source'] as $payment_source_key => $payment_source) {
+								$vault_id = (isset($payment_source['attributes']['vault']['id']) ? $payment_source['attributes']['vault']['id'] : '');
+								$vault_customer_id = (isset($payment_source['attributes']['vault']['customer']['id']) ? $payment_source['attributes']['vault']['customer']['id'] : '');
+								$payment_method = $payment_source_key;
+								
+								break;
+							}
 						
 							if ($capture_status == 'COMPLETED') {
 								$order_status_id = $setting['order_status']['completed']['id'];
+								$transaction_status = 'completed';
 							}
 						
 							if ($capture_status == 'DECLINED') {
 								$order_status_id = $setting['order_status']['denied']['id'];
+								$transaction_status = 'denied';
 							
 								$this->error['warning'] = $this->language->get('error_capture_declined');
 							}
@@ -2416,12 +2601,37 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						
 							if ($capture_status == 'PENDING') {
 								$order_status_id = $setting['order_status']['pending']['id'];
+								$transaction_status = 'pending';
 							}
 						
 							if (($capture_status == 'COMPLETED') || ($capture_status == 'DECLINED') || ($capture_status == 'PENDING')) {
 								$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
 				
 								$this->model_checkout_order->addHistory($this->session->data['order_id'], $order_status_id, $message);
+							}
+							
+							if (($capture_status == 'COMPLETED') || ($capture_status == 'DECLINED') || ($capture_status == 'PENDING')) {
+								$this->model_extension_paypal_payment_paypal->deletePayPalOrder($this->session->data['order_id']);
+								
+								$paypal_order_data =[
+									'order_id' => $this->session->data['order_id'],
+									'transaction_id' => $capture_id,
+									'transaction_status' => $transaction_status,
+									'payment_method' => $payment_method,
+									'vault_id' => $vault_id,
+									'vault_customer_id' => $vault_customer_id,
+									'environment' => $environment
+								];
+
+								$this->model_extension_paypal_payment_paypal->addPayPalOrder($paypal_order_data);
+							}
+								
+							if (($capture_status == 'COMPLETED') || ($capture_status == 'PENDING')) {
+								$subscriptions = $this->model_extension_paypal_payment_paypal->getSubscriptionsByOrderId($this->session->data['order_id']);
+					
+								foreach ($subscriptions as $subscription) {
+									$this->model_extension_paypal_payment_paypal->subscriptionPayment($subscription, $order_data, $paypal_order_data);
+								}
 							}
 						
 							if (($capture_status == 'COMPLETED') || ($capture_status == 'PARTIALLY_REFUNDED') || ($capture_status == 'REFUNDED') || ($capture_status == 'PENDING')) {
@@ -2615,15 +2825,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 	}
 		
 	public function webhook(): bool {		
-		$this->load->model('extension/paypal/payment/paypal');
-				
-		$webhook_info = json_decode(html_entity_decode(file_get_contents('php://input')), true);
-						
-		if (isset($webhook_info['id']) && isset($webhook_info['event_type'])) {
-			$this->model_extension_paypal_payment_paypal->log($webhook_info, 'Webhook');
-			
-			$webhook_event_id = $webhook_info['id'];
-			
+		if (!empty($this->request->get['webhook_token'])) {
 			$_config = new \Opencart\System\Engine\Config();
 			$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 			$_config->load('paypal');
@@ -2631,131 +2833,157 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$config_setting = $_config->get('paypal_setting');
 		
 			$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
-						
-			$client_id = $this->config->get('payment_paypal_client_id');
-			$secret = $this->config->get('payment_paypal_secret');
-			$environment = $this->config->get('payment_paypal_environment');
-			$partner_id = $setting['partner'][$environment]['partner_id'];
-			$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
-			$transaction_method = $this->config->get('payment_paypal_transaction_method');
-			
-			require_once DIR_EXTENSION . 'paypal/system/library/paypal.php';
 		
-			$paypal_info = [
-				'partner_id' => $partner_id,
-				'client_id' => $client_id,
-				'secret' => $secret,
-				'environment' => $environment,
-				'partner_attribution_id' => $partner_attribution_id
-			];
-		
-			$paypal = new \Opencart\System\Library\PayPal($paypal_info);
+			$webhook_info = json_decode(html_entity_decode(file_get_contents('php://input')), true);
 			
-			$token_info = [
-				'grant_type' => 'client_credentials'
-			];	
-		
-			$paypal->setAccessToken($token_info);
+			if (hash_equals($setting['general']['webhook_token'], $this->request->get['webhook_token']) && !empty($webhook_info['id']) && !empty($webhook_info['event_type'])) {	
+				$this->load->model('extension/paypal/payment/paypal');
+				
+				$this->model_extension_paypal_payment_paypal->log($webhook_info, 'Webhook');
 			
-			$webhook_repeat = 1;
+				$webhook_event_id = $webhook_info['id'];
+			
+				$client_id = $this->config->get('payment_paypal_client_id');
+				$secret = $this->config->get('payment_paypal_secret');
+				$environment = $this->config->get('payment_paypal_environment');
+				$partner_id = $setting['partner'][$environment]['partner_id'];
+				$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
+				$transaction_method = $this->config->get('payment_paypal_transaction_method');
+			
+				require_once DIR_EXTENSION . 'paypal/system/library/paypal.php';
+		
+				$paypal_info = [
+					'partner_id' => $partner_id,
+					'client_id' => $client_id,
+					'secret' => $secret,
+					'environment' => $environment,
+					'partner_attribution_id' => $partner_attribution_id
+				];
+		
+				$paypal = new \Opencart\System\Library\PayPal($paypal_info);
+			
+				$token_info = [
+					'grant_type' => 'client_credentials'
+				];	
+		
+				$paypal->setAccessToken($token_info);
+			
+				$webhook_repeat = 1;
 								
-			while ($webhook_repeat) {
-				$webhook_event = $paypal->getWebhookEvent($webhook_event_id);
+				while ($webhook_repeat) {
+					$webhook_event = $paypal->getWebhookEvent($webhook_event_id);
 
-				$errors = [];
+					$errors = [];
 				
-				$webhook_repeat = 0;
+					$webhook_repeat = 0;
 			
-				if ($paypal->hasErrors()) {
-					$error_messages = [];
+					if ($paypal->hasErrors()) {
+						$error_messages = [];
 				
-					$errors = $paypal->getErrors();
+						$errors = $paypal->getErrors();
 							
-					foreach ($errors as $error) {
-						if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
-							$webhook_repeat = 1;
+						foreach ($errors as $error) {
+							if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
+								$webhook_repeat = 1;
+							}
 						}
 					}
 				}
-			}
 									
-			if (isset($webhook_event['resource']['invoice_id']) && !$errors) {
-				$invoice_id = explode('_', $webhook_event['resource']['invoice_id']);
-				$order_id = reset($invoice_id);
+				if (isset($webhook_event['resource']['invoice_id']) && !$errors) {
+					$invoice_id = explode('_', $webhook_event['resource']['invoice_id']);
+					$order_id = reset($invoice_id);
 				
-				$order_status_id = 0;
-				$transaction_status = '';
+					$order_status_id = 0;
+					$transaction_status = '';
 					
-				if ($webhook_event['event_type'] == 'PAYMENT.AUTHORIZATION.CREATED') {
-					$order_status_id = $setting['order_status']['pending']['id'];
-					$transaction_status = 'created';
-				}
-		
-				if ($webhook_event['event_type'] == 'PAYMENT.AUTHORIZATION.VOIDED') {
-					$order_status_id = $setting['order_status']['voided']['id'];
-					$transaction_status = 'voided';
-				}
-			
-				if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.COMPLETED') {
-					$order_status_id = $setting['order_status']['completed']['id'];
-					$transaction_status = 'completed';
-				}
-		
-				if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.DENIED') {
-					$order_status_id = $setting['order_status']['denied']['id'];
-					$transaction_status = 'denied';
-				}
-		
-				if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.PENDING') {
-					$order_status_id = $setting['order_status']['pending']['id'];
-					$transaction_status = 'pending';
-				}
-		
-				if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.REFUNDED') {
-					$order_status_id = $setting['order_status']['refunded']['id'];
-					$transaction_status = 'refunded';
-				}
-		
-				if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.REVERSED') {
-					$order_status_id = $setting['order_status']['reversed']['id'];
-					$transaction_status = 'reversed';
-				}
-		
-				if ($webhook_event['event_type'] == 'CHECKOUT.ORDER.COMPLETED') {
-					$order_status_id = $setting['order_status']['completed']['id'];
-				}
-				
-				if ($order_status_id) {
-					$this->load->model('checkout/order');
-
-					$this->model_checkout_order->addHistory($order_id, $order_status_id, '', true);
-				}
-				
-				if (isset($webhook_event['resource']['id']) && $transaction_status) {
-					$transaction_id = $webhook_event['resource']['id'];
-
-					if (($transaction_status == 'refunded') || ($transaction_status == 'reversed')) {
-						$paypal_order_info = $this->model_extension_paypal_payment_paypal->getOrder($order_id);
-					
-						if ($paypal_order_info) {
-							$transaction_id = $paypal_order_info['transaction_id'];
-						}
+					if ($webhook_event['event_type'] == 'PAYMENT.AUTHORIZATION.CREATED') {
+						$order_status_id = $setting['order_status']['pending']['id'];
+						$transaction_status = 'created';
 					}
-					
-					$this->model_extension_paypal_payment_paypal->deleteOrder($order_id);
-										
-					$paypal_data = array(
-						'order_id' => $order_id,
-						'transaction_id' => $transaction_id,
-						'transaction_status' => $transaction_status,
-						'environment' => $environment
-					);
-
-					$this->model_extension_paypal_payment_paypal->addOrder($paypal_data);
-				}
-			}
+		
+					if ($webhook_event['event_type'] == 'PAYMENT.AUTHORIZATION.VOIDED') {
+						$order_status_id = $setting['order_status']['voided']['id'];
+						$transaction_status = 'voided';
+					}
 			
-			return true;
+					if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.COMPLETED') {
+						$order_status_id = $setting['order_status']['completed']['id'];
+						$transaction_status = 'completed';
+					}
+		
+					if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.DENIED') {
+						$order_status_id = $setting['order_status']['denied']['id'];
+						$transaction_status = 'denied';
+					}
+		
+					if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.PENDING') {
+						$order_status_id = $setting['order_status']['pending']['id'];
+						$transaction_status = 'pending';
+					}
+		
+					if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.REFUNDED') {
+						$order_status_id = $setting['order_status']['refunded']['id'];
+						$transaction_status = 'refunded';
+					}
+		
+					if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.REVERSED') {
+						$order_status_id = $setting['order_status']['reversed']['id'];
+						$transaction_status = 'reversed';
+					}
+		
+					if ($webhook_event['event_type'] == 'CHECKOUT.ORDER.COMPLETED') {
+						$order_status_id = $setting['order_status']['completed']['id'];
+					}
+				
+					if ($order_status_id) {
+						$this->load->model('checkout/order');
+
+						$this->model_checkout_order->addHistory($order_id, $order_status_id, '', true);
+					}
+				
+					if (isset($webhook_event['resource']['id']) && $transaction_status) {
+						$transaction_id = $webhook_event['resource']['id'];
+				
+						$paypal_order_data = [
+							'order_id' => $order_id,
+							'transaction_status' => $transaction_status
+						];
+					
+						if (($transaction_status != 'refunded') && ($transaction_status != 'reversed')) {
+							$paypal_order_data['transaction_id'] = $transaction_id;
+						}
+
+						$this->model_extension_paypal_payment_paypal->editPayPalOrder($paypal_order_data);
+					}
+				}
+
+				header('HTTP/1.1 200 OK');
+				
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public function cron(): bool {
+		if (!empty($this->request->get['cron_token'])) {
+			$_config = new \Opencart\System\Engine\Config();
+			$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
+			$_config->load('paypal');
+			
+			$config_setting = $_config->get('paypal_setting');
+		
+			$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
+			
+			if (hash_equals($setting['general']['cron_token'], $this->request->get['cron_token'])) {
+				$this->load->model('extension/paypal/payment/paypal');
+				
+				$this->model_extension_paypal_payment_paypal->cronPayment();
+			
+				return true;
+			}
 		}
 		
 		return false;
@@ -2935,8 +3163,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$this->load->model('extension/paypal/payment/paypal');
 
 		$order_id = $data[0];
-
-		$this->model_extension_paypal_payment_paypal->deleteOrder($order_id);
+		
+		$this->model_extension_paypal_payment_paypal->deletePayPalOrder($order_id);
 	}
 	
 	private function validateShipping(string $code): bool {
