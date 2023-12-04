@@ -171,7 +171,7 @@
 								<small> - <?php echo $option['name']; ?>: <?php echo $option['value']; ?></small>
 								<?php } ?>
 								<?php if ($product['recurring']) { ?>
-								<br /><span class="label label-info"><?php echo $text_recurring_item; ?></span> <small><?php echo $product['recurring_description']; ?></small>
+								<br /><span class="label label-info"><?php echo $text_recurring_item; ?></span> <small><?php echo $product['recurring']; ?></small>
 								<?php } ?>
 							</td>
 							<td class="text-left"><?php echo $product['model']; ?></td>

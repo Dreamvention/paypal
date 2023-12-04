@@ -5,7 +5,7 @@ class ControllerPaymentPayPal extends Controller {
 	public function __construct($registry) {
 		parent::__construct($registry);
 		
-		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && ($this->config->get('paypal_version') < '2.1.0'))) {
+		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && ($this->config->get('paypal_version') < '2.2.0'))) {
 			$this->uninstall();
 			$this->install();
 		}
@@ -75,9 +75,12 @@ class ControllerPaymentPayPal extends Controller {
 			);	
 		
 			$paypal->setAccessToken($token_info);
+			
+			$webhook_token = sha1(uniqid(mt_rand(), 1));
+			$cron_token = sha1(uniqid(mt_rand(), 1));
 							
 			$webhook_info = array(
-				'url' => $catalog . 'index.php?route=payment/paypal',
+				'url' => $catalog . 'index.php?route=payment/paypal&webhook_token=' . $webhook_token,
 				'event_types' => array(
 					array('name' => 'PAYMENT.AUTHORIZATION.CREATED'),
 					array('name' => 'PAYMENT.AUTHORIZATION.VOIDED'),
@@ -135,6 +138,8 @@ class ControllerPaymentPayPal extends Controller {
 			$setting['paypal_total'] = 0;
 			$setting['paypal_geo_zone_id'] = 0;
 			$setting['paypal_sort_order'] = 0;
+			$setting['paypal_setting']['general']['webhook_token'] = $webhook_token;
+			$setting['paypal_setting']['general']['cron_token'] = $cron_token;
 			
 			$this->load->model('localisation/country');
 		
@@ -239,12 +244,12 @@ class ControllerPaymentPayPal extends Controller {
 		
 		$data['configure_url'] = array(
 			'production' => array(
-				'ppcp' => 'https://www.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['production']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['production']['client_id'] . '&features=PAYMENT,REFUND,ACCESS_MERCHANT_INFORMATION&product=ppcp&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce'],
-				'express_checkout' => 'https://www.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['production']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['production']['client_id'] . '&features=PAYMENT,REFUND,ACCESS_MERCHANT_INFORMATION&product=EXPRESS_CHECKOUT&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce']
+				'ppcp' => 'https://www.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['production']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['production']['client_id'] . '&features=PAYMENT,REFUND,ACCESS_MERCHANT_INFORMATION,VAULT,BILLING_AGREEMENT&product=PPCP,ADVANCED_VAULTING&capabilities=PAYPAL_WALLET_VAULTING_ADVANCED&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce'],
+				'express_checkout' => 'https://www.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['production']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['production']['client_id'] . '&features=PAYMENT,REFUND,ACCESS_MERCHANT_INFORMATION,VAULT,BILLING_AGREEMENT&product=EXPRESS_CHECKOUT,ADVANCED_VAULTING&capabilities=PAYPAL_WALLET_VAULTING_ADVANCED&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce']
 			),
 			'sandbox' => array(
-				'ppcp' => 'https://www.sandbox.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['sandbox']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['sandbox']['client_id'] . '&features=PAYMENT,REFUND,ACCESS_MERCHANT_INFORMATION&product=ppcp&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce'],
-				'express_checkout' => 'https://www.sandbox.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['sandbox']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['sandbox']['client_id'] . '&features=PAYMENT,REFUND,ACCESS_MERCHANT_INFORMATION&product=EXPRESS_CHECKOUT&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce']
+				'ppcp' => 'https://www.sandbox.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['sandbox']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['sandbox']['client_id'] . '&features=PAYMENT,REFUND,ACCESS_MERCHANT_INFORMATION,VAULT,BILLING_AGREEMENT&product=PPCP,ADVANCED_VAULTING&capabilities=PAYPAL_WALLET_VAULTING_ADVANCED&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce'],
+				'express_checkout' => 'https://www.sandbox.paypal.com/bizsignup/partner/entry?partnerId=' . $data['setting']['partner']['sandbox']['partner_id'] . '&partnerClientId=' . $data['setting']['partner']['sandbox']['client_id'] . '&features=PAYMENT,REFUND,ACCESS_MERCHANT_INFORMATION,VAULT,BILLING_AGREEMENT&product=EXPRESS_CHECKOUT,ADVANCED_VAULTING&capabilities=PAYPAL_WALLET_VAULTING_ADVANCED&integrationType=FO&returnToPartnerUrl=' . $data['partner_url'] . '&displayMode=minibrowser&sellerNonce=' . $data['seller_nonce']
 			)
 		);
 		
@@ -518,6 +523,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['entry_currency_value'] = $this->language->get('entry_currency_value');
 		$data['entry_card_currency_code'] = $this->language->get('entry_card_currency_code');
 		$data['entry_card_currency_value'] = $this->language->get('entry_card_currency_value');
+		$data['entry_cron_url'] = $this->language->get('entry_cron_url');
 		
 		$data['help_checkout_mode'] = $this->language->get('help_checkout_mode');
 		$data['help_total'] = $this->language->get('help_total');
@@ -526,11 +532,13 @@ class ControllerPaymentPayPal extends Controller {
 		$data['help_currency_value'] = $this->language->get('help_currency_value');
 		$data['help_card_currency_code'] = $this->language->get('help_card_currency_code');
 		$data['help_card_currency_value'] = $this->language->get('help_card_currency_value');
+		$data['help_cron_url'] = $this->language->get('help_cron_url');
 		
 		$data['button_save'] = $this->language->get('button_save');
 		$data['button_cancel'] = $this->language->get('button_cancel');
 		$data['button_disconnect'] = $this->language->get('button_disconnect');
 		$data['button_all_settings'] = $this->language->get('button_all_settings');
+		$data['button_copy_url'] = $this->language->get('button_copy_url');
 						
 		$data['breadcrumbs'] = array();
 
@@ -605,6 +613,8 @@ class ControllerPaymentPayPal extends Controller {
 		$this->load->model('localisation/country');
 
 		$data['countries'] = $this->model_localisation_country->getCountries();
+		
+		$data['cron_url'] = $data['catalog'] . 'index.php?route=payment/paypal&cron_token=' . $data['setting']['general']['cron_token'];
 		
 		$result = $this->model_payment_paypal->checkVersion(VERSION, $data['setting']['version']);
 		
@@ -2346,7 +2356,7 @@ class ControllerPaymentPayPal extends Controller {
 			
 			$data['order_id'] = $this->request->get['order_id'];
 			
-			$paypal_order_info = $this->model_payment_paypal->getOrder($data['order_id']);
+			$paypal_order_info = $this->model_payment_paypal->getPayPalOrder($data['order_id']);
 				
 			if ($paypal_order_info) {
 				$data['text_transaction_id'] = $this->language->get('text_transaction_id');
@@ -2372,11 +2382,11 @@ class ControllerPaymentPayPal extends Controller {
 					$data['transaction_url'] = 'https://www.sandbox.paypal.com/activity/payment/' . $data['transaction_id'];
 				}
 				
-				$data['info_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/getPaymentInfo', 'token=' . $this->session->data['token'] . '&order_id=' . $data['order_id'], true));
-				$data['capture_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/capturePayment', 'token=' . $this->session->data['token'], true));
-				$data['reauthorize_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/reauthorizePayment', 'token=' . $this->session->data['token'], true));
-				$data['void_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/voidPayment', 'token=' . $this->session->data['token'], true));
-				$data['refund_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/refundPayment', 'token=' . $this->session->data['token'], true));
+				$data['info_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/getPaymentInfo', 'token=' . $this->session->data['token'] . '&order_id=' . $data['order_id'], true));
+				$data['capture_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/capturePayment', 'token=' . $this->session->data['token'], true));
+				$data['reauthorize_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/reauthorizePayment', 'token=' . $this->session->data['token'], true));
+				$data['void_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/voidPayment', 'token=' . $this->session->data['token'], true));
+				$data['refund_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/refundPayment', 'token=' . $this->session->data['token'], true));
 								
 				$data['tabs'][] = array(
 					'code'    => 'paypal',
@@ -2397,7 +2407,7 @@ class ControllerPaymentPayPal extends Controller {
 			
 			$data['order_id'] = $this->request->get['order_id'];
 			
-			$paypal_order_info = $this->model_payment_paypal->getOrder($data['order_id']);
+			$paypal_order_info = $this->model_payment_paypal->getPayPalOrder($data['order_id']);
 				
 			if ($paypal_order_info) {
 				$data['text_transaction_id'] = $this->language->get('text_transaction_id');
@@ -2409,10 +2419,10 @@ class ControllerPaymentPayPal extends Controller {
 				$data['text_transaction_refunded'] = $this->language->get('text_transaction_refunded');
 				$data['text_transaction_reversed'] = $this->language->get('text_transaction_reversed');			
 				
-				$data['button_capture'] = $this->language->get('button_capture');
-				$data['button_reauthorize'] = $this->language->get('button_reauthorize');
-				$data['button_void'] = $this->language->get('button_void');
-				$data['button_refund'] = $this->language->get('button_refund');
+				$data['button_capture_payment'] = $this->language->get('button_capture_payment');
+				$data['button_reauthorize_payment'] = $this->language->get('button_reauthorize_payment');
+				$data['button_void_payment'] = $this->language->get('button_void_payment');
+				$data['button_refund_payment'] = $this->language->get('button_refund_payment');
 				
 				$data['transaction_id'] = $paypal_order_info['transaction_id'];
 				$data['transaction_status'] = $paypal_order_info['transaction_status'];
@@ -2423,11 +2433,11 @@ class ControllerPaymentPayPal extends Controller {
 					$data['transaction_url'] = 'https://www.sandbox.paypal.com/activity/payment/' . $data['transaction_id'];
 				}
 				
-				$data['info_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/getPaymentInfo', 'token=' . $this->session->data['token'] . '&order_id=' . $data['order_id'], true));
-				$data['capture_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/capturePayment', 'token=' . $this->session->data['token'], true));
-				$data['reauthorize_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/reauthorizePayment', 'token=' . $this->session->data['token'], true));
-				$data['void_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/voidPayment', 'token=' . $this->session->data['token'], true));
-				$data['refund_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/refundPayment', 'token=' . $this->session->data['token'], true));
+				$data['info_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/getPaymentInfo', 'token=' . $this->session->data['token'] . '&order_id=' . $data['order_id'], true));
+				$data['capture_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/capturePayment', 'token=' . $this->session->data['token'], true));
+				$data['reauthorize_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/reauthorizePayment', 'token=' . $this->session->data['token'], true));
+				$data['void_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/voidPayment', 'token=' . $this->session->data['token'], true));
+				$data['refund_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/refundPayment', 'token=' . $this->session->data['token'], true));
 								
 				$content = $this->load->view('payment/paypal/order', $data);
 			}
@@ -2505,18 +2515,15 @@ class ControllerPaymentPayPal extends Controller {
 				$transaction_id = $result['id'];
 				$transaction_status = 'completed';
 				
-				$this->model_payment_paypal->deleteOrder($order_id);
-										
-				$paypal_data = array(
+				$paypal_order_data = array(
 					'order_id' => $order_id,
 					'transaction_id' => $transaction_id,
-					'transaction_status' => $transaction_status,
-					'environment' => $environment
+					'transaction_status' => $transaction_status
 				);
 
-				$this->model_payment_paypal->addOrder($paypal_data);
+				$this->model_payment_paypal->editPayPalOrder($paypal_order_data);
 								
-				$data['success'] = $this->language->get('success_capture');
+				$data['success'] = $this->language->get('success_capture_payment');
 			}
 		}
 				
@@ -2595,18 +2602,15 @@ class ControllerPaymentPayPal extends Controller {
 				$transaction_id = $result['id'];
 				$transaction_status = 'created';
 				
-				$this->model_payment_paypal->deleteOrder($order_id);
-										
-				$paypal_data = array(
+				$paypal_order_data = array(
 					'order_id' => $order_id,
 					'transaction_id' => $transaction_id,
-					'transaction_status' => $transaction_status,
-					'environment' => $environment
+					'transaction_status' => $transaction_status
 				);
 
-				$this->model_payment_paypal->addOrder($paypal_data);
+				$this->model_payment_paypal->editPayPalOrder($paypal_order_data);
 								
-				$data['success'] = $this->language->get('success_reauthorize');
+				$data['success'] = $this->language->get('success_reauthorize_payment');
 			}
 		}
 						
@@ -2658,9 +2662,7 @@ class ControllerPaymentPayPal extends Controller {
 			$paypal->setAccessToken($token_info);
 		
 			$result = $paypal->setPaymentVoid($transaction_id);
-				
-			$this->log->write($result);
-				
+								
 			if ($paypal->hasErrors()) {
 				$error_messages = array();
 				
@@ -2686,18 +2688,14 @@ class ControllerPaymentPayPal extends Controller {
 			if (!$this->error) {
 				$transaction_status = 'voided';
 				
-				$this->model_payment_paypal->deleteOrder($order_id);
-										
-				$paypal_data = array(
+				$paypal_order_data = array(
 					'order_id' => $order_id,
-					'transaction_id' => $transaction_id,
-					'transaction_status' => $transaction_status,
-					'environment' => $environment
+					'transaction_status' => $transaction_status
 				);
 
-				$this->model_payment_paypal->addOrder($paypal_data);
+				$this->model_payment_paypal->editPayPalOrder($paypal_order_data);
 								
-				$data['success'] = $this->language->get('success_void');
+				$data['success'] = $this->language->get('success_void_payment');
 			}
 		}
 						
@@ -2775,19 +2773,86 @@ class ControllerPaymentPayPal extends Controller {
 			if (isset($result['id']) && isset($result['status']) && !$this->error) {
 				$transaction_status = 'refunded';
 				
-				$this->model_payment_paypal->deleteOrder($order_id);
-										
-				$paypal_data = array(
+				$paypal_order_data = array(
 					'order_id' => $order_id,
-					'transaction_id' => $transaction_id,
-					'transaction_status' => $transaction_status,
-					'environment' => $environment
+					'transaction_status' => $transaction_status
 				);
 
-				$this->model_payment_paypal->addOrder($paypal_data);
+				$this->model_payment_paypal->editPayPalOrder($paypal_order_data);
 								
-				$data['success'] = $this->language->get('success_refund');
+				$data['success'] = $this->language->get('success_refund_payment');
 			}
+		}
+						
+		$data['error'] = $this->error;
+				
+		$this->response->addHeader('Content-Type: application/json');
+		$this->response->setOutput(json_encode($data));
+	}
+	
+	public function recurringButtons() {
+		$content = '';
+		
+		if ($this->config->get('paypal_status') && !empty($this->request->get['order_recurring_id'])) {
+			$this->load->language('payment/paypal');
+		
+			$this->load->model('sale/recurring');
+			
+			$data['order_recurring_id'] = $this->request->get['order_recurring_id'];
+
+			$order_recurring_info = $this->model_sale_recurring->getRecurring($data['order_recurring_id']);
+			
+			if ($order_recurring_info) {
+				$data['button_enable_recurring'] = $this->language->get('button_enable_recurring');
+				$data['button_disable_recurring'] = $this->language->get('button_disable_recurring');
+				
+				$data['recurring_status'] = $order_recurring_info['status'];
+				
+				$data['info_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/getRecurringInfo', 'token=' . $this->session->data['token'] . '&order_recurring_id=' . $data['order_recurring_id'], true));
+				$data['enable_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/enableRecurring', 'token=' . $this->session->data['token'], true));
+				$data['disable_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/disableRecurring', 'token=' . $this->session->data['token'], true));
+								
+				$content = $this->load->view('payment/paypal/recurring', $data);
+			}
+		}
+		
+		return $content;
+	}
+	
+	public function getRecurringInfo() {
+		$this->response->setOutput($this->recurringButtons());
+	}
+	
+	public function enableRecurring() {
+		if ($this->config->get('paypal_status') && !empty($this->request->post['order_recurring_id'])) {
+			$this->load->language('payment/paypal');
+			
+			$this->load->model('payment/paypal');
+			
+			$order_recurring_id = $this->request->post['order_recurring_id'];
+			
+			$this->model_payment_paypal->editOrderRecurringStatus($order_recurring_id, 1);
+			
+			$data['success'] = $this->language->get('success_enable_recurring');	
+		}
+						
+		$data['error'] = $this->error;
+				
+		$this->response->addHeader('Content-Type: application/json');
+		$this->response->setOutput(json_encode($data));
+	}
+	
+	public function disableRecurring() {
+		if ($this->config->get('paypal_status') && !empty($this->request->post['order_recurring_id'])) {
+			$this->load->language('payment/paypal');
+			
+			$this->load->model('payment/paypal');
+			
+			$order_recurring_id = $this->request->post['order_recurring_id'];
+			
+			$this->model_payment_paypal->editOrderRecurringStatus($order_recurring_id, 2);
+			
+			$data['success'] = $this->language->get('success_disable_recurring');	
 		}
 						
 		$data['error'] = $this->error;

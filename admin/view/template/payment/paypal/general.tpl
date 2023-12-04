@@ -178,6 +178,16 @@
 										<label class="control-label" for="input_general_card_currency_value"><span data-toggle="tooltip" title="<?php echo $help_card_currency_value; ?>"><?php echo $entry_card_currency_value; ?></span></label>
 										<input type="text" name="paypal_setting[general][card_currency_value]" value="<?php echo $setting['general']['card_currency_value']; ?>" placeholder="<?php echo $entry_card_currency_value; ?>" id="input_general_card_currency_value" class="form-control" />										
 									</div>
+									<div class="form-group">
+										<label class="control-label" for="input_cron_url"><span data-toggle="tooltip" title="<?php echo $help_cron_url; ?>"><?php echo $entry_cron_url; ?></span></label>
+										<input type="hidden" name="paypal_setting[general][cron_token]" value="<?php echo $setting['general']['cron_token']; ?>" />
+										<div class="input-group">
+											<input type="text" value="<?php echo $cron_url; ?>" readonly="readonly" id="input_cron_url" class="form-control" />
+											<span class="input-group-btn">
+												<button type="button" data-toggle="tooltip" title="{{ button_copy_url }}" class="btn btn-default copy-cron-url" field_id="input_cron_url"><i class="fa fa-clipboard"></i></button>
+											</span>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -193,6 +203,12 @@ $('.payment-paypal .switch').bootstrapSwitch({
     'onColor': 'success',
     'onText': '<?php echo $text_on; ?>',
     'offText': '<?php echo $text_off; ?>'
+});
+
+$('.payment-paypal').delegate('.copy-cron-url', 'click', function(event) {
+	event.preventDefault();
+	
+	navigator.clipboard.writeText($('#' + $(this).attr('field_id')).val());
 });
 
 $('.payment-paypal').on('click', '.button-disconnect', function() {
@@ -224,7 +240,7 @@ $('.payment-paypal').on('click', '.button-save', function() {
 			if (json['success']) {
 				$('.payment-paypal > .container-fluid').prepend('<div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i><button type="button" class="close" data-dismiss="alert">&times;</button> ' + json['success'] + '</div>');
 				
-				$('html, body').animate({ scrollTop: $('.payment-paypal > .container-fluid .alert-success').offset().top}, 'slow');
+				$('html, body').animate({scrollTop: $('.payment-paypal > .container-fluid .alert-success').offset().top}, 'slow');
 			}
 		},
 		error: function(xhr, ajaxOptions, thrownError) {
