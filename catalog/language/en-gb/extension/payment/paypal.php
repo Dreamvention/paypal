@@ -25,6 +25,7 @@ $_['text_payment_recurring']   				= 'Payment Profile';
 $_['text_trial_description']   				= '%s every %d %s(s) for %d payment(s) then';
 $_['text_payment_description'] 				= '%s every %d %s(s) for %d payment(s)';
 $_['text_payment_cancel']      				= '%s every %d %s(s) until canceled';
+$_['text_length']							= ' for %s payments';
 $_['text_order_message']					= 'PayPal Seller Protection - %s';
 $_['text_wait']								= 'Please wait!';
 $_['text_loading']          				= 'Loading...';

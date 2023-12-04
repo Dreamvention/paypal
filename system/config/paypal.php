@@ -1,6 +1,6 @@
 <?php 
 $_['paypal_setting'] = array(
-	'version' => '2.1.0',
+	'version' => '2.2.0',
 	'partner' => array(
 		'production' => array(
 			'partner_id' => 'TY2Q25KP2PX9L',
@@ -22,7 +22,9 @@ $_['paypal_setting'] = array(
 		'currency_code' => 'USD',
 		'currency_value' => '1',
 		'card_currency_code' => 'USD',
-		'card_currency_value' => '1'
+		'card_currency_value' => '1',
+		'webhook_token' => '',
+		'cron_token' => ''
 	),
 	'button' => array(
 		'checkout' => array(
