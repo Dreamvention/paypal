@@ -181,6 +181,14 @@
 	border: 1px solid #919697;
 	border-radius: 3px;
 }
+.payment-paypal .panel-default .input-group .form-control:first-child {
+    border-bottom-right-radius: 0px;
+    border-top-right-radius: 0px;
+}
+.payment-paypal .panel-default .input-group .form-control:last-child {
+    border-bottom-left-radius: 0px;
+    border-top-left-radius: 0px;
+}
 .payment-paypal .panel-default .form-control:focus {
 	border-color: #488DE6;
 	-webkit-box-shadow: none;
@@ -188,6 +196,26 @@
 }
 .payment-paypal .panel-default textarea.form-control, .payment-paypal .panel-default .form-control[multiple] {
 	height: auto;
+}
+.payment-paypal .panel-default .input-group-addon, .payment-paypal .panel-default .input-group-btn > .btn {
+	font-size: 13px;
+	color: #000000;
+	border: 1px solid #919697;
+	border-radius: 3px;
+}
+.payment-paypal .panel-default .input-group-btn > .btn {
+	height: 42px;
+	padding: 11px 22px;
+}
+.payment-paypal .panel-default .input-group-addon:first-child, .payment-paypal .panel-default .input-group-btn:first-child > .btn {
+    border-right: 0px;
+	border-bottom-right-radius: 0px;
+    border-top-right-radius: 0px;
+}
+.payment-paypal .panel-default .input-group-addon:last-child, .payment-paypal .panel-default .input-group-btn:last-child > .btn {
+    border-left: 0px;
+	border-bottom-left-radius: 0px;
+    border-top-left-radius: 0px;
 }
 .payment-paypal .panel-default .form-check-input {
 	display: inline-block;

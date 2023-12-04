@@ -185,7 +185,7 @@ $('.payment-paypal').on('click', '.button-save', function() {
 			if (json['success']) {
 				$('.payment-paypal > .container-fluid').prepend('<div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i><button type="button" class="close" data-dismiss="alert">&times;</button> ' + json['success'] + '</div>');
 				
-				$('html, body').animate({ scrollTop: $('.payment-paypal > .container-fluid .alert-success').offset().top}, 'slow');
+				$('html, body').animate({scrollTop: $('.payment-paypal > .container-fluid .alert-success').offset().top}, 'slow');
 			}
 		},
 		error: function(xhr, ajaxOptions, thrownError) {

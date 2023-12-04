@@ -1,16 +1,16 @@
 <div class="transaction-id">{{ text_transaction_id }}: <a href="{{ transaction_url }}" target="_blank">{{ transaction_id }}</a></div><br />
 <div class="transaction-status">{{ attribute(_context, 'text_transaction_' ~ transaction_status) }}</div><br />
 {% if (transaction_status == 'created') %}
-<button type="button" class="btn btn-primary button-capture">{{ button_capture }}</button>
-<button type="button" class="btn btn-primary button-reauthorize">{{ button_reauthorize }}</button>
-<button type="button" class="btn btn-primary button-void">{{ button_void }}</button>
+<button type="button" class="btn btn-primary button-capture-payment">{{ button_capture_payment }}</button>
+<button type="button" class="btn btn-primary button-reauthorize-payment">{{ button_reauthorize_payment }}</button>
+<button type="button" class="btn btn-primary button-void-payment">{{ button_void_payment }}</button>
 {% endif %}
 {% if (transaction_status == 'completed') %}
-<button type="button" class="btn btn-primary button-refund">{{ button_refund }}</button>
+<button type="button" class="btn btn-primary button-refund-payment">{{ button_refund_payment }}</button>
 {% endif %}
 <script type="text/javascript">
 
-$('#tab-paypal').on('click', '.button-capture', function() {
+$('#tab-paypal').on('click', '.button-capture-payment', function() {
 	$.ajax({
 		type: 'post',
 		url: '{{ capture_url }}',
@@ -28,13 +28,13 @@ $('#tab-paypal').on('click', '.button-capture', function() {
 			if (json['error'] && json['error']['warning']) {
 				$('#content > .container-fluid').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> ' + json['error']['warning'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
 				
-				$('html, body').animate({ scrollTop: $('#content > .container-fluid .alert-danger').offset().top}, 'slow');
+				$('html, body').animate({scrollTop: $('#content > .container-fluid .alert-danger').offset().top}, 'slow');
 			}
 			
 			if (json['success']) {
 				$('#content > .container-fluid').prepend('<div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> ' + json['success'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
 				
-				$('html, body').animate({ scrollTop: $('#content > .container-fluid .alert-success').offset().top}, 'slow');
+				$('html, body').animate({scrollTop: $('#content > .container-fluid .alert-success').offset().top}, 'slow');
 				
 				$('#tab-paypal').load('{{ info_url }}');
 			}
@@ -46,7 +46,7 @@ $('#tab-paypal').on('click', '.button-capture', function() {
 });
 
 
-$('#tab-paypal').on('click', '.button-reauthorize', function() {
+$('#tab-paypal').on('click', '.button-reauthorize-payment', function() {
 	$.ajax({
 		type: 'post',
 		url: '{{ reauthorize_url }}',
@@ -64,13 +64,13 @@ $('#tab-paypal').on('click', '.button-reauthorize', function() {
 			if (json['error'] && json['error']['warning']) {
 				$('#content > .container-fluid').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> ' + json['error']['warning'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
 				
-				$('html, body').animate({ scrollTop: $('#content > .container-fluid .alert-danger').offset().top}, 'slow');
+				$('html, body').animate({scrollTop: $('#content > .container-fluid .alert-danger').offset().top}, 'slow');
 			}
 			
 			if (json['success']) {
 				$('#content > .container-fluid').prepend('<div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> ' + json['success'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
 				
-				$('html, body').animate({ scrollTop: $('#content > .container-fluid .alert-success').offset().top}, 'slow');
+				$('html, body').animate({scrollTop: $('#content > .container-fluid .alert-success').offset().top}, 'slow');
 				
 				$('#tab-paypal').load('{{ info_url }}');
 			}
@@ -82,7 +82,7 @@ $('#tab-paypal').on('click', '.button-reauthorize', function() {
 });
 
 
-$('#tab-paypal').on('click', '.button-void', function() {
+$('#tab-paypal').on('click', '.button-void-payment', function() {
 	$.ajax({
 		type: 'post',
 		url: '{{ void_url }}',
@@ -100,13 +100,13 @@ $('#tab-paypal').on('click', '.button-void', function() {
 			if (json['error'] && json['error']['warning']) {
 				$('#content > .container-fluid').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> ' + json['error']['warning'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
 				
-				$('html, body').animate({ scrollTop: $('#content > .container-fluid .alert-danger').offset().top}, 'slow');
+				$('html, body').animate({scrollTop: $('#content > .container-fluid .alert-danger').offset().top}, 'slow');
 			}
 			
 			if (json['success']) {
 				$('#content > .container-fluid').prepend('<div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> ' + json['success'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
 				
-				$('html, body').animate({ scrollTop: $('#content > .container-fluid .alert-success').offset().top}, 'slow');
+				$('html, body').animate({scrollTop: $('#content > .container-fluid .alert-success').offset().top}, 'slow');
 				
 				$('#tab-paypal').load('{{ info_url }}');
 			}
@@ -117,7 +117,7 @@ $('#tab-paypal').on('click', '.button-void', function() {
 	});
 });
 
-$('#tab-paypal').on('click', '.button-refund', function() {
+$('#tab-paypal').on('click', '.button-refund-payment', function() {
 	$.ajax({
 		type: 'post',
 		url: '{{ refund_url }}',
@@ -135,7 +135,7 @@ $('#tab-paypal').on('click', '.button-refund', function() {
 			if (json['error'] && json['error']['warning']) {
 				$('#content > .container-fluid').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> ' + json['error']['warning'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
 				
-				$('html, body').animate({ scrollTop: $('#content > .container-fluid .alert-danger').offset().top}, 'slow');
+				$('html, body').animate({scrollTop: $('#content > .container-fluid .alert-danger').offset().top}, 'slow');
 			}
 			
 			if (json['success']) {

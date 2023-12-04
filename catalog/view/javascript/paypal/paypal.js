@@ -5,13 +5,15 @@ var PayPalAPI = (function () {
 	var paypal_callback;
 	
 	var showPayPalAlert = function(data) {
-		$('#paypal_form .alert').remove();
+		$('.alert-dismissible').remove();
 		
 		if (data['error'] && data['error']['warning']) {
 			if ($('#paypal_form').length) {
-				$('#paypal_form').prepend('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + data['error']['warning'] + '</div>');
+				$('#paypal_form').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> ' + data['error']['warning'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
 			} else {
-				alert(data['error']['warning']);
+				$('#content').parent().before('<div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> ' + data['error']['warning'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+				
+				$('html, body').animate({scrollTop: 0}, 'slow');
 			}
 		}
 	};
