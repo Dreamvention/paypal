@@ -325,9 +325,9 @@
 var message_width = JSON.parse('<?php echo json_encode($setting['message_width']); ?>');
 
 updatePayPalMessage('checkout', function() {
-	updatePayPalMessage('home', function() {
+	updatePayPalMessage('cart', function() {
 		updatePayPalMessage('product', function() {
-			updatePayPalMessage('cart');
+			updatePayPalMessage('home');
 		});
 	});
 });

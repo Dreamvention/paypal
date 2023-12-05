@@ -311,8 +311,8 @@
 var button_width = JSON.parse('<?php echo json_encode($setting['button_width']); ?>');
 
 updatePayPalButton('checkout', function() {
-	updatePayPalButton('product', function() {
-		updatePayPalButton('cart');
+	updatePayPalButton('cart', function() {
+		updatePayPalButton('product');
 	});
 });
 
