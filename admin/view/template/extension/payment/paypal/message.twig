@@ -322,9 +322,9 @@
 var message_width = JSON.parse('{{ setting['message_width']|json_encode() }}');
 
 updatePayPalMessage('checkout', function() {
-	updatePayPalMessage('home', function() {
+	updatePayPalMessage('cart', function() {
 		updatePayPalMessage('product', function() {
-			updatePayPalMessage('cart');
+			updatePayPalMessage('home');
 		});
 	});
 });
