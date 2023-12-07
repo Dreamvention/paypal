@@ -25,18 +25,22 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$_config->load('paypal');
 		
 		$config_setting = $_config->get('paypal_setting');
-				
-		if (!empty($this->session->data['environment']) && !empty($this->session->data['authorization_code']) && !empty($this->session->data['shared_id']) && !empty($this->session->data['seller_nonce']) && !empty($this->request->get['merchantIdInPayPal'])) {
+		
+		$cache_data = $this->cache->get('paypal');
+		
+		$this->cache->delete('paypal');
+										
+		if (!empty($cache_data['environment']) && !empty($cache_data['authorization_code']) && !empty($cache_data['shared_id']) && !empty($cache_data['seller_nonce']) && !empty($this->request->get['merchantIdInPayPal'])) {
 			$this->load->language('extension/paypal/payment/paypal');
 		
 			$this->load->model('extension/paypal/payment/paypal');
 			
-			$environment = $this->session->data['environment'];
+			$environment = $cache_data['environment'];
 			
 			require_once DIR_EXTENSION . 'paypal/system/library/paypal.php';
 						
 			$paypal_info = [
-				'client_id' => $this->session->data['shared_id'],
+				'client_id' => $cache_data['shared_id'],
 				'environment' => $environment,
 				'partner_attribution_id' => $config_setting['partner'][$environment]['partner_attribution_id']
 			];
@@ -45,8 +49,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			
 			$token_info = [
 				'grant_type' => 'authorization_code',
-				'code' => $this->session->data['authorization_code'],
-				'code_verifier' => $this->session->data['seller_nonce']
+				'code' => $cache_data['authorization_code'],
+				'code_verifier' => $cache_data['seller_nonce']
 			];
 			
 			$paypal->setAccessToken($token_info);
@@ -160,11 +164,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			}
 
 			$this->model_setting_setting->editSetting('payment_paypal', $setting);
-						
-			unset($this->session->data['authorization_code']);
-			unset($this->session->data['shared_id']);
-			unset($this->session->data['seller_nonce']);
-			
+									
 			if (!$this->error) {
 				$this->response->redirect($this->url->link('extension/paypal/payment/paypal', 'user_token=' . $this->session->data['user_token']));
 			}
@@ -1090,7 +1090,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		
 		$this->document->addScript('../extension/paypal/admin/view/javascript/paypal.js');
 		$this->document->addScript('../extension/paypal/admin/view/javascript/bootstrap-switch.js');
-
+		
 		$this->document->setTitle($this->language->get('heading_title_main'));
 		
 		$data['breadcrumbs'] = [];
@@ -1436,13 +1436,15 @@ class PayPal extends \Opencart\System\Engine\Controller {
 	}
 		
 	public function callback(): void {
-		if (isset($this->request->post['environment']) && isset($this->request->post['authorization_code']) && isset($this->request->post['shared_id']) && isset($this->request->post['seller_nonce'])) {
-			$this->session->data['environment'] = $this->request->post['environment'];
-			$this->session->data['authorization_code'] = $this->request->post['authorization_code'];
-			$this->session->data['shared_id'] = $this->request->post['shared_id'];
-			$this->session->data['seller_nonce'] = $this->request->post['seller_nonce'];
+		if (isset($this->request->post['environment']) && isset($this->request->post['authorization_code']) && isset($this->request->post['shared_id']) && isset($this->request->post['seller_nonce'])) {			
+			$cache_data['environment'] = $this->request->post['environment'];
+			$cache_data['authorization_code'] = $this->request->post['authorization_code'];
+			$cache_data['shared_id'] = $this->request->post['shared_id'];
+			$cache_data['seller_nonce'] = $this->request->post['seller_nonce'];
+			
+			$this->cache->set('paypal', $cache_data, 30);
 		}
-		
+				
 		$data['error'] = $this->error;
 				
 		$this->response->addHeader('Content-Type: application/json');
