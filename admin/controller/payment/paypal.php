@@ -1716,7 +1716,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 									
 			$this->load->model('extension/paypal/payment/paypal');
 			
-			$data['order_id'] = $this->request->get['order_id'];
+			$data['order_id'] = (int)$this->request->get['order_id'];
 			
 			$paypal_order_info = $this->model_extension_paypal_payment_paypal->getPayPalOrder($data['order_id']);
 				
@@ -1755,7 +1755,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			
 			$this->load->model('extension/paypal/payment/paypal');
 			
-			$data['order_id'] = $this->request->get['order_id'];
+			$data['order_id'] = (int)$this->request->get['order_id'];
 			
 			$paypal_order_info = $this->model_extension_paypal_payment_paypal->getPayPalOrder($data['order_id']);
 				
