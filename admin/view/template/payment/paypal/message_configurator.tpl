@@ -33,104 +33,24 @@
 					<li class="nav-tab"><a href="<?php echo $href_googlepay_button; ?>" class="tab"><i class="tab-icon tab-icon-googlepay-button"></i><span class="tab-title"><?php echo $text_tab_googlepay_button; ?></span></a></li>
 					<li class="nav-tab"><a href="<?php echo $href_applepay_button; ?>" class="tab"><i class="tab-icon tab-icon-applepay-button"></i><span class="tab-title"><?php echo $text_tab_applepay_button; ?></span></a></li>
 					<li class="nav-tab"><a href="<?php echo $href_card; ?>" class="tab"><i class="tab-icon tab-icon-card"></i><span class="tab-title"><?php echo $text_tab_card; ?></span></a></li>
-					<li class="nav-tab active"><a href="<?php echo $href_message; ?>" class="tab"><i class="tab-icon tab-icon-message"></i><span class="tab-title"><?php echo $text_tab_message; ?></span></a></li>
+					<li class="nav-tab active"><a href="<?php echo $href_message_configurator; ?>" class="tab"><i class="tab-icon tab-icon-message-configurator"></i><span class="tab-title"><?php echo $text_tab_message_configurator; ?></span></a></li>
+					<li class="nav-tab"><a href="<?php echo $href_message_setting; ?>" class="tab"><i class="tab-icon tab-icon-message-setting"></i><span class="tab-title"><?php echo $text_tab_message_setting; ?></span></a></li>
 					<li class="nav-tab"><a href="<?php echo $href_order_status; ?>" class="tab"><i class="tab-icon tab-icon-order-status"></i><span class="tab-title"><?php echo $text_tab_order_status; ?></span></a></li>
 					<li class="nav-tab"><a href="<?php echo $href_contact; ?>" class="tab"><i class="tab-icon tab-icon-contact"></i><span class="tab-title"><?php echo $text_tab_contact; ?></span></a></li>
 				</ul>
 					
 				<div class="section-content">
 					<form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form_payment">
-						<ul class="nav nav-pills">
-							<?php $i = 0; ?>
-							<?php foreach ($setting['message'] as $message) { ?>
-							<li class="nav-pill <?php if ($i == 0) { ?>active<?php } ?>"><a href="#pill_<?php echo $message['page_code']; ?>" class="pill" data-toggle="tab"><?php echo ${$message['page_name']}; ?></a></li>
-							<?php $i++; ?>
-							<?php } ?>
-						</ul>
-						<hr class="hr" />
-						<div class="tab-content">
-							<?php $i = 0; ?>
-							<?php foreach ($setting['message'] as $message) { ?>
-							<div id="pill_<?php echo $message['page_code']; ?>" class="tab-pane <?php if ($i == 0) { ?>active<?php } ?>">
-								<div class="section-message-setting">
-									<div class="row">
-										<div class="col col-md-6">
-											<legend class="legend"><?php echo $text_message_settings; ?></legend>
-										</div>
-									</div>
-									<?php if ($text_message_alert) { ?>
-									<div class="form-group">
-										<p class="alert alert-info"><?php echo $text_message_alert; ?></p>
-									</div>
-									<div class="form-group">
-										<p class="footnote"><?php echo $text_message_footnote; ?></p>
-									</div>
-									<?php } ?>
-									<div class="row">
-										<?php if ($message['page_code'] != 'checkout') { ?>
-										<div class="col col-md-3">
-											<div class="form-group">
-												<label class="control-label" for="input_message_<?php echo $message['page_code']; ?>_insert_tag"><?php echo $entry_message_insert_tag; ?></label>
-												<input type="text" name="paypal_setting[message][<?php echo $message['page_code']; ?>][insert_tag]" value="<?php echo $message['insert_tag']; ?>" id="input_message_<?php echo $message['page_code']; ?>_insert_tag" class="form-control" />
-											</div>
-										</div>
-										<div class="col col-md-3">
-											<div class="form-group">
-												<label class="control-label" for="input_message_<?php echo $message['page_code']; ?>_insert_type"><?php echo $entry_message_insert_type; ?></label>
-												<select name="paypal_setting[message][<?php echo $message['page_code']; ?>][insert_type]" id="input_message_<?php echo $message['page_code']; ?>_insert_type" class="form-control">
-													<?php foreach ($setting['message_insert_type'] as $message_insert_type) { ?>
-													<?php if ($message_insert_type['code'] == $message['insert_type']) { ?>
-													<option value="<?php echo $message_insert_type['code']; ?>" selected="selected"><?php echo ${$message_insert_type['name']}; ?></option>
-													<?php } else { ?>
-													<option value="<?php echo $message_insert_type['code']; ?>"><?php echo ${$message_insert_type['name']}; ?></option>
-													<?php } ?>
-													<?php } ?>
-												</select>
-											</div>
-										</div>
-										<?php } ?>
-										<div class="col col-md-3">
-											<div class="form-group">
-												<label class="control-label" for="input_message_<?php echo $message['page_code']; ?>_align"><?php echo $entry_message_align; ?></label>
-												<select name="paypal_setting[message][<?php echo $message['page_code']; ?>][align]" id="input_message_<?php echo $message['page_code']; ?>_align" class="form-control control-paypal-message">
-													<?php foreach ($setting['message_align'] as $message_align) { ?>
-													<?php if ($message_align['code'] == $message['align']) { ?>
-													<option value="<?php echo $message_align['code']; ?>" selected="selected"><?php echo ${$message_align['name']}; ?></option>
-													<?php } else { ?>
-													<option value="<?php echo $message_align['code']; ?>"><?php echo ${$message_align['name']}; ?></option>
-													<?php } ?>
-													<?php } ?>
-												</select>
-											</div>
-										</div>
-										<div class="col col-md-3">
-											<div class="form-group">
-												<label class="control-label" for="input_message_<?php echo $message['page_code']; ?>_size"><?php echo $entry_message_size; ?></label>
-												<select name="paypal_setting[message][<?php echo $message['page_code']; ?>][size]" id="input_message_<?php echo $message['page_code']; ?>_size" class="form-control control-paypal-message">
-													<?php foreach ($setting['message_size'] as $message_size) { ?>
-													<?php if ($message_size['code'] == $message['size']) { ?>
-													<option value="<?php echo $message_size['code']; ?>" selected="selected"><?php echo ${$message_size['name']}; ?></option>
-													<?php } else { ?>
-													<option value="<?php echo $message_size['code']; ?>"><?php echo ${$message_size['name']}; ?></option>
-													<?php } ?>
-													<?php } ?>
-												</select>
-											</div>
-										</div>
-										<input type="hidden" name="paypal_setting[message][<?php echo $message['page_code']; ?>][status]" value="<?php echo $message['status']; ?>" id="input_message_<?php echo $message['page_code']; ?>_status" />
-										<input type="hidden" name="paypal_setting[message][<?php echo $message['page_code']; ?>][layout]" value="<?php echo $message['layout']; ?>" id="input_message_<?php echo $message['page_code']; ?>_layout" />
-										<input type="hidden" name="paypal_setting[message][<?php echo $message['page_code']; ?>][logo_type]" value="<?php echo $message['logo_type']; ?>" id="input_message_<?php echo $message['page_code']; ?>_logo_type" />
-										<input type="hidden" name="paypal_setting[message][<?php echo $message['page_code']; ?>][logo_position]" value="<?php echo $message['logo_position']; ?>" id="input_message_<?php echo $message['page_code']; ?>_logo_position" />
-										<input type="hidden" name="paypal_setting[message][<?php echo $message['page_code']; ?>][text_color]" value="<?php echo $message['text_color']; ?>" id="input_message_<?php echo $message['page_code']; ?>_text_color" />
-										<input type="hidden" name="paypal_setting[message][<?php echo $message['page_code']; ?>][text_size]" value="<?php echo $message['text_size']; ?>" id="input_message_<?php echo $message['page_code']; ?>_text_size" />
-										<input type="hidden" name="paypal_setting[message][<?php echo $message['page_code']; ?>][flex_color]" value="<?php echo $message['flex_color']; ?>" id="input_message_<?php echo $message['page_code']; ?>_flex_color" />
-										<input type="hidden" name="paypal_setting[message][<?php echo $message['page_code']; ?>][flex_ratio]" value="<?php echo $message['flex_ratio']; ?>" id="input_message_<?php echo $message['page_code']; ?>_flex_ratio" />
-									</div>
-								</div>
-							</div>
-							<?php $i++; ?>
-							<?php } ?>
-						</div>
+						<?php foreach ($setting['message'] as $message) { ?>
+						<input type="hidden" name="paypal_setting[message][<?php echo $message['page_code']; ?>][status]" value="<?php echo $message['status']; ?>" id="input_message_<?php echo $message['page_code']; ?>_status" />
+						<input type="hidden" name="paypal_setting[message][<?php echo $message['page_code']; ?>][layout]" value="<?php echo $message['layout']; ?>" id="input_message_<?php echo $message['page_code']; ?>_layout" />
+						<input type="hidden" name="paypal_setting[message][<?php echo $message['page_code']; ?>][logo_type]" value="<?php echo $message['logo_type']; ?>" id="input_message_<?php echo $message['page_code']; ?>_logo_type" />
+						<input type="hidden" name="paypal_setting[message][<?php echo $message['page_code']; ?>][logo_position]" value="<?php echo $message['logo_position']; ?>" id="input_message_<?php echo $message['page_code']; ?>_logo_position" />
+						<input type="hidden" name="paypal_setting[message][<?php echo $message['page_code']; ?>][text_color]" value="<?php echo $message['text_color']; ?>" id="input_message_<?php echo $message['page_code']; ?>_text_color" />
+						<input type="hidden" name="paypal_setting[message][<?php echo $message['page_code']; ?>][text_size]" value="<?php echo $message['text_size']; ?>" id="input_message_<?php echo $message['page_code']; ?>_text_size" />
+						<input type="hidden" name="paypal_setting[message][<?php echo $message['page_code']; ?>][flex_color]" value="<?php echo $message['flex_color']; ?>" id="input_message_<?php echo $message['page_code']; ?>_flex_color" />
+						<input type="hidden" name="paypal_setting[message][<?php echo $message['page_code']; ?>][flex_ratio]" value="<?php echo $message['flex_ratio']; ?>" id="input_message_<?php echo $message['page_code']; ?>_flex_ratio" />
+						<?php } ?>
 					</form>
 					<div id="messaging-configurator"></div>
 				</div>
@@ -143,24 +63,7 @@
 readyMerchantConfigurators();
 
 $('.payment-paypal').on('click', '.button-save', function() {
-    $.ajax({
-		type: 'post',
-		url: $('#form_payment').attr('action'),
-		data: $('#form_payment').serialize(),
-		dataType: 'json',
-		success: function(json) {
-			$('.payment-paypal .alert-success').remove();
-			
-			if (json['success']) {
-				$('.payment-paypal > .container-fluid').prepend('<div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i><button type="button" class="close" data-dismiss="alert">&times;</button> ' + json['success'] + '</div>');
-				
-				$('html, body').animate({scrollTop: $('.payment-paypal > .container-fluid .alert-success').offset().top}, 'slow');
-			}
-		},
-		error: function(xhr, ajaxOptions, thrownError) {
-			console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-		}
-    });  
+	$('.payment-paypal .buttonOverride').trigger('click');
 });
 
 $('.payment-paypal').on('click', '.button-agree', function() {
@@ -193,11 +96,15 @@ function readyMerchantConfigurators() {
 function initMerchantConfigurators() {		
 	window.merchantConfigurators.Messaging({
 		locale: '<?php echo $locale; ?>',
-		merchantClientId: '<?php echo $client_id; ?>',
+		merchantIdentifier: '<?php echo $client_id; ?>',
 		partnerClientId:'<?php echo $partner_client_id; ?>',
 		partnerName: 'Opencart',
 		bnCode: '<?php echo $partner_attribution_id; ?>',
 		placements: ['checkout', 'cart', 'product', 'homepage'],
+		styleOverrides: {
+			button: 'buttonOverride',
+			header: 'headerOverride'
+		},
 		config: {
 			'checkout': {
 				'placement': 'checkout',
@@ -261,7 +168,24 @@ function initMerchantConfigurators() {
 			$('.payment-paypal #input_message_home_flex_color').val(data['config']['homepage']['color']);
 			$('.payment-paypal #input_message_home_flex_ratio').val(data['config']['homepage']['ratio']);
 			
-			$('.payment-paypal .button-save').trigger('click');
+			$.ajax({
+				type: 'post',
+				url: $('#form_payment').attr('action'),
+				data: $('#form_payment').serialize(),
+				dataType: 'json',
+				success: function(json) {
+					$('.payment-paypal .alert-success').remove();
+			
+					if (json['success']) {
+						$('.payment-paypal > .container-fluid').prepend('<div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i><button type="button" class="close" data-dismiss="alert">&times;</button> ' + json['success'] + '</div>');
+				
+						$('html, body').animate({scrollTop: $('.payment-paypal > .container-fluid .alert-success').offset().top}, 'slow');
+					}
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+					console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+				}
+			}); 
 		}
 	});
 }
