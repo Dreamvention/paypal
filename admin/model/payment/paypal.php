@@ -166,33 +166,57 @@ class PayPal extends \Opencart\System\Engine\Model {
 		return $query->row;
 	}
 	
+	public function deletePayPalCustomerTokens(int $customer_id): void {
+		$query = $this->db->query("DELETE FROM `" . DB_PREFIX . "paypal_checkout_integration_customer_token` WHERE `customer_id` = '" . (int)$customer_id . "'");
+	}
+	
 	public function editPayPalOrder(array $data): void {
 		$sql = "UPDATE `" . DB_PREFIX . "paypal_checkout_integration_order` SET";
 
 		$implode = [];
 		
+		if (!empty($data['paypal_order_id'])) {
+			$implode[] = "`paypal_order_id` = '" . $this->db->escape($data['paypal_order_id']) . "'";
+		}
+		
 		if (!empty($data['transaction_id'])) {
-			$implode[] .= "`transaction_id` = '" . $this->db->escape($data['transaction_id']) . "'";
+			$implode[] = "`transaction_id` = '" . $this->db->escape($data['transaction_id']) . "'";
 		}
 					
 		if (!empty($data['transaction_status'])) {
-			$implode[] .= "`transaction_status` = '" . $this->db->escape($data['transaction_status']) . "'";
+			$implode[] = "`transaction_status` = '" . $this->db->escape($data['transaction_status']) . "'";
 		}
 		
 		if (!empty($data['payment_method'])) {
-			$implode[] .= "`payment_method` = '" . $this->db->escape($data['payment_method']) . "'";
+			$implode[] = "`payment_method` = '" . $this->db->escape($data['payment_method']) . "'";
 		}
 		
 		if (!empty($data['vault_id'])) {
-			$implode[] .= "`vault_id` = '" . $this->db->escape($data['vault_id']) . "'";
+			$implode[] = "`vault_id` = '" . $this->db->escape($data['vault_id']) . "'";
 		}
 		
 		if (!empty($data['vault_customer_id'])) {
-			$implode[] .= "`vault_customer_id` = '" . $this->db->escape($data['vault_customer_id']) . "'";
+			$implode[] = "`vault_customer_id` = '" . $this->db->escape($data['vault_customer_id']) . "'";
+		}
+		
+		if (!empty($data['card_type'])) {
+			$implode[] = "`card_type` = '" . $this->db->escape($data['card_type']) . "'";
+		}
+		
+		if (!empty($data['card_nice_type'])) {
+			$implode[] = "`card_nice_type` = '" . $this->db->escape($data['card_nice_type']) . "'";
+		}
+		
+		if (!empty($data['card_last_digits'])) {
+			$implode[] = "`card_last_digits` = '" . $this->db->escape($data['card_last_digits']) . "'";
+		}
+		
+		if (!empty($data['card_expiry'])) {
+			$implode[] = "`card_expiry` = '" . $this->db->escape($data['card_expiry']) . "'";
 		}
 		
 		if (!empty($data['environment'])) {
-			$implode[] .= "`environment` = '" . $this->db->escape($data['environment']) . "'";
+			$implode[] = "`environment` = '" . $this->db->escape($data['environment']) . "'";
 		}
 				
 		if ($implode) {
@@ -300,10 +324,12 @@ class PayPal extends \Opencart\System\Engine\Model {
 	}
 	
 	public function install(): void {
-		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order` (`order_id` INT(11) NOT NULL, `transaction_id` VARCHAR(20) NOT NULL, `transaction_status` VARCHAR(20) NULL, `payment_method` VARCHAR(20) NULL, `vault_id` VARCHAR(50) NULL, `vault_customer_id` VARCHAR(50) NULL, `environment` VARCHAR(20) NULL, PRIMARY KEY (`order_id`, `transaction_id`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci");
+		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "paypal_checkout_integration_customer_token` (`customer_id` INT(11) NOT NULL, `payment_method` VARCHAR(20) NOT NULL, `vault_id` VARCHAR(50) NOT NULL, `vault_customer_id` VARCHAR(50) NOT NULL, `card_type` VARCHAR(40) NOT NULL, `card_nice_type` VARCHAR(40) NOT NULL, `card_last_digits` VARCHAR(4) NOT NULL, `card_expiry` VARCHAR(20) NOT NULL, `main_token_status` TINYINT(1) NOT NULL, PRIMARY KEY (`customer_id`, `payment_method`, `vault_id`), KEY `vault_customer_id` (`vault_customer_id`), KEY `main_token_status` (`main_token_status`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci");
+		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order` (`order_id` INT(11) NOT NULL, `paypal_order_id` VARCHAR(20) NOT NULL, `transaction_id` VARCHAR(20) NOT NULL, `transaction_status` VARCHAR(20) NOT NULL, `payment_method` VARCHAR(20) NOT NULL, `vault_id` VARCHAR(50) NOT NULL, `vault_customer_id` VARCHAR(50) NOT NULL, `card_type` VARCHAR(40) NOT NULL, `card_nice_type` VARCHAR(40) NOT NULL, `card_last_digits` VARCHAR(4) NOT NULL, `card_expiry` VARCHAR(20) NOT NULL, `environment` VARCHAR(20) NOT NULL, PRIMARY KEY (`order_id`), KEY `paypal_order_id` (`paypal_order_id`), KEY `transaction_id` (`transaction_id`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci");
 	}
 	
 	public function uninstall(): void {
+		$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_customer_token`");
 		$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order`");
 	}
 }

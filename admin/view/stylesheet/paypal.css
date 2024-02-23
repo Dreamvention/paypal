@@ -1,16 +1,3 @@
-html, body {
-	font-size: 13px;
-}
-.breadcrumb-item {
-	font-size: 14px;
-}
-.btn {
-	font-size: 14px;
-	padding: 8px 12px;
-}
-.tooltip {
-	font-size: 12px;
-}
 .payment-paypal {
 	font-size: 13px;
 	line-height: 1.4;
@@ -386,9 +373,13 @@ html, body {
 	width: 33px;
 	background-image: url('../image/payment/icon-card.svg');
 }
-.payment-paypal .card .tab .tab-icon-message {
+.payment-paypal .card .tab .tab-icon-message-setting {
 	width: 37px;
-	background-image: url('../image/payment/icon-message.svg');
+	background-image: url('../image/payment/icon-message-setting.svg');
+}
+.payment-paypal .card .tab .tab-icon-message-configurator {
+	width: 37px;
+	background-image: url('../image/payment/icon-message-configurator.svg');
 }
 .payment-paypal .card .tab .tab-icon-order-status {
 	width: 28px;
@@ -682,10 +673,34 @@ html, body {
 	background-size: contain;
 	background-repeat: no-repeat;
 }
-.payment-paypal .panel-default #messaging-configurator input {
+.payment-paypal .card #messaging-configurator * {
+	font-size: 13px;
+	line-height: 1.4;
+	-webkit-box-sizing: revert;
+	-moz-box-sizing: revert;
+	box-sizing: revert;
+}
+.payment-paypal .card #messaging-configurator > div {
+    margin: 0 !important;
+    justify-content: flex-start !important;
+}
+.payment-paypal .card #configurator-eligibleContainer{
+    width: 100%  !important;
+    max-width: 110rem  !important;
+    padding: 0 !important;
+}
+.payment-paypal .card #messaging-configurator .headerOverride {
+	font-size: 15px;
+	font-weight: 700;
+	color: #000000;
+}
+.payment-paypal .card #messaging-configurator .buttonOverride {
+	display: none;
+}
+.payment-paypal .card #messaging-configurator input {
 	position: absolute;
 }
-.payment-paypal .panel-default #messaging-configurator .css-15yf9ku {
+.payment-paypal .card #messaging-configurator #configurator-previewSectionContainer > div + div {
 	height: auto;
 }
 @media (max-width: 767px) {
@@ -896,6 +911,11 @@ html, body {
 .payment-paypal .card-dashboard .col {
 	padding: 0px 7px;
 }
+@media (min-width: 1200px) {
+	.payment-paypal .card-dashboard .col-tab {
+		width: 20%;
+	}
+}
 .payment-paypal .card-dashboard .paypal-sale {
 	padding: 11px 0px;
 }
@@ -919,7 +939,7 @@ html, body {
 .payment-paypal .card-dashboard .tab {
 	position: relative;
 	display: block;
-	padding: 37px 7px 30px 7px;
+	padding: 37px 10px 30px 10px;
 	text-align: center;
 	background: #FFFFFF;
 	box-shadow: 0px 2px 6px #00000029;

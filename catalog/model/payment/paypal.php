@@ -119,37 +119,144 @@ class PayPal extends \Opencart\System\Engine\Model {
 		return $query->row;
 	}
 	
+	public function addPayPalCustomerToken(array $data): void {
+		$sql = "INSERT INTO `" . DB_PREFIX . "paypal_checkout_integration_customer_token` SET";
+
+		$implode = [];
+			
+		if (!empty($data['customer_id'])) {
+			$implode[] = "`customer_id` = '" . (int)$data['customer_id'] . "'";
+		}
+		
+		if (!empty($data['payment_method'])) {
+			$implode[] = "`payment_method` = '" . $this->db->escape($data['payment_method']) . "'";
+		}	
+
+		if (!empty($data['vault_id'])) {
+			$implode[] = "`vault_id` = '" . $this->db->escape($data['vault_id']) . "'";
+		}
+		
+		if (!empty($data['vault_customer_id'])) {
+			$implode[] = "`vault_customer_id` = '" . $this->db->escape($data['vault_customer_id']) . "'";
+		}
+		
+		if (!empty($data['card_type'])) {
+			$implode[] = "`card_type` = '" . $this->db->escape($data['card_type']) . "'";
+		}
+		
+		if (!empty($data['card_nice_type'])) {
+			$implode[] = "`card_nice_type` = '" . $this->db->escape($data['card_nice_type']) . "'";
+		}
+		
+		if (!empty($data['card_last_digits'])) {
+			$implode[] = "`card_last_digits` = '" . $this->db->escape($data['card_last_digits']) . "'";
+		}
+		
+		if (!empty($data['card_expiry'])) {
+			$implode[] = "`card_expiry` = '" . $this->db->escape($data['card_expiry']) . "'";
+		}
+					
+		if ($implode) {
+			$sql .= implode(", ", $implode);
+		}
+		
+		$this->db->query($sql);
+	}
+	
+	public function deletePayPalCustomerToken(int $customer_id, string $payment_method, string $vault_id): void {
+		$query = $this->db->query("DELETE FROM `" . DB_PREFIX . "paypal_checkout_integration_customer_token` WHERE `customer_id` = '" . (int)$customer_id . "' AND `payment_method` = '" . $this->db->escape($payment_method) . "' AND `vault_id` = '" . $this->db->escape($vault_id) . "'");
+	}
+	
+	public function setPayPalCustomerMainToken(int $customer_id, string $payment_method, string $vault_id): void {
+		$this->db->query("UPDATE `" . DB_PREFIX . "paypal_checkout_integration_customer_token` SET `main_token_status` = '0' WHERE `customer_id` = '" . (int)$customer_id . "' AND `payment_method` = '" . $this->db->escape($payment_method) . "'");
+		$this->db->query("UPDATE `" . DB_PREFIX . "paypal_checkout_integration_customer_token` SET `main_token_status` = '1' WHERE `customer_id` = '" . (int)$customer_id . "' AND `payment_method` = '" . $this->db->escape($payment_method) . "' AND `vault_id` = '" . $this->db->escape($vault_id) . "'");
+	}
+	
+	public function getPayPalCustomerMainToken(int $customer_id, string $payment_method): array {
+		$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "paypal_checkout_integration_customer_token` WHERE `customer_id` = '" . (int)$customer_id . "' AND `payment_method` = '" . $this->db->escape($payment_method) . "' AND `main_token_status` = '1'");
+		
+		if ($query->num_rows) {
+			return $query->row;
+		} else {
+			return [];
+		}
+	}
+	
+	public function getPayPalCustomerToken(int $customer_id, string $payment_method, string $vault_id): array {
+		$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "paypal_checkout_integration_customer_token` WHERE `customer_id` = '" . (int)$customer_id . "' AND `payment_method` = '" . $this->db->escape($payment_method) . "' AND `vault_id` = '" . $this->db->escape($vault_id) . "'");
+
+		if ($query->num_rows) {
+			return $query->row;
+		} else {
+			return [];
+		}
+	}
+	
+	public function getPayPalCustomerTokens(int $customer_id, string $payment_method = ''): array {
+		if ($payment_method) {
+			$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "paypal_checkout_integration_customer_token` WHERE `customer_id` = '" . (int)$customer_id . "' AND `payment_method` = '" . $this->db->escape($payment_method) . "'");
+		} else {
+			$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "paypal_checkout_integration_customer_token` WHERE `customer_id` = '" . (int)$customer_id . "'");
+		}
+
+		if ($query->num_rows) {
+			return $query->rows;
+		} else {
+			return [];
+		}
+	}
+	
 	public function addPayPalOrder(array $data): void {
 		$sql = "INSERT INTO `" . DB_PREFIX . "paypal_checkout_integration_order` SET";
 
 		$implode = [];
 			
 		if (!empty($data['order_id'])) {
-			$implode[] .= "`order_id` = '" . (int)$data['order_id'] . "'";
+			$implode[] = "`order_id` = '" . (int)$data['order_id'] . "'";
 		}
 		
+		if (!empty($data['paypal_order_id'])) {
+			$implode[] = "`paypal_order_id` = '" . $this->db->escape($data['paypal_order_id']) . "'";
+		}
+				
 		if (!empty($data['transaction_id'])) {
-			$implode[] .= "`transaction_id` = '" . $this->db->escape($data['transaction_id']) . "'";
+			$implode[] = "`transaction_id` = '" . $this->db->escape($data['transaction_id']) . "'";
 		}
 		
 		if (!empty($data['transaction_status'])) {
-			$implode[] .= "`transaction_status` = '" . $this->db->escape($data['transaction_status']) . "'";
+			$implode[] = "`transaction_status` = '" . $this->db->escape($data['transaction_status']) . "'";
 		}
 		
 		if (!empty($data['payment_method'])) {
-			$implode[] .= "`payment_method` = '" . $this->db->escape($data['payment_method']) . "'";
+			$implode[] = "`payment_method` = '" . $this->db->escape($data['payment_method']) . "'";
 		}
 		
 		if (!empty($data['vault_id'])) {
-			$implode[] .= "`vault_id` = '" . $this->db->escape($data['vault_id']) . "'";
+			$implode[] = "`vault_id` = '" . $this->db->escape($data['vault_id']) . "'";
 		}
 		
 		if (!empty($data['vault_customer_id'])) {
-			$implode[] .= "`vault_customer_id` = '" . $this->db->escape($data['vault_customer_id']) . "'";
+			$implode[] = "`vault_customer_id` = '" . $this->db->escape($data['vault_customer_id']) . "'";
+		}
+		
+		if (!empty($data['card_type'])) {
+			$implode[] = "`card_type` = '" . $this->db->escape($data['card_type']) . "'";
+		}
+		
+		if (!empty($data['card_nice_type'])) {
+			$implode[] = "`card_nice_type` = '" . $this->db->escape($data['card_nice_type']) . "'";
+		}
+		
+		if (!empty($data['card_last_digits'])) {
+			$implode[] = "`card_last_digits` = '" . $this->db->escape($data['card_last_digits']) . "'";
+		}
+		
+		if (!empty($data['card_expiry'])) {
+			$implode[] = "`card_expiry` = '" . $this->db->escape($data['card_expiry']) . "'";
 		}
 				
 		if (!empty($data['environment'])) {
-			$implode[] .= "`environment` = '" . $this->db->escape($data['environment']) . "'";
+			$implode[] = "`environment` = '" . $this->db->escape($data['environment']) . "'";
 		}
 		
 		if ($implode) {
@@ -164,28 +271,32 @@ class PayPal extends \Opencart\System\Engine\Model {
 
 		$implode = [];
 		
+		if (!empty($data['paypal_order_id'])) {
+			$implode[] = "`paypal_order_id` = '" . $this->db->escape($data['paypal_order_id']) . "'";
+		}
+		
 		if (!empty($data['transaction_id'])) {
-			$implode[] .= "`transaction_id` = '" . $this->db->escape($data['transaction_id']) . "'";
+			$implode[] = "`transaction_id` = '" . $this->db->escape($data['transaction_id']) . "'";
 		}
 					
 		if (!empty($data['transaction_status'])) {
-			$implode[] .= "`transaction_status` = '" . $this->db->escape($data['transaction_status']) . "'";
+			$implode[] = "`transaction_status` = '" . $this->db->escape($data['transaction_status']) . "'";
 		}
 		
 		if (!empty($data['payment_method'])) {
-			$implode[] .= "`payment_method` = '" . $this->db->escape($data['payment_method']) . "'";
+			$implode[] = "`payment_method` = '" . $this->db->escape($data['payment_method']) . "'";
 		}
 		
 		if (!empty($data['vault_id'])) {
-			$implode[] .= "`vault_id` = '" . $this->db->escape($data['vault_id']) . "'";
+			$implode[] = "`vault_id` = '" . $this->db->escape($data['vault_id']) . "'";
 		}
 		
 		if (!empty($data['vault_customer_id'])) {
-			$implode[] .= "`vault_customer_id` = '" . $this->db->escape($data['vault_customer_id']) . "'";
+			$implode[] = "`vault_customer_id` = '" . $this->db->escape($data['vault_customer_id']) . "'";
 		}
 		
 		if (!empty($data['environment'])) {
-			$implode[] .= "`environment` = '" . $this->db->escape($data['environment']) . "'";
+			$implode[] = "`environment` = '" . $this->db->escape($data['environment']) . "'";
 		}
 				
 		if ($implode) {
@@ -203,6 +314,16 @@ class PayPal extends \Opencart\System\Engine\Model {
 	
 	public function getPayPalOrder(int $order_id): array {
 		$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "paypal_checkout_integration_order` WHERE `order_id` = '" . (int)$order_id . "'");
+		
+		if ($query->num_rows) {
+			return $query->row;
+		} else {
+			return [];
+		}
+	}
+	
+	public function getPayPalOrderByPayPalOrderId(string $paypal_order_id): array {
+		$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "paypal_checkout_integration_order` WHERE `paypal_order_id` = '" . $this->db->escape($paypal_order_id) . "'");
 		
 		if ($query->num_rows) {
 			return $query->row;
@@ -322,87 +443,89 @@ class PayPal extends \Opencart\System\Engine\Model {
 			
 				$paypal_order_info = $this->getPayPalOrder($subscription['order_id']);
 				
-				if ($subscription['trial_status'] && $subscription['trial_duration'] && $subscription['trial_remaining']) {
-					$trial_remaining = $subscription['trial_remaining'] - 1;
-					$remaining = $subscription['duration'];
-				} elseif ($subscription['duration'] && $subscription['remaining']) {
-					$trial_remaining = $subscription['trial_duration'];
-					$remaining = $subscription['remaining'] - 1;
-				} else {
-					$trial_remaining = $subscription['trial_remaining'];
-					$remaining = $subscription['remaining'];
-				}
-				
-				$date_next = $subscription['date_next'];
-
-				if ($subscription['trial_status'] && $subscription['trial_duration']) {
-					$date_next = date('Y-m-d', strtotime('+' . $subscription['trial_cycle'] . ' ' . $subscription['trial_frequency']));
-				} elseif ($subscription['duration'] && $subscription['remaining']) {
-					$date_next = date('Y-m-d', strtotime('+' . $subscription['cycle'] . ' ' . $subscription['frequency']));
-				}
-				
-				$price = 0;
-				
-				if ($subscription['trial_status'] && (!$subscription['trial_duration'] || $subscription['trial_remaining'])) {
-					$price = $subscription['trial_price'];
-				} elseif (!$subscription['duration'] || $subscription['remaining']) {
-					$price = $subscription['price'];
-				}
-				
-				$subscription_name = '';
-				
-				if (VERSION >= '4.0.2.0') {			
-					$product_info = $this->model_catalog_product->getProduct($subscription['product_id']);
-
-					if ($product_info) {
-						$subscription_name = $product_info['name'];
-					}
-				} else {
-					$subscription_name = $subscription['name'];
-				}
-			
-				$result = $this->createPayment($order_info, $paypal_order_info, $price, $subscription['subscription_id'], $subscription_name);
-			
-				$transaction_status = '';
-				$transaction_id = '';
-				$currency_code = '';
-				$amount = '';
-			
-				if ($transaction_method == 'authorize') {
-					if (isset($result['purchase_units'][0]['payments']['authorizations'][0]['status']) && isset($result['purchase_units'][0]['payments']['authorizations'][0]['seller_protection']['status'])) {
-						$transaction_id = $result['purchase_units'][0]['payments']['authorizations'][0]['id'];
-						$transaction_status = $result['purchase_units'][0]['payments']['authorizations'][0]['status'];
-						$currency_code = $result['purchase_units'][0]['payments']['authorizations'][0]['amount']['currency_code'];
-						$amount = $result['purchase_units'][0]['payments']['authorizations'][0]['amount']['value'];
-					}
-				} else {
-					if (isset($result['purchase_units'][0]['payments']['captures'][0]['status']) && isset($result['purchase_units'][0]['payments']['captures'][0]['seller_protection']['status'])) {
-						$transaction_id = $result['purchase_units'][0]['payments']['captures'][0]['id'];
-						$transaction_status = $result['purchase_units'][0]['payments']['captures'][0]['status'];
-						$currency_code = $result['purchase_units'][0]['payments']['captures'][0]['amount']['currency_code'];
-						$amount = $result['purchase_units'][0]['payments']['captures'][0]['amount']['value'];
-					}
-				}
-			
-				if ($transaction_id && $transaction_status && $currency_code && $amount) {
-					if (($transaction_status == 'CREATED') || ($transaction_status == 'COMPLETED') || ($transaction_status == 'PENDING')) {
-						$subscription_transaction_data = [
-							'subscription_id' => $subscription['subscription_id'],
-							'transaction_id' => $transaction_id,
-							'amount' => $amount
-						];
-			
-						$this->addSubscriptionTransaction($subscription_transaction_data);
-								
-						$this->editSubscriptionRemainingDateNext($subscription['subscription_id'], $remaining, $trial_remaining, $date_next);
+				if (!empty($paypal_order_info['vault_id'])) {
+					if ($subscription['trial_status'] && $subscription['trial_duration'] && $subscription['trial_remaining']) {
+						$trial_remaining = $subscription['trial_remaining'] - 1;
+						$remaining = $subscription['duration'];
+					} elseif ($subscription['duration'] && $subscription['remaining']) {
+						$trial_remaining = $subscription['trial_duration'];
+						$remaining = $subscription['remaining'] - 1;
 					} else {
-						$subscription_transaction_data = [
-							'subscription_id' => $subscription['subscription_id'],
-							'transaction_id' => $transaction_id,
-							'amount' => $amount
-						];
+						$trial_remaining = $subscription['trial_remaining'];
+						$remaining = $subscription['remaining'];
+					}
 				
-						$this->addSubscriptionTransaction($subscription_transaction_data);
+					$date_next = $subscription['date_next'];
+
+					if ($subscription['trial_status'] && $subscription['trial_duration']) {
+						$date_next = date('Y-m-d', strtotime('+' . $subscription['trial_cycle'] . ' ' . $subscription['trial_frequency']));
+					} elseif ($subscription['duration'] && $subscription['remaining']) {
+						$date_next = date('Y-m-d', strtotime('+' . $subscription['cycle'] . ' ' . $subscription['frequency']));
+					}
+				
+					$price = 0;
+				
+					if ($subscription['trial_status'] && (!$subscription['trial_duration'] || $subscription['trial_remaining'])) {
+						$price = $subscription['trial_price'];
+					} elseif (!$subscription['duration'] || $subscription['remaining']) {
+						$price = $subscription['price'];
+					}
+				
+					$subscription_name = '';
+				
+					if (VERSION >= '4.0.2.0') {			
+						$product_info = $this->model_catalog_product->getProduct($subscription['product_id']);
+
+						if ($product_info) {
+							$subscription_name = $product_info['name'];
+						}
+					} else {
+						$subscription_name = $subscription['name'];
+					}
+			
+					$result = $this->createPayment($order_info, $paypal_order_info, $price, $subscription['subscription_id'], $subscription_name);
+			
+					$transaction_status = '';
+					$transaction_id = '';
+					$currency_code = '';
+					$amount = '';
+			
+					if ($transaction_method == 'authorize') {
+						if (isset($result['purchase_units'][0]['payments']['authorizations'][0]['status']) && isset($result['purchase_units'][0]['payments']['authorizations'][0]['seller_protection']['status'])) {
+							$transaction_id = $result['purchase_units'][0]['payments']['authorizations'][0]['id'];
+							$transaction_status = $result['purchase_units'][0]['payments']['authorizations'][0]['status'];
+							$currency_code = $result['purchase_units'][0]['payments']['authorizations'][0]['amount']['currency_code'];
+							$amount = $result['purchase_units'][0]['payments']['authorizations'][0]['amount']['value'];
+						}
+					} else {
+						if (isset($result['purchase_units'][0]['payments']['captures'][0]['status']) && isset($result['purchase_units'][0]['payments']['captures'][0]['seller_protection']['status'])) {
+							$transaction_id = $result['purchase_units'][0]['payments']['captures'][0]['id'];
+							$transaction_status = $result['purchase_units'][0]['payments']['captures'][0]['status'];
+							$currency_code = $result['purchase_units'][0]['payments']['captures'][0]['amount']['currency_code'];
+							$amount = $result['purchase_units'][0]['payments']['captures'][0]['amount']['value'];
+						}
+					}
+			
+					if ($transaction_id && $transaction_status && $currency_code && $amount) {
+						if (($transaction_status == 'CREATED') || ($transaction_status == 'COMPLETED') || ($transaction_status == 'PENDING')) {
+							$subscription_transaction_data = [
+								'subscription_id' => $subscription['subscription_id'],
+								'transaction_id' => $transaction_id,
+								'amount' => $amount
+							];
+			
+							$this->addSubscriptionTransaction($subscription_transaction_data);
+								
+							$this->editSubscriptionRemainingDateNext($subscription['subscription_id'], $remaining, $trial_remaining, $date_next);
+						} else {
+							$subscription_transaction_data = [
+								'subscription_id' => $subscription['subscription_id'],
+								'transaction_id' => $transaction_id,
+								'amount' => $amount
+							];
+				
+							$this->addSubscriptionTransaction($subscription_transaction_data);
+						}
 					}
 				}
 			}
@@ -494,6 +617,13 @@ class PayPal extends \Opencart\System\Engine\Model {
 		$paypal_order_info['application_context']['shipping_preference'] = $shipping_preference;
 				
 		$paypal_order_info['payment_source'][$paypal_order_data['payment_method']]['vault_id'] = $paypal_order_data['vault_id'];
+		
+		if ($paypal_order_data['payment_method'] == 'card') {
+			$paypal_order_info['payment_source'][$paypal_order_data['payment_method']]['stored_credential']['payment_initiator'] = 'MERCHANT';
+			$paypal_order_info['payment_source'][$paypal_order_data['payment_method']]['stored_credential']['payment_type'] = 'UNSCHEDULED';
+			$paypal_order_info['payment_source'][$paypal_order_data['payment_method']]['stored_credential']['usage'] = 'SUBSEQUENT';
+			$paypal_order_info['payment_source'][$paypal_order_data['payment_method']]['stored_credential']['previous_transaction_reference'] = $paypal_order_data['transaction_id'];
+		}
 		
 		$result = $paypal->createOrder($paypal_order_info);
 								
@@ -594,32 +724,38 @@ class PayPal extends \Opencart\System\Engine\Model {
 	}
 	
 	public function update(): void {
+		$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_customer_token`");
 		$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order`");
 				
-		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order` (`order_id` INT(11) NOT NULL, `transaction_id` VARCHAR(20) NOT NULL, `transaction_status` VARCHAR(20) NULL, `payment_method` VARCHAR(20) NULL, `vault_id` VARCHAR(50) NULL, `vault_customer_id` VARCHAR(50) NULL, `environment` VARCHAR(20) NULL, PRIMARY KEY (`order_id`, `transaction_id`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci");
+		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "paypal_checkout_integration_customer_token` (`customer_id` INT(11) NOT NULL, `payment_method` VARCHAR(20) NOT NULL, `vault_id` VARCHAR(50) NOT NULL, `vault_customer_id` VARCHAR(50) NOT NULL, `card_type` VARCHAR(40) NOT NULL, `card_nice_type` VARCHAR(40) NOT NULL, `card_last_digits` VARCHAR(4) NOT NULL, `card_expiry` VARCHAR(20) NOT NULL, `main_token_status` TINYINT(1) NOT NULL, PRIMARY KEY (`customer_id`, `payment_method`, `vault_id`), KEY `vault_customer_id` (`vault_customer_id`), KEY `main_token_status` (`main_token_status`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci");
+		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order` (`order_id` INT(11) NOT NULL, `paypal_order_id` VARCHAR(20) NOT NULL, `transaction_id` VARCHAR(20) NOT NULL, `transaction_status` VARCHAR(20) NOT NULL, `payment_method` VARCHAR(20) NOT NULL, `vault_id` VARCHAR(50) NOT NULL, `vault_customer_id` VARCHAR(50) NOT NULL, `card_type` VARCHAR(40) NOT NULL, `card_nice_type` VARCHAR(40) NOT NULL, `card_last_digits` VARCHAR(4) NOT NULL, `card_expiry` VARCHAR(20) NOT NULL, `environment` VARCHAR(20) NOT NULL, PRIMARY KEY (`order_id`), KEY `paypal_order_id` (`paypal_order_id`), KEY `transaction_id` (`transaction_id`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci");
 				
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_order_info'");
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_header'");
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_extension_get_extensions_by_type'");
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_extension_get_extension_by_code'");
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_order_delete_order'");
+		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_customer_delete_customer'");
 		
 		if (VERSION >= '4.0.2.0') {
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_info', `description` = '', `trigger` = 'admin/view/sale/order_info/before', `action` = 'extension/paypal/payment/paypal.order_info_before', `status` = '1', `sort_order` = '1'");
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_header', `description` = '', `trigger` = 'catalog/controller/common/header/before', `action` = 'extension/paypal/payment/paypal.header_before', `status` = '1', `sort_order` = '2'");
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_delete_order', `description` = '', `trigger` = 'catalog/model/checkout/order/deleteOrder/before', `action` = 'extension/paypal/payment/paypal.order_delete_order_before', `status` = '1', `sort_order` = '3'");
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_customer_delete_customer', `description` = '', `trigger` = 'admin/model/customer/customer/deleteCustomer/before', `action` = 'extension/paypal/payment/paypal.customer_delete_customer_before', `status` = '1', `sort_order` = '4'");
 		} elseif (VERSION >= '4.0.1.0') {
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_info', `description` = '', `trigger` = 'admin/view/sale/order_info/before', `action` = 'extension/paypal/payment/paypal|order_info_before', `status` = '1', `sort_order` = '1'");
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_header', `description` = '', `trigger` = 'catalog/controller/common/header/before', `action` = 'extension/paypal/payment/paypal|header_before', `status` = '1', `sort_order` = '2'");
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_extension_get_extensions_by_type', `description` = '', `trigger` = 'catalog/model/setting/extension/getExtensionsByType/after', `action` = 'extension/paypal/payment/paypal|extension_get_extensions_by_type_after', `status` = '1', `sort_order` = '3'");
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_extension_get_extension_by_code', `description` = '', `trigger` = 'catalog/model/setting/extension/getExtensionByCode/after', `action` = 'extension/paypal/payment/paypal|extension_get_extension_by_code_after', `status` = '1', `sort_order` = '4'");
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_delete_order', `description` = '', `trigger` = 'catalog/model/checkout/order/deleteOrder/before', `action` = 'extension/paypal/payment/paypal|order_delete_order_before', `status` = '1', `sort_order` = '5'");
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_customer_delete_customer', `description` = '', `trigger` = 'admin/model/customer/customer/deleteCustomer/before', `action` = 'extension/paypal/payment/paypal|customer_delete_customer_before', `status` = '1', `sort_order` = '6'");
 		} else {
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_info', `description` = '', `trigger` = 'admin/view/sale/order_info/before', `action` = 'extension/paypal/payment/paypal|order_info_before', `status` = '1', `sort_order` = '1'");
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_header', `description` = '', `trigger` = 'catalog/controller/common/header/before', `action` = 'extension/paypal/payment/paypal|header_before', `status` = '1', `sort_order` = '2'");
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_extension_get_extensions_by_type', `description` = '', `trigger` = 'catalog/model/setting/extension/getExtensionsByType/after', `action` = 'extension/paypal/payment/paypal|extension_get_extensions_by_type_after', `status` = '1', `sort_order` = '3'");
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_extension_get_extension_by_code', `description` = '', `trigger` = 'catalog/model/setting/extension/getExtensionByCode/after', `action` = 'extension/paypal/payment/paypal|extension_get_extension_by_code_after', `status` = '1', `sort_order` = '4'");
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_delete_order', `description` = '', `trigger` = 'catalog/model/checkout/order/deleteOrder/before', `action` = 'extension/paypal/payment/paypal|order_delete_order_before', `status` = '1', `sort_order` = '5'");
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_customer_delete_customer', `description` = '', `trigger` = 'admin/model/customer/customer/deleteCustomer/before', `action` = 'extension/paypal/payment/paypal|customer_delete_customer_before', `status` = '1', `sort_order` = '6'");
 		}
 								
 		$_config = new \Opencart\System\Engine\Config();
