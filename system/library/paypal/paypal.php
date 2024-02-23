@@ -48,7 +48,7 @@ class PayPal {
 		if (!empty($result['access_token'])) {
 			$this->access_token = $result['access_token'];
 			
-			return $this->access_token;
+			return $result;
 		} else {
 			return false;
 		}
@@ -206,6 +206,89 @@ class PayPal {
 		
 		if (!empty($result['events'])) {
 			return $result['events'];
+		} else {
+			return false;
+		}
+	}
+	
+	//IN:  payment token info
+	public function createPaymentToken($payment_token_info) {
+		$command = '/v3/vault/payment-tokens';
+		
+		$params = $payment_token_info;
+				
+		$result = $this->execute('POST', $command, $params, true);
+		
+		if (!empty($result['id'])) {
+			return $result;
+		} else {
+			return false;
+		}
+	}
+		
+	//IN:  payment token id
+	public function deletePaymentToken($payment_token_id) {
+		$command = '/v3/vault/payment-tokens/' . $payment_token_id;
+				
+		$result = $this->execute('DELETE', $command);
+		
+		return true;
+	}
+	
+	//IN:  payment token id
+	//OUT: payment token info, if no return - check errors
+	public function getPaymentToken($payment_token_id) {
+		$command = '/v3/vault/payment-tokens/' . $payment_token_id;
+				
+		$result = $this->execute('GET', $command);
+		
+		if (!empty($result['id'])) {
+			return $result;
+		} else {
+			return false;
+		}
+	}
+	
+	//IN:  customer id
+	//OUT: payment tokens info, if no return - check errors
+	public function getPaymentTokens($customer_id) {
+		$command = '/v3/vault/payment-tokens';
+		
+		$params = array('customer_id' => $customer_id);
+				
+		$result = $this->execute('GET', $command, $params);
+		
+		if (!empty($result['payment_tokens'])) {
+			return $result['payment_tokens'];
+		} else {
+			return false;
+		}
+	}
+	
+	//IN:  setup token info
+	public function createSetupToken($setup_token_info) {
+		$command = '/v3/vault/setup-tokens';
+		
+		$params = $setup_token_info;
+				
+		$result = $this->execute('POST', $command, $params, true);
+		
+		if (!empty($result['id'])) {
+			return $result;
+		} else {
+			return false;
+		}
+	}
+		
+	//IN:  setup token id
+	//OUT: setup token info, if no return - check errors
+	public function getSetupToken($setup_token_id) {
+		$command = '/v3/vault/setup-tokens/' . $setup_token_id;
+				
+		$result = $this->execute('GET', $command);
+		
+		if (!empty($result['id'])) {
+			return $result;
 		} else {
 			return false;
 		}
