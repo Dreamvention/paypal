@@ -401,7 +401,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 		if ($subscription_data['trial_status'] && $subscription_data['trial_duration'] && $subscription['trial_remaining']) {
 			$trial_remaining = $subscription_data['trial_duration'] - 1;
 			$remaining = $subscription_data['duration'];
-		} elseif ($subscription_data['duration'] && $subscription['remaining']) {
+		} elseif ($subscription_data['duration'] && $subscription_data['remaining']) {
 			$trial_remaining = $subscription_data['trial_duration'];
 			$remaining = $subscription_data['duration'] - 1;
 		} else {
