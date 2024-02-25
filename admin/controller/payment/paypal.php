@@ -167,10 +167,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			}
 
 			$this->model_setting_setting->editSetting('payment_paypal', $setting);
-									
-			if (!$this->error) {
-				$this->response->redirect($this->url->link('extension/paypal/payment/paypal', 'user_token=' . $this->session->data['user_token']));
-			}
+		}
+		
+		if (!empty($this->request->get['merchantIdInPayPal']) && !$this->error) {
+			sleep(3);
+			
+			$this->response->redirect($this->url->link('extension/paypal/payment/paypal', 'user_token=' . $this->session->data['user_token']));
 		}
 
 		if (!$this->config->get('payment_paypal_client_id')) {
