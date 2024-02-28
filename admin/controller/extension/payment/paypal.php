@@ -353,13 +353,13 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$data['button_status'] = 0;
 		}
 		
-		if ($data['setting']['googlepay_button']['status']) {
+		if ($data['setting']['googlepay_button']['product']['status'] || $data['setting']['googlepay_button']['cart']['status'] || $data['setting']['googlepay_button']['checkout']['status']) {
 			$data['googlepay_button_status'] = 1;
 		} else {
 			$data['googlepay_button_status'] = 0;
 		}
 		
-		if ($data['setting']['applepay_button']['status']) {
+		if ($data['setting']['applepay_button']['product']['status'] || $data['setting']['applepay_button']['cart']['status'] || $data['setting']['applepay_button']['checkout']['status']) {
 			$data['applepay_button_status'] = 1;
 		} else {
 			$data['applepay_button_status'] = 0;
