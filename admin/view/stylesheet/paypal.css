@@ -686,19 +686,25 @@
 }
 .payment-paypal .card #configurator-eligibleContainer{
     width: 100%  !important;
-    max-width: 110rem  !important;
+	max-width: 110rem !important;
     padding: 0 !important;
 }
-.payment-paypal .card #messaging-configurator .headerOverride {
+.payment-paypal .card #messaging-configurator #configurator-eligibleContainer .headerOverride {
 	font-size: 15px;
 	font-weight: 700;
 	color: #000000;
 }
-.payment-paypal .card #messaging-configurator .buttonOverride {
+.payment-paypal .card #messaging-configurator #configurator-eligibleContainer .buttonOverride {
 	display: none;
 }
-.payment-paypal .card #messaging-configurator input {
+.payment-paypal .card #messaging-configurator #configurator-eligibleContainer input {
 	position: absolute;
+}
+.payment-paypal .card #messaging-configurator #configurator-controlPanelContainer {
+	margin-right: 50px;
+}
+.payment-paypal .card #messaging-configurator #configurator-controlPanelContainer [accordionname] button:not([id^="dropdownMenuButton"]) {
+	padding: 16px 16px 16px 16px;
 }
 .payment-paypal .card #messaging-configurator #configurator-previewSectionContainer > div + div {
 	height: auto;

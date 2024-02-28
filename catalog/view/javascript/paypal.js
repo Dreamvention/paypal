@@ -81,6 +81,26 @@ var PayPalAPI = (function () {
 				}
 			}
 		}
+		
+		if (paypal_data['components'].includes('googlepay')) {
+			if (!$('#googlepay_button').length) {
+				if ($(paypal_data['googlepay_button_insert_tag']).length) {
+					html = '<div id="googlepay_button" class="googlepay-button pt-4 pd-4 w-100 mb-3 clearfix"><div id="googlepay_button_container" class="googlepay-button-container paypal-spinner"></div></div>';
+			
+					eval("$('" + paypal_data['googlepay_button_insert_tag'] + "')." + paypal_data['googlepay_button_insert_type'] + "(html)");
+				}
+			}
+		}
+		
+		if (paypal_data['components'].includes('applepay')) {
+			if (!$('#applepay_button').length) {
+				if ($(paypal_data['applepay_button_insert_tag']).length) {
+					html = '<div id="applepay_button" class="applepay-button pt-4 pd-4 w-100 mb-3 clearfix"><div id="applepay_button_container" class="applepay-button-container paypal-spinner"></div></div>';
+			
+					eval("$('" + paypal_data['applepay_button_insert_tag'] + "')." + paypal_data['applepay_button_insert_type'] + "(html)");
+				}
+			}
+		}
 				
 		if (paypal_data['components'].includes('messages')) {
 			if (!$('#paypal_message').length) {
