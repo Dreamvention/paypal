@@ -59,12 +59,13 @@
 										</div>
 									</div>
 									<?php if ($text_message_alert) { ?>
-									<div class="form-group">
+									<?php /*<div class="form-group">
 										<p class="alert alert-info"><?php echo $text_message_alert; ?></p>
 									</div>
 									<div class="form-group">
 										<p class="footnote"><?php echo $text_message_footnote; ?></p>
 									</div>
+									*/ ?>
 									<?php } ?>
 									<div class="row">
 										<div class="col col-md-6">
