@@ -42,13 +42,16 @@ $_['text_checkout']							= 'Checkout';
 $_['text_cart']								= 'Cart';
 $_['text_product']							= 'Product';
 $_['text_home']								= 'Home';
+$_['text_automatic']			 	 		= 'Automatic';
+$_['text_manual']			 	 			= 'Manual';
+$_['text_sandbox']			 				= 'Sandbox';
 $_['text_production']			 	 		= 'Production';
 $_['text_sandbox']			 				= 'Sandbox';
 $_['text_multi_button']			 			= 'Multi Button';
 $_['text_one_button']			 			= 'One Button';
 $_['text_authorization']			 		= 'Authorization';
 $_['text_sale']			 	 				= 'Sale';
-$_['text_connect']							= 'Your seller account has been connected.<br /><strong>Client ID</strong> = %s<br /><strong>Secret</strong> = %s<br /><strong>Merchant ID</strong> = %s<br /><strong>Webhook ID</strong> = %s<br /><strong>Environment</strong> = %s<br />If you would like to connect another account, please, disconnect.';
+$_['text_connect']							= 'Your seller account has been connected.<br /><strong>Merchant ID</strong> = %s<br /><strong>Client ID</strong> = %s<br /><strong>Secret</strong> = %s<br /><strong>Webhook ID</strong> = %s<br /><strong>Environment</strong> = %s<br />If you would like to connect another account, please, disconnect.';
 $_['text_applepay_alert']					= '<strong>You need to verify any domain names in your environment that will show an Apple Pay button.</strong><br /><br />If Apple hasn’t verified a domain, they will reject any payments from that domain. The Apple Pay payment method won’t work if the domain isn’t registered.';
 $_['text_applepay_step_1']					= '<strong>Download and host live domain association file</strong><br />1. Download the domain association file for your live environment.<br />2. Host the file on your production site at /.well-known/apple-developer-merchantid-domain-association.';
 $_['text_applepay_step_2']					= '<strong>Register your live domain</strong><br />1. Go to the Payment Methods page on your PayPal account.<br />2. Register all high-level domains such as business.example.com, and subdomains such as checkout.business.example.com, that show the Apple Pay button.';
@@ -200,10 +203,15 @@ $_['text_transaction_declined']				= 'Payment capture was declined.';
 $_['text_transaction_pending']				= 'The state of a payment capture was changed to pending.';
 $_['text_transaction_refunded']				= 'A merchant refunded the payment capture.';
 $_['text_transaction_reversed']				= 'PayPal reversed the payment capture.';
+$_['text_loading']          				= 'Loading...';
 
 // Entry
 $_['entry_connect']	 						= 'Connect';
+$_['entry_authorization_type']				= 'Authorization Type';
 $_['entry_environment']				 		= 'Environment';
+$_['entry_merchant_id']				 		= 'Merchant ID';
+$_['entry_client_id']				 		= 'Client ID';
+$_['entry_client_secret']				 	= 'Secret';
 $_['entry_debug']				 			= 'Debug Logging';
 $_['entry_sale_analytics_range'] 			= 'Sales Analytics Range';
 $_['entry_checkout_mode']	 				= 'Checkout Mode';
@@ -274,9 +282,9 @@ $_['help_total']		 					= 'The checkout total the order must reach before this p
 $_['help_country_code']		 				= 'Select the default country for PayPal.';
 $_['help_currency_code']		 			= 'Select the default currency for PayPal.';
 $_['help_currency_value']		 			= 'Set to 1.00000 if this is your default currency.';
-$_['help_cron_url']		  					= 'Set a cron to call this URL.';
 $_['help_card_currency_code']		 		= 'Select the default currency for PayPal Card.';
 $_['help_card_currency_value']		 		= 'Set to 1.00000 if this is your default currency.';
+$_['help_cron_url']		  					= 'Set a cron to call this URL.';
 $_['help_card_secure_method'] 				= '3D Secure enables you to authenticate card holders through card issuers. \'SCA Always\' method trigger 3D Secure for every transaction, regardless of SCA requirements. \'SCA When Required\' method returns a 3D Secure contingency when it is a mandate in the region where you operate.';
 $_['help_card_secure_scenario'] 			= '3D Secure authentication is perfomed only if the card is enrolled for the service. In scenarios where the 3D Secure authentication has not been successful, you have the option to complete the payment at your own risk, meaning that you -the merchant- will be liable in case of a chargeback.';
 
@@ -312,5 +320,6 @@ $_['success_disable_recurring']				= 'Success: Recurring payment was disabled.';
 
 // Error
 $_['error_permission']	 					= 'Warning: You do not have permission to modify payment PayPal!';
+$_['error_connect']	 						= 'Warning: Client ID or Secret is incorrect!';
 $_['error_timeout'] 	  					= 'Sorry, PayPal is currently busy. Please try again later!';
 $_['error_agree'] 	  						= 'We discovered that a few countries under sanctions are featured on your website. Please click the button to deactivate them (Cuba, Iran, Syria, North Korea, Crimea, Donetsk, and Lugansk regions of Ukraine).<br /><br /><button type="button" class="button-agree btn btn-danger">Comply with PayPal regulations</button>';
