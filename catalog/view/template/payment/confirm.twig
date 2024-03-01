@@ -249,7 +249,7 @@ $(document).on('click', '.button-shipping-address', function(event) {
 });
 
 $('#paypal_confirm').bind('click', function() {
-    $('#paypal_confirm').prop('disabled', true).button('loading');
+    $('#paypal_confirm').prop('disabled', true).addClass('loading');
 });
 
 function onLoadPaymentAddress() {

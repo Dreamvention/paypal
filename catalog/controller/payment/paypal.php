@@ -4312,7 +4312,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 	
 	private function isApple(): bool {
 		if (!empty($this->request->server['HTTP_USER_AGENT'])) {
-			$user_agent = $this->request->server['HTTP_USER_AGENT'];
+			$user_agent = strtolower($this->request->server['HTTP_USER_AGENT']);
 			
 			$apple_agents = ['ipod', 'iphone', 'ipad'];
 
