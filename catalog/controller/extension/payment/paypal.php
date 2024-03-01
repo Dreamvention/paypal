@@ -4148,7 +4148,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 	
 	private function isApple() {
 		if (!empty($this->request->server['HTTP_USER_AGENT'])) {
-			$user_agent = $this->request->server['HTTP_USER_AGENT'];
+			$user_agent = strtolower($this->request->server['HTTP_USER_AGENT']);
 			
 			$apple_agents = array('ipod', 'iphone', 'ipad');
 
