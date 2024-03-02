@@ -37,7 +37,7 @@
 					</div>
 				</div>
 				<div class="card-button">
-					<?php if ($logged) { ?>
+					<?php if ($vault_status && $logged) { ?>
 					<div class="checkbox">
 						<label>
 							<input type="checkbox" name="paypal_card_save" id="paypal_card_save" value="1" checked /> <?php echo $entry_card_save; ?>

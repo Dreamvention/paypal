@@ -525,6 +525,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		
 		$data['entry_connect'] = $this->language->get('entry_connect');
 		$data['entry_status'] = $this->language->get('entry_status');
+		$data['entry_vault_status'] = $this->language->get('entry_vault_status');
 		$data['entry_debug'] = $this->language->get('entry_debug');
 		$data['entry_sale_analytics_range'] = $this->language->get('entry_sale_analytics_range');
 		$data['entry_checkout_mode'] = $this->language->get('entry_checkout_mode');
@@ -539,6 +540,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['entry_card_currency_value'] = $this->language->get('entry_card_currency_value');
 		$data['entry_cron_url'] = $this->language->get('entry_cron_url');
 		
+		$data['help_vault_status'] = $this->language->get('help_vault_status');
 		$data['help_checkout_mode'] = $this->language->get('help_checkout_mode');
 		$data['help_total'] = $this->language->get('help_total');
 		$data['help_country_code'] = $this->language->get('help_country_code');
