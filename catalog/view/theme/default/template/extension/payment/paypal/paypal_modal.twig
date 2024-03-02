@@ -44,7 +44,7 @@
 									</div>
 								</div>
 								<div class="card-button">
-									{% if logged %}
+									{% if vault_status and logged %}
 									<div class="checkbox">
 										<label>
 											<input type="checkbox" name="paypal_card_save" id="paypal_card_save" value="1" checked /> {{ entry_card_save }}

@@ -36,6 +36,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$data['environment'] = $this->config->get('payment_paypal_environment');
 			$data['partner_id'] = $setting['partner'][$data['environment']]['partner_id'];
 			$data['partner_attribution_id'] = $setting['partner'][$data['environment']]['partner_attribution_id'];
+			$data['vault_status'] = $setting['general']['vault_status'];
 			$data['checkout_mode'] = $setting['general']['checkout_mode'];
 			$data['transaction_method'] = $setting['general']['transaction_method'];
 			
@@ -114,6 +115,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['environment'] = $this->config->get('payment_paypal_environment');
 		$data['partner_id'] = $setting['partner'][$data['environment']]['partner_id'];
 		$data['partner_attribution_id'] = $setting['partner'][$data['environment']]['partner_attribution_id'];
+		$data['vault_status'] = $setting['general']['vault_status'];
 		$data['transaction_method'] = $setting['general']['transaction_method'];
 			
 		$data['button_status'] = $setting['button']['checkout']['status'];
@@ -197,6 +199,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$data['environment'] = $this->config->get('payment_paypal_environment');
 			$data['partner_id'] = $setting['partner'][$data['environment']]['partner_id'];
 			$data['partner_attribution_id'] = $setting['partner'][$data['environment']]['partner_attribution_id'];
+			$data['vault_status'] = $setting['general']['vault_status'];
 			$data['transaction_method'] = $setting['general']['transaction_method'];
 			
 			$country = $this->model_extension_payment_paypal->getCountryByCode($setting['general']['country_code']);
@@ -554,7 +557,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 										
 					$data['card_customer_tokens'] = array();
 					
-					if ($this->customer->isLogged()) {
+					if ($setting['general']['vault_status'] && $this->customer->isLogged()) {
 						$card_customer_tokens = $this->model_extension_payment_paypal->getPayPalCustomerTokens($this->customer->getId(), 'card');
 			
 						foreach ($card_customer_tokens as $card_customer_token) {
@@ -616,7 +619,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				'grant_type' => 'client_credentials',
 			);
 
-			if ($this->customer->isLogged()) {
+			if ($setting['general']['vault_status'] && $this->customer->isLogged()) {
 				$paypal_customer_token = $this->model_extension_payment_paypal->getPayPalCustomerMainToken($this->customer->getId(), 'paypal');
 				
 				if (!empty($paypal_customer_token['vault_customer_id'])) {
@@ -627,7 +630,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				
 			$result = $paypal->setAccessToken($token_info);
 			
-			if (!empty($result['id_token'])) {
+			if ($setting['general']['vault_status'] && !empty($result['id_token'])) {
 				$data['id_token'] = $result['id_token'];
 			}
 		
@@ -799,6 +802,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				$environment = $this->config->get('payment_paypal_environment');
 				$partner_id = $setting['partner'][$environment]['partner_id'];
 				$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
+				$vault_status = $setting['general']['vault_status'];
 				$transaction_method = $setting['general']['transaction_method'];		
 										
 				$currency_code = $this->session->data['currency'];
@@ -960,7 +964,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 	
 				$paypal_order_info['application_context']['shipping_preference'] = $shipping_preference;
 				
-				if ($this->customer->isLogged() || $this->cart->hasRecurringProducts()) {
+				if ($setting['general']['vault_status'] && ($this->customer->isLogged() || $this->cart->hasRecurringProducts())) {
 					if ($payment_method == 'paypal') {
 						$paypal_customer_token = array();
 						
@@ -976,9 +980,6 @@ class ControllerExtensionPaymentPayPal extends Controller {
 								'customer_type' => 'CONSUMER'
 							);
 						}
-
-						$paypal_order_info['payment_source'][$payment_method]['experience_context']['return_url'] = $this->url->link('extension/payment/paypal', 'callback_token=' . $setting['general']['callback_token'], true);
-						$paypal_order_info['payment_source'][$payment_method]['experience_context']['cancel_url'] = $this->url->link('checkout/checkout', '', true);
 					}
 					
 					if ($payment_method == 'card') {
@@ -1130,6 +1131,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$environment = $this->config->get('payment_paypal_environment');
 			$partner_id = $setting['partner'][$environment]['partner_id'];
 			$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
+			$vault_status = $setting['general']['vault_status'];
 			$transaction_method = $setting['general']['transaction_method'];
 			
 			require_once DIR_SYSTEM . 'library/paypal/paypal.php';
@@ -1470,7 +1472,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 									if ($payment_method == 'paypal') {
 										$paypal_customer_token = array();
 						
-										if ($this->customer->isLogged()) {
+										if ($setting['general']['vault_status'] && $this->customer->isLogged()) {
 											$paypal_customer_token = $this->model_extension_payment_paypal->getPayPalCustomerMainToken($this->customer->getId(), $payment_method);
 										}
 										
@@ -1499,7 +1501,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 
 									$this->model_extension_payment_paypal->addPayPalOrder($paypal_order_data);
 									
-									if ($this->customer->isLogged() && $vault_id) {
+									if ($vault_id && $this->customer->isLogged()) {
 										$customer_id = $this->customer->getId();
 										
 										$paypal_customer_token_info = $this->model_extension_payment_paypal->getPayPalCustomerToken($customer_id, $payment_method, $vault_id);
@@ -1597,7 +1599,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 									if ($payment_method == 'paypal') {
 										$paypal_customer_token = array();
 						
-										if ($this->customer->isLogged()) {
+										if ($setting['general']['vault_status'] && $this->customer->isLogged()) {
 											$paypal_customer_token = $this->model_extension_payment_paypal->getPayPalCustomerMainToken($this->customer->getId(), $payment_method);
 										}
 										
@@ -1626,7 +1628,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 
 									$this->model_extension_payment_paypal->addPayPalOrder($paypal_order_data);
 									
-									if ($this->customer->isLogged() && $vault_id) {
+									if ($vault_id && $this->customer->isLogged()) {
 										$customer_id = $this->customer->getId();
 										
 										$paypal_customer_token_info = $this->model_extension_payment_paypal->getPayPalCustomerToken($customer_id, $payment_method, $vault_id);
@@ -2413,6 +2415,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$environment = $this->config->get('payment_paypal_environment');
 			$partner_id = $setting['partner'][$environment]['partner_id'];
 			$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
+			$vault_status = $setting['general']['vault_status'];
 			$transaction_method = $setting['general']['transaction_method'];
 			
 			$currency_code = $this->session->data['currency'];
@@ -2706,7 +2709,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 								if ($payment_method == 'paypal') {
 									$paypal_customer_token = array();
 						
-									if ($this->customer->isLogged()) {
+									if ($setting['general']['vault_status'] && $this->customer->isLogged()) {
 										$paypal_customer_token = $this->model_extension_payment_paypal->getPayPalCustomerMainToken($this->customer->getId(), $payment_method);
 									}
 										
@@ -2735,7 +2738,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 
 								$this->model_extension_payment_paypal->addPayPalOrder($paypal_order_data);
 									
-								if ($this->customer->isLogged() && $vault_id) {
+								if ($vault_id && $this->customer->isLogged()) {
 									$customer_id = $this->customer->getId();
 										
 									$paypal_customer_token_info = $this->model_extension_payment_paypal->getPayPalCustomerToken($customer_id, $payment_method, $vault_id);
@@ -2833,7 +2836,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 								if ($payment_method == 'paypal') {
 									$paypal_customer_token = array();
 						
-									if ($this->customer->isLogged()) {
+									if ($setting['general']['vault_status'] && $this->customer->isLogged()) {
 										$paypal_customer_token = $this->model_extension_payment_paypal->getPayPalCustomerMainToken($this->customer->getId(), $payment_method);
 									}
 										
@@ -2862,7 +2865,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 
 								$this->model_extension_payment_paypal->addPayPalOrder($paypal_order_data);
 									
-								if ($this->customer->isLogged() && $vault_id) {
+								if ($vault_id && $this->customer->isLogged()) {
 									$customer_id = $this->customer->getId();
 										
 									$paypal_customer_token_info = $this->model_extension_payment_paypal->getPayPalCustomerToken($customer_id, $payment_method, $vault_id);
@@ -3205,6 +3208,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					$environment = $this->config->get('payment_paypal_environment');
 					$partner_id = $setting['partner'][$environment]['partner_id'];
 					$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
+					$vault_status = $setting['general']['vault_status'];
 					$transaction_method = $setting['general']['transaction_method'];
 			
 					require_once DIR_SYSTEM . 'library/paypal/paypal.php';
@@ -3403,7 +3407,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 
 										$this->model_extension_payment_paypal->addPayPalOrder($paypal_order_data);
 									
-										if ($this->customer->isLogged() && $vault_id) {
+										if ($vault_id && $this->customer->isLogged()) {
 											$customer_id = $this->customer->getId();
 										
 											$paypal_customer_token_info = $this->model_extension_payment_paypal->getPayPalCustomerToken($customer_id, $payment_method, $vault_id);
@@ -3502,7 +3506,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 
 										$this->model_extension_payment_paypal->addPayPalOrder($paypal_order_data);
 									
-										if ($this->customer->isLogged() && $vault_id) {
+										if ($vault_id && $this->customer->isLogged()) {
 											$customer_id = $this->customer->getId();
 										
 											$paypal_customer_token_info = $this->model_extension_payment_paypal->getPayPalCustomerToken($customer_id, $payment_method, $vault_id);
@@ -3611,6 +3615,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				$environment = $this->config->get('payment_paypal_environment');
 				$partner_id = $setting['partner'][$environment]['partner_id'];
 				$partner_attribution_id = $setting['partner'][$environment]['partner_attribution_id'];
+				$vault_status = $setting['general']['vault_status'];
 				$transaction_method = $setting['general']['transaction_method'];
 			
 				require_once DIR_SYSTEM .'library/paypal/paypal.php';
@@ -3752,7 +3757,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 						
 						$order_info = $this->model_checkout_order->getOrder($order_id);
 						
-						if (!empty($order_info['customer_id']) && $vault_id) {
+						if ($vault_id && !empty($order_info['customer_id'])) {
 							$customer_id = $order_info['customer_id'];
 										
 							$paypal_customer_token_info = $this->model_extension_payment_paypal->getPayPalCustomerToken($customer_id, $payment_method, $vault_id);

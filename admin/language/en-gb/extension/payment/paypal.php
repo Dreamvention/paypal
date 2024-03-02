@@ -212,13 +212,14 @@ $_['entry_environment']				 		= 'Environment';
 $_['entry_merchant_id']				 		= 'Merchant ID';
 $_['entry_client_id']				 		= 'Client ID';
 $_['entry_client_secret']				 	= 'Secret';
+$_['entry_status']		 					= 'Status';
+$_['entry_vault_status']		 			= 'Vault Status';
 $_['entry_debug']				 			= 'Debug Logging';
 $_['entry_sale_analytics_range'] 			= 'Sales Analytics Range';
 $_['entry_checkout_mode']	 				= 'Checkout Mode';
 $_['entry_transaction_method']	 			= 'Settlement Method';
 $_['entry_total']		 					= 'Total';
 $_['entry_geo_zone']	 					= 'Geo Zone';
-$_['entry_status']		 					= 'Status';
 $_['entry_sort_order']	 					= 'Sort Order';
 $_['entry_country_code']	 				= 'Country';
 $_['entry_currency_code']	 				= 'Currency';
@@ -273,6 +274,7 @@ $_['entry_contact_send'] 					= 'Submit Form';
 
 // Help
 $_['help_status']		 					= 'Enable/Disable extension.';
+$_['help_vault_status']		 				= 'Vault allows merchant to securely save buyer’s payment method for future transactions. Vault substitutes the sensitive payment data with non-sensitive payment token and allows merchant to use the payment Token for future purchases.';
 $_['help_button_status']					= 'When activated PayPal will display personalized Smart Buttons avalible to your customers based on their location.';
 $_['help_googlepay_button_status']			= 'PayPal verifies if you are eligible for Google Pay payment and will display this option on the checkout step if available.';
 $_['help_applepay_button_status']			= 'PayPal verifies if you are eligible for Apple Pay payment and will display this option on the checkout step if available.';

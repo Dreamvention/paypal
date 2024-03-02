@@ -57,6 +57,13 @@
 											<input type="checkbox" name="payment_paypal_status" value="1" class="switch" {% if status %}checked="checked"{% endif %} />
 										</div>
 									</div>
+									<div class="form-group">
+										<label class="control-label" for="input_vault_status"><span data-toggle="tooltip" title="{{ help_vault_status }}">{{ entry_vault_status }}</span></label>
+										<div id="input_vault_status">
+											<input type="hidden" name="payment_paypal_setting[general][vault_status]" value="0" />
+											<input type="checkbox" name="payment_paypal_setting[general][vault_status]" value="1" class="switch" {% if setting['general']['vault_status'] %}checked="checked"{% endif %} />
+										</div>
+									</div>
 								</div>
 								<div class="col col-md-6">
 									<div class="form-group">
@@ -66,10 +73,6 @@
 											<input type="checkbox" name="payment_paypal_setting[general][debug]" value="1" class="switch" {% if setting['general']['debug'] %}checked="checked"{% endif %} />
 										</div>
 									</div>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col col-md-6">
 									<div class="form-group">
 										<label class="control-label" for="input_general_sale_analytics_range">{{ entry_sale_analytics_range }}</label>
 										<select name="payment_paypal_setting[general][sale_analytics_range]" id="input_general_sale_analytics_range" class="form-control">
@@ -82,6 +85,10 @@
 											{% endfor %}
 										</select>
 									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col col-md-6">
 									<div class="form-group">
 										<label class="control-label" for="input_general_checkout_mode"><span data-toggle="tooltip" title="{{ help_checkout_mode }}">{{ entry_checkout_mode }}</span></label>
 										<select name="payment_paypal_setting[general][checkout_mode]" id="input_general_checkout_mode" class="form-control">
@@ -179,6 +186,8 @@
 										<label class="control-label" for="input_general_card_currency_value"><span data-toggle="tooltip" title="{{ help_card_currency_value }}">{{ entry_card_currency_value }}</span></label>
 										<input type="text" name="payment_paypal_setting[general][card_currency_value]" value="{{ setting['general']['card_currency_value'] }}" placeholder="{{ entry_card_currency_value }}" id="input_general_card_currency_value" class="form-control" />										
 									</div>
+								</div>
+								<div class="col col-md-12">
 									<div class="form-group">
 										<label class="control-label" for="input_cron_url"><span data-toggle="tooltip" title="{{ help_cron_url }}">{{ entry_cron_url }}</span></label>
 										<input type="hidden" name="payment_paypal_setting[general][cron_token]" value="{{ setting['general']['cron_token'] }}" />
