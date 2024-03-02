@@ -15,9 +15,10 @@ $_['paypal_setting'] = [
 	],
 	'general' => [
 		'debug' => false,
-		'sale_analytics_range' => 'month',
+		'vault_status' => false,
 		'checkout_mode' => 'multi_button',
 		'transaction_method' => 'capture',
+		'sale_analytics_range' => 'month',
 		'country_code' => 'US',
 		'currency_code' => 'USD',
 		'currency_value' => '1',

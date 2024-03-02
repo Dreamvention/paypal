@@ -42,7 +42,7 @@
 					</div>
 				</div>
 				<div class="card-button">
-					{% if logged %}
+					{% if vault_status and logged %}
 					<div class="form-check">
                         <input type="checkbox" name="paypal_card_save" id="paypal_card_save" class="form-check-input" value="1" checked /> <label for="paypal_card_save" class="form-check-label">{{ entry_card_save }}</label>
                     </div>
