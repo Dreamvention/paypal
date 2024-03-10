@@ -211,6 +211,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 							
 		$data['button_cancel'] = $this->language->get('button_cancel');
 		$data['button_connect'] = $this->language->get('button_connect');
+		$data['button_view'] = $this->language->get('button_view');
 						
 		$data['breadcrumbs'] = array();
 
