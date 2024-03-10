@@ -65,15 +65,20 @@
 					<div class="manual-authorization {% if (authorization_type == 'automatic') %}hidden{% endif %}">
 						<div class="form-group text-left">
 							<label class="control-label" for="input_merchant_id">{{ entry_merchant_id }}</label>
-							<input type="text" name="payment_paypal_merchant_id" id="input_merchant_id" class="form-control" />
+							<input type="text" name="payment_paypal_merchant_id" value="" id="input_merchant_id" class="form-control" />
 						</div>
 						<div class="form-group text-left">
 							<label class="control-label" for="input_client_id">{{ entry_client_id }}</label>
-							<input type="text" name="payment_paypal_client_id" id="input_client_id" class="form-control" />
+							<input type="text" name="payment_paypal_client_id" value="" id="input_client_id" class="form-control" />
 						</div>
 						<div class="form-group text-left">
 							<label class="control-label" for="input_client_secret">{{ entry_client_secret }}</label>
-							<input type="text" name="payment_paypal_client_secret" id="input_client_secret" class="form-control" />
+							<div class="input-group">
+								<input type="password" name="payment_paypal_client_secret" value="" id="input_client_secret" class="form-control" />
+								<span class="input-group-btn">
+									<button type="button" data-toggle="tooltip" title="{{ button_view }}" class="btn btn-default view-password" field_id="input_client_secret"><i class="fa fa-eye"></i></button>
+								</span>
+							</div>
 						</div>
 						<div class="form-group">
 							<div class="button-group">
@@ -112,6 +117,16 @@ $('#input_environment').on('change', function() {
 		$('.button-connect-ppcp').attr('href', '{{ configure_url['sandbox']['ppcp'] }}');
 		$('.button-connect-express_checkout').attr('href', '{{ configure_url['sandbox']['express_checkout'] }}');
 	}	
+});
+
+$('.payment-paypal').on('click', '.view-password', function(event) {
+	event.preventDefault();
+	
+	if ($('#' + $(this).attr('field_id')).attr('type') == 'password') {
+		$('#' + $(this).attr('field_id')).attr('type', 'text');
+	} else {
+		$('#' + $(this).attr('field_id')).attr('type', 'password');
+	}
 });
 
 $('.payment-paypal').on('click', '.button-connect', function() {	
