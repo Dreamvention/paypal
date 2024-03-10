@@ -290,6 +290,7 @@ $_['help_card_secure_scenario'] 			= '3D Secure authentication is perfomed only 
 $_['button_connect'] 						= 'Connect';
 $_['button_disconnect'] 					= 'Disconnect';
 $_['button_all_settings']					= 'All Settings';
+$_['button_view']							= 'View';
 $_['button_copy_url']						= 'Copy URL to clipboard';
 $_['button_download']						= 'Download';
 $_['button_download_host']					= 'Download and host';

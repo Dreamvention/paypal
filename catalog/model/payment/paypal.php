@@ -75,14 +75,14 @@ class PayPal extends \Opencart\System\Engine\Model {
 					];
 				}
 				
-				if ($setting['googlepay_button']['status']) {
+				if ($setting['googlepay_button']['checkout']['status']) {
 					$option_data['googlepay'] = [
 						'code' => 'paypal.googlepay',
 						'name' => $this->language->get('text_paypal_googlepay_title')
 					];
 				}
 				
-				if ($setting['applepay_button']['status'] && $this->isApple()) {
+				if ($setting['applepay_button']['checkout']['status'] && $this->isApple()) {
 					$option_data['applepay'] = [
 						'code' => 'paypal.applepay',
 						'name' => $this->language->get('text_paypal_applepay_title')

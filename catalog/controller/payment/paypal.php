@@ -4068,7 +4068,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					];
 				}
 				
-				if (($code == 'paypal_googlepay') && $setting['googlepay_button']['status']) {
+				if (($code == 'paypal_googlepay') && $setting['googlepay_button']['checkout']['status']) {
 					$this->config->set('payment_paypal_googlepay_status', 1);
 					
 					$output = [
@@ -4079,7 +4079,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					];
 				}
 				
-				if (($code == 'paypal_applepay') && $setting['applepay_button']['status'] && $this->isApple()) {
+				if (($code == 'paypal_applepay') && $setting['applepay_button']['checkout']['status'] && $this->isApple()) {
 					$this->config->set('payment_paypal_applepay_status', 1);
 					
 					$output = [

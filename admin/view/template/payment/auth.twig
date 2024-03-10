@@ -80,7 +80,8 @@
 						<div class="row mb-3 text-start">
 							<label class="col-form-label" for="input_client_secret">{{ entry_client_secret }}</label>
 							<div class="input-group">
-								<input type="text" name="payment_paypal_client_secret" id="input_client_secret" class="form-control" />
+								<input type="password" name="payment_paypal_client_secret" id="input_client_secret" class="form-control" />
+								<button type="button" data-bs-toggle="tooltip" title="{{ button_view }}" class="btn btn-light view-password" field_id="input_client_secret"><i class="fas fa-eye"></i></button>
 							</div>
 						</div>
 						<div class="row mb-3">
@@ -120,6 +121,16 @@ $('#input_environment').on('change', function() {
 		$('.button-connect-ppcp').attr('href', '{{ configure_url['sandbox']['ppcp'] }}');
 		$('.button-connect-express_checkout').attr('href', '{{ configure_url['sandbox']['express_checkout'] }}');
 	}	
+});
+
+$('.payment-paypal').on('click', '.view-password', function(event) {
+	event.preventDefault();
+	
+	if ($('#' + $(this).attr('field_id')).attr('type') == 'password') {
+		$('#' + $(this).attr('field_id')).attr('type', 'text');
+	} else {
+		$('#' + $(this).attr('field_id')).attr('type', 'password');
+	}
 });
 
 $('.payment-paypal').on('click', '.button-connect', function() {	
