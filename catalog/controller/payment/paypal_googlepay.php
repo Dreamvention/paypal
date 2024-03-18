@@ -39,8 +39,8 @@ class PayPalGooglePay extends \Opencart\System\Engine\Controller {
 			$data['checkout_mode'] = $setting['general']['checkout_mode'];
 			$data['transaction_method'] = $setting['general']['transaction_method'];
 			
-			if ($setting['googlepay_button']['status']) {
-				$data['googlepay_button_status'] = $setting['googlepay_button']['status'];
+			if ($setting['googlepay_button']['checkout']['status']) {
+				$data['googlepay_button_status'] = $setting['googlepay_button']['checkout']['status'];
 			}
 											
 			require_once DIR_EXTENSION . 'paypal/system/library/paypal.php';
@@ -120,8 +120,8 @@ class PayPalGooglePay extends \Opencart\System\Engine\Controller {
 		$data['partner_attribution_id'] = $setting['partner'][$data['environment']]['partner_attribution_id'];
 		$data['transaction_method'] = $setting['general']['transaction_method'];
 						
-		if ($setting['googlepay_button']['status']) {
-			$data['googlepay_button_status'] = $setting['googlepay_button']['status'];
+		if ($setting['googlepay_button']['checkout']['status']) {
+			$data['googlepay_button_status'] = $setting['googlepay_button']['checkout']['status'];
 		}
 				
 		require_once DIR_EXTENSION . 'paypal/system/library/paypal.php';
