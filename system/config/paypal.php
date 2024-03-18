@@ -17,6 +17,7 @@ $_['paypal_setting'] = array(
 		'debug' => false,
 		'vault_status' => false,
 		'checkout_mode' => 'multi_button',
+		'checkout_route' => 'checkout/checkout',
 		'transaction_method' => 'capture',
 		'sale_analytics_range' => 'month',
 		'country_code' => 'US',
@@ -64,7 +65,20 @@ $_['paypal_setting'] = array(
 			'color' => 'gold',
 			'shape' => 'rect',
 			'label' => 'paypal',
-			'tagline' => 'false'
+			'funding' => array(
+				'paylater' => 1,
+				'card' => 2,
+				'bancontact' => 2,
+				'blik' => 2,
+				'eps' => 2,
+				'giropay' => 2,
+				'ideal' => 2,
+				'mercadopago' => 2,
+				'mybank' => 2,
+				'p24' => 2,
+				'sepa' => 2,
+				'venmo' => 2
+			)
 		),
 		'product' => array(
 			'page_code' => 'product',
@@ -77,7 +91,20 @@ $_['paypal_setting'] = array(
 			'color' => 'gold',
 			'shape' => 'rect',
 			'label' => 'paypal',
-			'tagline' => 'false'
+			'funding' => array(
+				'paylater' => 1,
+				'card' => 2,
+				'bancontact' => 2,
+				'blik' => 2,
+				'eps' => 2,
+				'giropay' => 2,
+				'ideal' => 2,
+				'mercadopago' => 2,
+				'mybank' => 2,
+				'p24' => 2,
+				'sepa' => 2,
+				'venmo' => 2
+			)
 		)
 	),
 	'googlepay_button' => array(
@@ -647,10 +674,6 @@ $_['paypal_setting'] = array(
 		'card' => array(
 			'code' => 'card',
 			'name' => 'text_card'
-		),
-		'bancontact' => array(
-			'code' => 'bancontact',
-			'name' => 'text_bancontact'
 		),
 		'bancontact' => array(
 			'code' => 'bancontact',
