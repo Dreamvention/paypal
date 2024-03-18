@@ -219,7 +219,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$data['components'] = array();
 			
 			if ($this->request->post['page_code'] == 'home') {				
-				if ($setting['message']['home']['status'] && ($data['currency_code'] == $setting['general']['currency_code'])) {
+				if ($setting['message']['home']['status'] && !empty($setting['paylater_country'][$setting['general']['country_code']]) && ($data['currency_code'] == $setting['general']['currency_code'])) {
 					$data['components'][] = 'messages';
 					$data['message_status'] = $setting['message']['home']['status'];
 					$data['message_insert_tag'] = html_entity_decode($setting['message']['home']['insert_tag']);
@@ -250,12 +250,76 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				}
 			}
 			
-			if (($this->request->post['page_code'] == 'product') && !empty($this->request->post['product_id'])) {
-				$product_id = (int)$this->request->post['product_id'];
-		
+			if (!empty($this->request->post['product'])) {
+				$this->request->post['product'] = $this->unserialize($this->request->post['product']);
+			}
+			
+			if (($this->request->post['page_code'] == 'product') && !empty($this->request->post['product']['product_id'])) {
+				$product = $this->request->post['product'];
+				$product_id = (int)$this->request->post['product']['product_id'];
+				$product_price = 0;
+				
+				if (isset($product['quantity'])) {
+					$quantity = (int)$product['quantity'];
+				} else {
+					$quantity = 1;
+				}
+
+				if (isset($product['option'])) {
+					$option = array_filter($product['option']);
+				} else {
+					$option = array();
+				}
+				
 				$this->load->model('catalog/product');
 
 				$product_info = $this->model_catalog_product->getProduct($product_id);
+
+				if ($product_info && ($this->customer->isLogged() || !$this->config->get('config_customer_price'))) {				
+					$option_price = 0;
+
+					$product_options = $this->model_catalog_product->getProductOptions($product_id);
+						
+					foreach ($product_options as $product_option) {
+						if (isset($option[$product_option['product_option_id']])) {
+							if (($product_option['type'] == 'select') || ($product_option['type'] == 'radio')) {
+								foreach ($product_option['product_option_value'] as $product_option_value) {
+									if (!$product_option_value['subtract'] || ($product_option_value['quantity'] > 0)) {
+										if ((float)$product_option_value['price']) {
+											if ($option[$product_option['product_option_id']] == $product_option_value['product_option_value_id']) {
+												if ($product_option_value['price_prefix'] == '+') {
+													$option_price += $product_option_value['price'];
+												} elseif ($product_option_value['price_prefix'] == '-') {
+													$option_price -= $product_option_value['price'];
+												}
+											}
+										}
+									}	
+								}
+							} elseif (($product_option['type'] == 'checkbox') && is_array($option[$product_option['product_option_id']])) {
+								foreach ($product_option['product_option_value'] as $product_option_value) {
+									if (!$product_option_value['subtract'] || ($product_option_value['quantity'] > 0)) {
+										if ((float)$product_option_value['price']) {
+											if (in_array($product_option_value['product_option_value_id'], $option[$product_option['product_option_id']])) {
+												if ($product_option_value['price_prefix'] == '+') {
+													$option_price += $product_option_value['price'];
+												} elseif ($product_option_value['price_prefix'] == '-') {
+													$option_price -= $product_option_value['price'];
+												}
+											}
+										}
+									}	
+								}
+							}
+						}
+					}
+					
+					if ((float)$product_info['special']) {
+						$product_price = $this->tax->calculate(($product_info['special'] + $option_price) * $quantity, $product_info['tax_class_id'], true);
+					} else {
+						$product_price = $this->tax->calculate(($product_info['price'] + $option_price) * $quantity, $product_info['tax_class_id'], true);
+					}
+				}
 				
 				if ($setting['button']['product']['status']) {
 					$data['components'][] = 'buttons';
@@ -268,7 +332,19 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					$data['button_color'] = $setting['button']['product']['color'];
 					$data['button_shape'] = $setting['button']['product']['shape'];
 					$data['button_label'] = $setting['button']['product']['label'];
-					$data['button_tagline'] = $setting['button']['product']['tagline'];	
+										
+					$data['button_enable_funding'] = array();
+					$data['button_disable_funding'] = array();
+				
+					foreach ($setting['button_funding'] as $button_funding) {
+						if ($setting['button']['product']['funding'][$button_funding['code']] == 1) {
+							$data['button_enable_funding'][] = $button_funding['code'];
+						} 
+				
+						if ($setting['button']['product']['funding'][$button_funding['code']] == 2) {
+							$data['button_disable_funding'][] = $button_funding['code'];
+						}
+					}
 				}
 				
 				if ($setting['googlepay_button']['product']['status']) {
@@ -283,16 +359,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					$data['googlepay_button_shape'] = $setting['googlepay_button']['product']['shape'];
 					$data['googlepay_button_type'] = $setting['googlepay_button']['product']['type'];
 					
-					if ($product_info) {
-						if ($this->customer->isLogged() || !$this->config->get('config_customer_price')) {
-							if ((float)$product_info['special']) {
-								$product_price = $this->tax->calculate($product_info['special'], $product_info['tax_class_id'], true);
-							} else {
-								$product_price = $this->tax->calculate($product_info['price'], $product_info['tax_class_id'], true);
-							}
-						
-							$data['googlepay_amount'] = number_format($product_price * $data['currency_value'], $data['decimal_place'], '.', '');
-						} 			
+					if ($product_price) {
+						$data['googlepay_amount'] = number_format($product_price * $data['currency_value'], $data['decimal_place'], '.', ''); 			
 					}
 				}
 				
@@ -308,20 +376,12 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					$data['applepay_button_shape'] = $setting['applepay_button']['product']['shape'];
 					$data['applepay_button_type'] = $setting['applepay_button']['product']['type'];
 					
-					if ($product_info) {
-						if ($this->customer->isLogged() || !$this->config->get('config_customer_price')) {
-							if ((float)$product_info['special']) {
-								$product_price = $this->tax->calculate($product_info['special'], $product_info['tax_class_id'], true);
-							} else {
-								$product_price = $this->tax->calculate($product_info['price'], $product_info['tax_class_id'], true);
-							}
-						
-							$data['applepay_amount'] = number_format($product_price * $data['currency_value'], $data['decimal_place'], '.', '');
-						} 			
+					if ($product_price) {
+						$data['applepay_amount'] = number_format($product_price * $data['currency_value'], $data['decimal_place'], '.', ''); 			
 					}
 				}
 				
-				if ($setting['message']['product']['status'] && ($data['currency_code'] == $setting['general']['currency_code'])) {
+				if ($setting['message']['product']['status'] && !empty($setting['paylater_country'][$setting['general']['country_code']]) && ($data['currency_code'] == $setting['general']['currency_code'])) {
 					$data['components'][] = 'messages';
 					$data['message_status'] = $setting['message']['product']['status'];
 					$data['message_insert_tag'] = html_entity_decode($setting['message']['product']['insert_tag']);
@@ -334,16 +394,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					$data['message_flex_color'] = $setting['message']['product']['flex_color'];
 					$data['message_flex_ratio'] = $setting['message']['product']['flex_ratio'];
 									
-					if ($product_info) {
-						if ($this->customer->isLogged() || !$this->config->get('config_customer_price')) {
-							if ((float)$product_info['special']) {
-								$product_price = $this->tax->calculate($product_info['special'], $product_info['tax_class_id'], true);
-							} else {
-								$product_price = $this->tax->calculate($product_info['price'], $product_info['tax_class_id'], true);
-							}
-						
-							$data['message_amount'] = number_format($product_price * $data['currency_value'], $data['decimal_place'], '.', '');
-						} 			
+					if ($product_price) {
+						$data['message_amount'] = number_format($product_price * $data['currency_value'], $data['decimal_place'], '.', ''); 			
 					}
 				}
 			}
@@ -360,7 +412,19 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					$data['button_color'] = $setting['button']['cart']['color'];
 					$data['button_shape'] = $setting['button']['cart']['shape'];
 					$data['button_label'] = $setting['button']['cart']['label'];
-					$data['button_tagline'] = $setting['button']['cart']['tagline'];	
+
+					$data['button_enable_funding'] = array();
+					$data['button_disable_funding'] = array();
+				
+					foreach ($setting['button_funding'] as $button_funding) {
+						if ($setting['button']['cart']['funding'][$button_funding['code']] == 1) {
+							$data['button_enable_funding'][] = $button_funding['code'];
+						} 
+				
+						if ($setting['button']['cart']['funding'][$button_funding['code']] == 2) {
+							$data['button_disable_funding'][] = $button_funding['code'];
+						}
+					}
 				}
 				
 				if ($setting['googlepay_button']['cart']['status']) {
@@ -421,7 +485,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					$data['applepay_amount'] = number_format($item_total * $data['currency_value'], $data['decimal_place'], '.', '');
 				}
 
-				if ($setting['message']['cart']['status'] && ($data['currency_code'] == $setting['general']['currency_code'])) {
+				if ($setting['message']['cart']['status'] && !empty($setting['paylater_country'][$setting['general']['country_code']]) && ($data['currency_code'] == $setting['general']['currency_code'])) {
 					$data['components'][] = 'messages';
 					$data['message_status'] = $setting['message']['cart']['status'];
 					$data['message_insert_tag'] = html_entity_decode($setting['message']['cart']['insert_tag']);
@@ -570,7 +634,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					}
 				}
 				
-				if ($setting['message']['checkout']['status'] && ($data['currency_code'] == $setting['general']['currency_code'])) {
+				if ($setting['message']['checkout']['status'] && !empty($setting['paylater_country'][$setting['general']['country_code']]) && ($data['currency_code'] == $setting['general']['currency_code'])) {
 					$data['components'][] = 'messages';
 					$data['message_status'] = $setting['message']['checkout']['status'];
 					$data['message_layout'] = $setting['message']['checkout']['layout'];
@@ -1010,9 +1074,11 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					}
 				}
 				
-				$paypal_order_info['payment_source'][$payment_method]['attributes']['verification']['method'] = strtoupper($setting['card']['secure_method']);
-				$paypal_order_info['payment_source'][$payment_method]['experience_context']['return_url'] = $this->url->link('extension/payment/paypal', 'callback_token=' . $setting['general']['callback_token'], true);
-				$paypal_order_info['payment_source'][$payment_method]['experience_context']['cancel_url'] = $this->url->link('checkout/checkout', '', true);
+				if ($payment_method) {
+					$paypal_order_info['payment_source'][$payment_method]['attributes']['verification']['method'] = strtoupper($setting['card']['secure_method']);
+					$paypal_order_info['payment_source'][$payment_method]['experience_context']['return_url'] = $this->url->link('extension/payment/paypal', 'callback_token=' . $setting['general']['callback_token'], true);
+					$paypal_order_info['payment_source'][$payment_method]['experience_context']['cancel_url'] = $this->url->link('checkout/checkout', '', true);
+				}
 				
 				$result = $paypal->createOrder($paypal_order_info);
 				
@@ -3843,16 +3909,15 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				$params['page_code'] = 'home';
 			}
 			
-			if (($route == 'product/product') && !empty($this->request->get['product_id']) && ($setting['button']['product']['status'] || $setting['googlepay_button']['product']['status'] || $setting['applepay_button']['product']['status'] || $setting['message']['product']['status'])) {
+			if (($route == 'product/product') && ($setting['button']['product']['status'] || $setting['googlepay_button']['product']['status'] || $setting['applepay_button']['product']['status'] || $setting['message']['product']['status'])) {
 				$params['page_code'] = 'product';
-				$params['product_id'] = $this->request->get['product_id'];
 			}
 			
 			if (($route == 'checkout/cart') && ($setting['button']['cart']['status'] || $setting['googlepay_button']['cart']['status'] || $setting['applepay_button']['cart']['status'] || $setting['message']['cart']['status'])) {
 				$params['page_code'] = 'cart';
 			}
 			
-			if (($route == 'checkout/checkout') && ($setting['button']['checkout']['status'] || $setting['googlepay_button']['checkout']['status'] || $setting['applepay_button']['checkout']['status'] || $setting['card']['status'] || $setting['message']['checkout']['status'])) {
+			if (($route == $setting['general']['checkout_route']) && ($setting['button']['checkout']['status'] || $setting['googlepay_button']['checkout']['status'] || $setting['applepay_button']['checkout']['status'] || $setting['card']['status'] || $setting['message']['checkout']['status'])) {
 				$params['page_code'] = 'checkout';
 			}
 			
