@@ -28,7 +28,7 @@ var PayPalAPI = (function () {
 		return params;
 	};
 	
-	var updatePaypalData = function() {
+	var updatePayPalData = function() {
 		var params = [];
 		var script_file = document.getElementsByTagName('script');
 		
@@ -41,6 +41,10 @@ var PayPalAPI = (function () {
 		}
 		
 		paypal_data = params;
+		
+		if (paypal_data['page_code'] == 'product') {
+			paypal_data['product'] = $('#product input[type=\'text\'], #product input[type=\'hidden\'], #product input[type=\'radio\']:checked, #product input[type=\'checkbox\']:checked, #product select, #product textarea').serialize();
+		}
 				
 		$.ajax({
 			method: 'post',
@@ -184,17 +188,20 @@ var PayPalAPI = (function () {
 					env: paypal_data['environment'],
 					locale: paypal_data['locale'],
 					style: {
-						layout: ((paypal_data['page_code'] != 'checkout') ? 'horizontal' : 'vertical'),
+						layout: 'vertical',
 						size: paypal_data['button_size'],
 						color: paypal_data['button_color'],
 						shape: paypal_data['button_shape'],
 						label: paypal_data['button_label'],
-						tagline: ((paypal_data['page_code'] != 'checkout') ? paypal_data['button_tagline'] : 'false')
+						tagline: 'false'
 					},
 					createOrder: function() {
 						paypal_order_id = false;
+						product_data = false;
 						
-						product_data = $('#product input[type=\'text\'], #product input[type=\'hidden\'], #product input[type=\'radio\']:checked, #product input[type=\'checkbox\']:checked, #product select, #product textarea').serialize();
+						if (paypal_data['page_code'] == 'product') {
+							product_data = $('#product input[type=\'text\'], #product input[type=\'hidden\'], #product input[type=\'radio\']:checked, #product input[type=\'checkbox\']:checked, #product select, #product textarea').serialize();
+						}
 				
 						$.ajax({
 							method: 'post',
@@ -530,6 +537,18 @@ var PayPalAPI = (function () {
 			document.querySelector('#paypal_message_container').appendChild(paypal_message);
 						
 			$('#paypal_message_container').removeClass('paypal-spinner');
+			
+			if (paypal_data['page_code'] == 'product') {
+				$('[name^="option"], [name="quantity"]').on('change', function(event) {
+					setTimeout(function() {
+						updatePayPalData();
+		
+						if (paypal_message) {
+							paypal_message.setAttribute('data-pp-amount', paypal_data['message_amount']);
+						}
+					}, 10);
+				});
+			}
 		}
 			
 		if (paypal_callback && typeof paypal_callback == 'function') {
@@ -546,11 +565,16 @@ var PayPalAPI = (function () {
 					return new Promise(async function(resolve, reject) {
 						try {
 							paypal_order_id = false;
+							product_data = false;
+						
+							if (paypal_data['page_code'] == 'product') {
+								product_data = $('#product input[type=\'text\'], #product input[type=\'hidden\'], #product input[type=\'radio\']:checked, #product input[type=\'checkbox\']:checked, #product select, #product textarea').serialize();
+							}
 							
 							$.ajax({
 								method: 'post',
 								url: 'index.php?route=extension/paypal/payment/paypal' + paypal_data['separator'] + 'createOrder',
-								data: {'page_code': paypal_data['page_code'], 'payment_type': 'googlepay_button'},
+								data: {'page_code': paypal_data['page_code'], 'payment_type': 'googlepay_button', 'product': product_data},
 								dataType: 'json',
 								async: false,
 								success: function(json) {				
@@ -822,11 +846,16 @@ var PayPalAPI = (function () {
 					console.log(JSON.stringify(event, null, 4));
 										
 					paypal_order_id = false;
+					product_data = false;
+						
+					if (paypal_data['page_code'] == 'product') {
+						product_data = $('#product input[type=\'text\'], #product input[type=\'hidden\'], #product input[type=\'radio\']:checked, #product input[type=\'checkbox\']:checked, #product select, #product textarea').serialize();
+					}
 						
 					$.ajax({
 						method: 'post',
 						url: 'index.php?route=extension/paypal/payment/paypal' + paypal_data['separator'] + 'createOrder',
-						data: {'page_code': paypal_data['page_code'], 'payment_type': 'applepay_button'},
+						data: {'page_code': paypal_data['page_code'], 'payment_type': 'applepay_button', 'product': product_data},
 						dataType: 'json',
 						async: false,
 						success: function(json) {				
@@ -888,7 +917,7 @@ var PayPalAPI = (function () {
 	};
 	
 	var init = function(callback = '') {
-		updatePaypalData();
+		updatePayPalData();
 		
 		paypal_callback = callback;
 			
