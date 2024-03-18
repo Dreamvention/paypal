@@ -530,6 +530,7 @@ class ControllerPaymentPayPal extends Controller {
 		$data['entry_debug'] = $this->language->get('entry_debug');
 		$data['entry_sale_analytics_range'] = $this->language->get('entry_sale_analytics_range');
 		$data['entry_checkout_mode'] = $this->language->get('entry_checkout_mode');
+		$data['entry_checkout_route'] = $this->language->get('entry_checkout_route');
 		$data['entry_transaction_method'] = $this->language->get('entry_transaction_method');
 		$data['entry_total'] = $this->language->get('entry_total');
 		$data['entry_geo_zone'] = $this->language->get('entry_geo_zone');
@@ -543,6 +544,7 @@ class ControllerPaymentPayPal extends Controller {
 		
 		$data['help_vault_status'] = $this->language->get('help_vault_status');
 		$data['help_checkout_mode'] = $this->language->get('help_checkout_mode');
+		$data['help_checkout_route'] = $this->language->get('help_checkout_route');
 		$data['help_total'] = $this->language->get('help_total');
 		$data['help_country_code'] = $this->language->get('help_country_code');
 		$data['help_currency_code'] = $this->language->get('help_currency_code');
@@ -2689,7 +2691,7 @@ class ControllerPaymentPayPal extends Controller {
 			
 			$this->load->model('payment/paypal');
 			
-			$data['order_id'] = $this->request->get['order_id'];
+			$data['order_id'] = (int)$this->request->get['order_id'];
 			
 			$paypal_order_info = $this->model_payment_paypal->getPayPalOrder($data['order_id']);
 				
@@ -2740,7 +2742,7 @@ class ControllerPaymentPayPal extends Controller {
 			
 			$this->load->model('payment/paypal');
 			
-			$data['order_id'] = $this->request->get['order_id'];
+			$data['order_id'] = (int)$this->request->get['order_id'];
 			
 			$paypal_order_info = $this->model_payment_paypal->getPayPalOrder($data['order_id']);
 				
