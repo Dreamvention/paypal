@@ -1,37 +1,18 @@
 # PayPal Checkout Integration for OpenCart
 
-The PayPal Checkout Integration (formerly known as PayPal Commerce Platform) offers marketplaces, crowdfunding, and other commerce platforms a powerful and flexible payment processing solution.
+## Let your customers pay how they want at checkout
 
-Solutions for partners are a combination of REST APIs and tailored PayPal products like Smart Payment Buttons. The fastest way to get started is to start the Engineering and Business workflows at the same time.
-
-## Use the PayPal Checkout Integration to
-- Accept payments from customers around the world.
-- Help manage the risk inherent in processing payments.
-- Accept payments by credit and debit cards, banks, alternative payment methods, PayPal balance, and more.
-- Get your sellers ready to accept payments quickly with streamlined onboarding.
-
-Help grow your business faster with the PayPal Checkout Integration
-
-## Update
-If you already have an older version of PayPal Commerce Platform installed in your opencart, you will need to uninstall it first before installing the PayPal Checkout Integration. 
-
-### Uninstall PayPal Commerce Platform
-1. In OpenCart admin go to Extensions -> Payments -> PayPal Commerce Platform and click "Uninstall"
-2. Go to Extensions -> Modules -> PayPal Smart Button and click "Uninstall"
-3. Go to Extension Installer and click "Uninstall" for PayPal extension
-4. In the Extension Installer click "Delete" for PayPal extension
+PayPal Checkout comes with PayPal payments, card processing, and country-specific payment options from around the world. We automatically handle updates on our end so upgrading is hassle-free. All you need is a PayPal Business account.
 
 ## Installation
-This Module is Extension Installer ready.
+> If you currently have an older version of PayPal Commerce Platform installed in your OpenCart, you should uninstall it before installing the PayPal Checkout Integration.
 
 ### Quick Install via OpenCart Extension Installer (recommended)
-1. [Download](https://github.com/Dreamvention/paypal/releases) the **compiled** Extensions from the latest releases by selecting your OpenCart version accordingly.
-2. Upload via OpenCart Admin -> Extension Installer and click "Install" for PayPal extension
-3. Go to Extensions -> Payments -> PayPal Checkout Integration and click "Install"
-4. Click "Edit" for PayPal Checkout Integration.
+1. [Download](https://github.com/Dreamvention/paypal/releases) the archive that corresponds to your version of OpenCart.
+2. Navigate to Extensions -> Installer and click Upload.
+3. Select the downloaded ZIP file and click Open.
+4. After the successful installation, navigate to Extensions -> Extensions -> Payments. Find PayPal Checkout Integration and click the green Install button.
+5. Once installed click the Edit button. A setup screen should welcome you.
+6. Verify that you are in the production environment and click Connect. Simply follow the instructions.
+7. Once the onboarding process is complete, you will be forwarded back to the OpenCart dashboard. Please wait while the installation is finalized and the page is refreshed. You should now see your PayPal Checkout Dashboard.
 
-Now you need to setup your PayPal Account.
-
-## Setup PayPal Account
-1. Click "Connect" (check that you are in Production mode)
-2. Follow the instructions provided by PayPal on-boarding process.
