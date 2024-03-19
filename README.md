@@ -22,7 +22,7 @@ PayPal Checkout comes with PayPal payments, card processing, and country-specifi
 1. [Sign in](https://www.paypal.com/signin) to your business PayPal account.
 2. Hover over your profile icon and select **Account Settings**.
 3. Go to **Business information** and copy your **PayPal Merchant ID** for later use.
-4. Visit [**the developer section**](https://developer.paypal.com/dashboard/applications/live) and click on **Create App** to generate a **Client ID** and **Secret key** for your App.
+4. Visit [the developer section](https://developer.paypal.com/dashboard/applications/live) and click on **Create App** to generate a **Client ID** and **Secret key** for your App.
 5. Copy the **Client ID** and **Secret key** from the API credentials section.
 6. Access the Admin Dashboard and go to Extensions -> Extensions -> Payments.
 7. Look for **PayPal Checkout Integration** and click on the **Edit** button.
