@@ -5,7 +5,7 @@
 PayPal Checkout comes with PayPal payments, card processing, and country-specific payment options from around the world. We automatically handle updates on our end so upgrading is hassle-free. All you need is a PayPal Business account.
 
 ## Installation
-> If you currently have an older version of PayPal Commerce Platform installed in your OpenCart, you should uninstall it before installing the PayPal Checkout Integration.
+> If you currently have an older version of **PayPal Commerce Platform** installed in your OpenCart, you should uninstall it before installing the **PayPal Checkout Integration**.
 
 ### Quick Install via OpenCart Extension Installer (recommended)
 1. [**Download**](https://github.com/Dreamvention/paypal/releases) the archive that corresponds to your version of OpenCart.
