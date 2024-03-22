@@ -215,6 +215,7 @@ class ControllerPaymentPayPal extends Controller {
 			$data['secret'] = $this->config->get('paypal_secret');
 			$data['merchant_id'] = $this->config->get('paypal_merchant_id');
 			$data['environment'] = $this->config->get('paypal_environment');
+			$data['googlepay_environment'] = (($data['environment'] == 'production') ? 'PRODUCTION' : 'TEST');
 			$data['partner_id'] = $setting['partner'][$data['environment']]['partner_id'];
 			$data['partner_attribution_id'] = $setting['partner'][$data['environment']]['partner_attribution_id'];
 			$data['vault_status'] = $setting['general']['vault_status'];
@@ -4055,7 +4056,9 @@ class ControllerPaymentPayPal extends Controller {
 		
 				$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('paypal_setting'));
 				
-				if (!empty($setting['paylater_country'][$setting['general']['country_code']]) && ($setting['button']['checkout']['funding']['paylater'] != 2)) {
+				$currency_code = $this->session->data['currency'];
+				
+				if (!empty($setting['paylater_country'][$setting['general']['country_code']]) && ($currency_code == $setting['general']['currency_code']) && ($setting['button']['checkout']['funding']['paylater'] != 2)) {
 					$this->config->set('paypal_paylater_status', 1);
 					
 					$output[] = array(
