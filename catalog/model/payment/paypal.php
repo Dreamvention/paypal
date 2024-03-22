@@ -63,12 +63,14 @@ class PayPal extends \Opencart\System\Engine\Model {
 		
 				$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
 				
+				$currency_code = $this->session->data['currency'];
+				
 				$option_data['paypal'] = [
 					'code' => 'paypal.paypal',
 					'name' => $this->language->get('text_paypal_title')
 				];
-				
-				if (!empty($setting['paylater_country'][$setting['general']['country_code']]) && ($setting['button']['checkout']['funding']['paylater'] != 2)) {
+
+				if (!empty($setting['paylater_country'][$setting['general']['country_code']]) && ($currency_code == $setting['general']['currency_code']) && ($setting['button']['checkout']['funding']['paylater'] != 2)) {
 					$option_data['paylater'] = [
 						'code' => 'paypal.paylater',
 						'name' => $this->language->get('text_paypal_paylater_title')
