@@ -584,7 +584,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					}
 									
 					if (VERSION >= '4.0.2.0') {
-						if (isset($this->session->data['payment_method']['code']) && ($this->session->data['payment_method']['code'] == 'paypal_paylater')) {
+						if (isset($this->session->data['payment_method']['code']) && ($this->session->data['payment_method']['code'] == 'paypal.paylater')) {
 							$data['button_funding_source'] = 'paylater';
 						}
 					} else {
