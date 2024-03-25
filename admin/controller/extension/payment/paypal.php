@@ -2938,9 +2938,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			if (isset($result['id']) && isset($result['status']) && !$this->error) {
 				$transaction_id = $result['id'];
 				$transaction_status = 'created';
-				
-				$this->model_extension_payment_paypal->deletePayPalOrder($order_id);
-										
+														
 				$paypal_order_data = array(
 					'order_id' => $order_id,
 					'transaction_id' => $transaction_id,
@@ -3026,9 +3024,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			
 			if (!$this->error) {
 				$transaction_status = 'voided';
-				
-				$this->model_extension_payment_paypal->deletePayPalOrder($order_id);
-										
+														
 				$paypal_order_data = array(
 					'order_id' => $order_id,
 					'transaction_status' => $transaction_status
@@ -3113,9 +3109,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		
 			if (isset($result['id']) && isset($result['status']) && !$this->error) {
 				$transaction_status = 'refunded';
-				
-				$this->model_extension_payment_paypal->deletePayPalOrder($order_id);
-										
+														
 				$paypal_order_data = array(
 					'order_id' => $order_id,
 					'transaction_status' => $transaction_status
