@@ -115,8 +115,8 @@
 						{% for quote in shipping_method['quote'] %}
 						<div class="radio">
 							<label>
-								{% if quote['code'] == code or not code %}
-								{% set code = quote['code'] %}
+								{% if quote['code'] == shipping_method_code or not shipping_method_code %}
+								{% set shipping_method_code = quote['code'] %}
 								<input type="radio" name="shipping_method" value="{{ quote['code'] }}" id="{{ quote['code'] }}" checked="checked" />
 								{% else %}
 								<input type="radio" name="shipping_method" value="{{ quote['code'] }}" id="{{ quote['code'] }}" />
@@ -140,7 +140,7 @@
 				</div>
 				<div class="panel-body">
 					{% for payment_method in payment_methods %}
-					{% if payment_method['code'] == 'paypal' %}
+					{% if payment_method['code'] == payment_method_code %}
 					<div class="radio">
 						<label>
 							<input type="radio" name="payment_method" value="{{ payment_method['code'] }}" checked="checked" />
