@@ -2705,10 +2705,10 @@ class ControllerPaymentPayPal extends Controller {
 				$data['text_transaction_refunded'] = $this->language->get('text_transaction_refunded');
 				$data['text_transaction_reversed'] = $this->language->get('text_transaction_reversed');			
 				
-				$data['button_capture'] = $this->language->get('button_capture');
-				$data['button_reauthorize'] = $this->language->get('button_reauthorize');
-				$data['button_void'] = $this->language->get('button_void');
-				$data['button_refund'] = $this->language->get('button_refund');
+				$data['button_capture_payment'] = $this->language->get('button_capture_payment');
+				$data['button_reauthorize_payment'] = $this->language->get('button_reauthorize_payment');
+				$data['button_void_payment'] = $this->language->get('button_void_payment');
+				$data['button_refund_payment'] = $this->language->get('button_refund_payment');
 				
 				$data['transaction_id'] = $paypal_order_info['transaction_id'];
 				$data['transaction_status'] = $paypal_order_info['transaction_status'];
