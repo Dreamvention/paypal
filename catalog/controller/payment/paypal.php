@@ -1422,6 +1422,70 @@ class PayPal extends \Opencart\System\Engine\Controller {
 							}
 						}
 					}
+					
+					if (empty($paypal_order_info['payer']['name']) && empty($paypal_order_info['purchase_units'][0]['shipping']['address']) && !empty($paypal_order_info['payment_source'])) {
+						foreach ($paypal_order_info['payment_source'] as $payment_source) {
+							$this->session->data['customer']['firstname'] = (isset($payment_source['card']['name']) ? $payment_source['card']['name'] : '');
+							
+							$this->session->data['payment_address']['firstname'] = (isset($payment_source['card']['name']) ? $payment_source['card']['name'] : '');
+							$this->session->data['payment_address']['address_1'] = (isset($payment_source['card']['billing_address']['address_line_1']) ? $payment_source['card']['billing_address']['address_line_1'] : '');
+							$this->session->data['payment_address']['city'] = (isset($payment_source['card']['billing_address']['admin_area_2']) ? $payment_source['card']['billing_address']['admin_area_2'] : '');
+							$this->session->data['payment_address']['postcode'] = (isset($payment_source['card']['billing_address']['postal_code']) ? $payment_source['card']['billing_address']['postal_code'] : '');
+							
+							if (isset($payment_source['card']['billing_address']['country_code'])) {
+								$country_info = $this->model_extension_paypal_payment_paypal->getCountryByCode($payment_source['card']['billing_address']['country_code']);
+			
+								if ($country_info) {
+									$this->session->data['payment_address']['country'] = $country_info['name'];
+									$this->session->data['payment_address']['country_id'] = $country_info['country_id'];
+								}
+							}
+							
+							if ($this->cart->hasShipping()) {
+								$this->session->data['shipping_address']['firstname'] = $this->session->data['payment_address']['firstname'];
+								$this->session->data['shipping_address']['address_1'] = $this->session->data['payment_address']['address_1'];
+								$this->session->data['shipping_address']['city'] = $this->session->data['payment_address']['city'];
+								$this->session->data['shipping_address']['postcode'] = $this->session->data['payment_address']['postcode'] ;
+								$this->session->data['shipping_address']['country'] = $this->session->data['payment_address']['country'];
+								$this->session->data['shipping_address']['country_id'] = $this->session->data['payment_address']['country_id'];
+							}
+											
+							break;
+						}
+					}
+					
+					if ($payment_type == 'button') {
+						if (VERSION >= '4.0.2.0') {
+							$this->session->data['payment_method'] = [
+								'code' => 'paypal.paypal',
+								'name' => $this->language->get('text_paypal_title')						
+							];
+						} else {
+							$this->session->data['payment_method'] = 'paypal'; 
+						}
+					}
+					
+					if ($payment_type == 'googlepay_button') {
+						if (VERSION >= '4.0.2.0') {
+							$this->session->data['payment_method'] = [
+								'code' => 'paypal.googlepay',
+								'name' => $this->language->get('text_paypal_googlepay_title')						
+							];
+						} else {
+							$this->session->data['payment_method'] = 'paypal_googlepay'; 
+						}
+					}
+					
+					if ($payment_type == 'applepay_button') {
+						if (VERSION >= '4.0.2.0') {
+							$this->session->data['payment_method'] = [
+								'code' => 'paypal.applepay',
+								'name' => $this->language->get('text_paypal_applepay_title')						
+							];
+						} else {	
+							$this->session->data['payment_method'] = 'paypal_applepay'; 
+						}
+					}
 
 					$data['url'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'confirmOrder', 'language=' . $this->config->get('config_language'));
 				}
@@ -2067,9 +2131,9 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						}
 						
 						if (VERSION >= '4.0.2.0') {
-							$data['code'] = $this->session->data['shipping_method']['code'];
+							$data['shipping_method_code'] = $this->session->data['shipping_method']['code'];
 						} else {
-							$data['code'] = $this->session->data['shipping_method'];
+							$data['shipping_method_code'] = $this->session->data['shipping_method'];
 						}
 						
 						$data['action_shipping'] = $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'confirmShipping', 'language=' . $this->config->get('config_language'));
@@ -2131,13 +2195,25 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			
 			$this->response->redirect($this->url->link('checkout/checkout', 'language=' . $this->config->get('config_language')));
 		}
-
-		if (VERSION >= '4.0.2.0') {
-			$this->session->data['payment_method'] = $method_data['paypal']['option']['paypal'];
-		} else {
-			$this->session->data['payment_method'] = $method_data['paypal']['code'];
-		}
 		
+		if (VERSION >= '4.0.2.0') {
+			if (isset($this->session->data['payment_method']['code'])) {
+				$data['payment_method_code'] = $this->session->data['payment_method']['code'];
+			} else {
+				$this->session->data['payment_method'] = $method_data['paypal']['option']['paypal'];
+			
+				$data['payment_method_code'] = $this->session->data['payment_method']['code'];
+			}
+		} else {
+			if (isset($this->session->data['payment_method'])) {
+				$data['payment_method_code'] = $this->session->data['payment_method'];
+			} else {
+				$this->session->data['payment_method'] = $method_data['paypal']['code'];
+						
+				$data['payment_method_code'] = $this->session->data['payment_method'];
+			}
+		}
+
 		// Custom Fields
 		$this->load->model('account/custom_field');
 
@@ -2318,9 +2394,14 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$order_data['customer_group_id'] = $this->session->data['customer']['customer_group_id'];
 			$order_data['firstname'] = $this->session->data['customer']['firstname'];
 			$order_data['lastname'] = $this->session->data['customer']['lastname'];
-			$order_data['email'] = $this->session->data['customer']['email'];
 			$order_data['telephone'] = $this->session->data['customer']['telephone'];
 			$order_data['custom_field'] = $this->session->data['customer']['custom_field'];
+			
+			if ($this->session->data['customer']['email']) {
+				$order_data['email'] = $this->session->data['customer']['email'];
+			} else {
+				$order_data['email'] = $this->config->get('config_email');
+			}
 						
 			$order_data['payment_address_id'] = $this->session->data['payment_address']['address_id'];
 			$order_data['payment_firstname'] = $this->session->data['payment_address']['firstname'];
@@ -2609,6 +2690,42 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			
 			$paypal_order_id = $this->session->data['paypal_order_id'];
 			
+			$paypal_order_info = $paypal->getOrder($paypal_order_id);
+			
+			if ($paypal->hasErrors()) {
+				$error_messages = [];
+				
+				$errors = $paypal->getErrors();
+								
+				foreach ($errors as $error) {
+					if (isset($error['name']) && ($error['name'] == 'CURLE_OPERATION_TIMEOUTED')) {
+						$error['message'] = $this->language->get('error_timeout');
+					}
+					
+					if (isset($error['details'][0]['description'])) {
+						$error_messages[] = $error['details'][0]['description'];
+					} elseif (isset($error['message'])) {
+						$error_messages[] = $error['message'];
+					}
+					
+					$this->model_extension_paypal_payment_paypal->log($error, $error['message']);
+				}
+			
+				$this->error['warning'] = implode(' ', $error_messages);
+			}
+		
+			if (!empty($this->error['warning'])) {
+				$this->error['warning'] .= ' ' . sprintf($this->language->get('error_payment'), $this->url->link('information/contact', 'language=' . $this->config->get('config_language')));
+			}
+			
+			$shipping_info_name = [];
+			$shipping_info_address = [];
+					
+			if ($paypal_order_info && !$this->error) {
+				$shipping_info_name = (isset($paypal_order_info['purchase_units'][0]['shipping']['name']) ? $paypal_order_info['purchase_units'][0]['shipping']['name'] : []); 
+				$shipping_info_address = (isset($paypal_order_info['purchase_units'][0]['shipping']['address']) ? $paypal_order_info['purchase_units'][0]['shipping']['address'] : []);
+			}
+			
 			$paypal_order_info = [];
 			
 			$paypal_order_info[] = [
@@ -2644,17 +2761,33 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					}
 				}
 				
-				$paypal_order_info[] = [
-					'op' => 'replace',
-					'path' => '/purchase_units/@reference_id==\'default\'/shipping/name',
-					'value' => $shipping_info['name']
-				];
+				if ($shipping_info_name) {
+					$paypal_order_info[] = array(
+						'op' => 'replace',
+						'path' => '/purchase_units/@reference_id==\'default\'/shipping/name',
+						'value' => $shipping_info['name']
+					);
+				} else {
+					$paypal_order_info[] = array(
+						'op' => 'add',
+						'path' => '/purchase_units/@reference_id==\'default\'/shipping/name',
+						'value' => $shipping_info['name']
+					);
+				}
 				
-				$paypal_order_info[] = [
-					'op' => 'replace',
-					'path' => '/purchase_units/@reference_id==\'default\'/shipping/address',
-					'value' => $shipping_info['address']
-				];
+				if ($shipping_info_address) {
+					$paypal_order_info[] = array(
+						'op' => 'replace',
+						'path' => '/purchase_units/@reference_id==\'default\'/shipping/address',
+						'value' => $shipping_info['address']
+					);
+				} else {
+					$paypal_order_info[] = array(
+						'op' => 'add',
+						'path' => '/purchase_units/@reference_id==\'default\'/shipping/address',
+						'value' => $shipping_info['address']
+					);
+				}
 			}
 												
 			$item_total = 0;

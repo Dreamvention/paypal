@@ -103,8 +103,8 @@
 						{% if not shipping_method['error'] %}
 						{% for quote in shipping_method['quote'] %}
 						<div class="form-check">
-							{% if quote['code'] == code or not code %}
-							{% set code = quote['code'] %}
+							{% if quote['code'] == shipping_method_code or not shipping_method_code %}
+							{% set shipping_method_code = quote['code'] %}
 							<input type="radio" name="shipping_method" value="{{ quote['code'] }}" id="input_shipping_method_{{ quote['code'] }}" checked="checked" />
 							{% else %}
 							<input type="radio" name="shipping_method" value="{{ quote['code'] }}" id="input_shipping_method_{{ quote['code'] }}" />
@@ -125,17 +125,18 @@
 				<div class="card-header"><h4 class="mb-0">{{ text_checkout_payment_method }}</h4></div>
 				<div class="card-body"> 	
 					{% for payment_method in payment_methods %}
-					{% if payment_method['code'] == 'paypal' %}
+					{% set payment_method_code_first = payment_method_code|split('.')|first %}
+					{% if payment_method['code'] == payment_method_code_first %}
 					<p><strong>{% if payment_method['name'] %}{{ payment_method['name'] }}{% else %}{{ payment_method['title'] }}{% endif %}</strong></p>
 					{% if not payment_method['error'] %}
 					{% if payment_method['option'] %}
 					{% for option in payment_method['option'] %}
+					{% if option['code'] == payment_method_code %}
 					<div class="form-check">
-						{% if option['code'] == 'paypal.paypal' %}
 						<input type="radio" name="payment_method" value="{{ option['code'] }}" id="input-payment-method-{{ option['code'] }}" checked="checked" />
 						<label for="input_payment_method_{{ option['code'] }}">{{ option['name'] }}</label>
-						{% endif %}
 					</div>
+					{% endif %}
 					{% endfor %}
 					{% else %}
 					<div class="form-check">
