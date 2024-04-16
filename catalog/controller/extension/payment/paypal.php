@@ -134,6 +134,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['card_status'] = $setting['card']['status'];
 		
 		$data['text_paypal_title'] = $this->language->get('text_paypal_title');
+		$data['text_loading'] = $this->language->get('text_loading');
 			
 		$data['entry_card_number'] = $this->language->get('entry_card_number');
 		$data['entry_expiration_date'] = $this->language->get('entry_expiration_date');
@@ -1861,6 +1862,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$this->document->addScript('catalog/view/javascript/jquery/datetimepicker/moment.js');
 		$this->document->addScript('catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.js');
 		$this->document->addStyle('catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.css');
+		
+		$theme = $this->config->get('theme_' . $this->config->get('config_theme') . '_directory');
+				
+		if (file_exists(DIR_TEMPLATE . $theme . '/stylesheet/paypal/paypal.css')) {
+			$this->document->addStyle('catalog/view/theme/' . $theme . '/stylesheet/paypal/paypal.css');
+		} else {
+			$this->document->addStyle('catalog/view/theme/default/stylesheet/paypal/paypal.css');
+		}
 
 		$data['heading_title'] = $this->language->get('text_paypal');
 		
@@ -1874,6 +1883,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$data['text_recurring_item'] = $this->language->get('text_recurring_item');
 		$data['text_select'] = $this->language->get('text_select');
 		$data['text_none'] = $this->language->get('text_none');
+		$data['text_loading'] = $this->language->get('text_loading');
 		
 		$data['column_image'] = $this->language->get('column_image');
 		$data['column_name'] = $this->language->get('column_name');

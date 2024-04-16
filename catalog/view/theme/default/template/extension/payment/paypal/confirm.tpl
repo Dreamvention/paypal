@@ -209,7 +209,7 @@
 				</div>
 			</div>
 			<div class="buttons">
-				<div class="pull-right"><a href="<?php echo $action_confirm; ?>" class="btn btn-primary" id="paypal_confirm"><?php echo $button_confirm; ?></a></div>
+				<div class="pull-right"><a href="<?php echo $action_confirm; ?>" class="btn btn-primary" id="paypal_confirm" data-loading-text="<?php echo $text_loading; ?>"><?php echo $button_confirm; ?></a></div>
 			</div>
 			<?php echo $content_bottom; ?>
 		</div>
