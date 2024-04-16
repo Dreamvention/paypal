@@ -1844,6 +1844,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$this->document->addScript('catalog/view/javascript/jquery/datetimepicker/moment/moment-with-locales.min.js');
 		$this->document->addScript('catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.js');
 		$this->document->addStyle('catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.css');
+		
+		$theme = $this->config->get('theme_' . $this->config->get('config_theme') . '_directory');
+				
+		if (file_exists(DIR_TEMPLATE . $theme . '/stylesheet/paypal/paypal.css')) {
+			$this->document->addStyle('catalog/view/theme/' . $theme . '/stylesheet/paypal/paypal.css');
+		} else {
+			$this->document->addStyle('catalog/view/theme/default/stylesheet/paypal/paypal.css');
+		}
 
 		$data['heading_title'] = $this->language->get('text_paypal');
 
