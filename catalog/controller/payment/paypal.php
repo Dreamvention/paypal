@@ -1923,6 +1923,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$this->document->addScript('catalog/view/javascript/jquery/datetimepicker/moment-with-locales.min.js');
 		$this->document->addScript('catalog/view/javascript/jquery/datetimepicker/daterangepicker.js');
 		$this->document->addStyle('catalog/view/javascript/jquery/datetimepicker/daterangepicker.css');
+		$this->document->addStyle('extension/paypal/catalog/view/stylesheet/paypal.css');
 
 		$data['heading_title'] = $this->language->get('text_paypal');
 

@@ -24,7 +24,7 @@
 	-webkit-appearance: button;
 	cursor: pointer;
 }
-.payment-paypal button[disabled], .payment-paypal innput[disabled] {
+.payment-paypal button[disabled], .payment-paypal input[disabled] {
 	cursor: default;
 }
 .payment-paypal button::-moz-focus-inner, .payment-paypal input::-moz-focus-inner {
@@ -33,6 +33,9 @@
 }
 .payment-paypal [role="button"] {
 	cursor: pointer;
+}
+.payment-paypal [data-loading-text].loading:after {
+	content: attr(data-loading-text);
 }
 .payment-paypal .paypal-flex-row {
 	display: block;

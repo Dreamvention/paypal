@@ -201,6 +201,7 @@ $_['text_transaction_declined']				= 'Payment capture was declined.';
 $_['text_transaction_pending']				= 'The state of a payment capture was changed to pending.';
 $_['text_transaction_refunded']				= 'A merchant refunded the payment capture.';
 $_['text_transaction_reversed']				= 'PayPal reversed the payment capture.';
+$_['text_loading']          				= '...';
 
 // Entry
 $_['entry_connect']	 						= 'Connect';

@@ -26,6 +26,7 @@ $_['text_subscription_cancel']   			= '%s every %d %s(s) until canceled';
 $_['text_length']							= ' for %s payments';
 $_['text_order_message']					= 'PayPal Seller Protection - %s';
 $_['text_wait']								= 'Please wait!';
+$_['text_loading']          				= '...';
 $_['text_failure_page_title']				= 'Your order is failed!';
 $_['text_failure_page_message']				= 'Sorry, but the transaction failed! Please choose another payment method or <a href="%s" target="_blank">contact us</a>';
 
