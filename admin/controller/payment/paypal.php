@@ -2002,7 +2002,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 	}
 	
 	public function customer_delete_customer_before(string $route, array &$data): void {
-		$this->load->model('extension/payment/paypal');
+		$this->load->model('extension/paypal/payment/paypal');
 
 		$customer_id = $data[0];
 
