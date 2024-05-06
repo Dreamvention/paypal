@@ -25,6 +25,7 @@ $_['paypal_setting'] = array(
 		'currency_value' => '1',
 		'card_currency_code' => 'USD',
 		'card_currency_value' => '1',
+		'order_history_token' => '',
 		'callback_token' => '',
 		'webhook_token' => '',
 		'cron_token' => ''
@@ -286,6 +287,11 @@ $_['paypal_setting'] = array(
 			'code' => 'voided',
 			'name' => 'text_voided_status',
 			'id' => 16
+		),
+		'shipped' => array(
+			'code' => 'shipped',
+			'name' => 'text_shipped_status',
+			'id' => 3
 		)
 	),
 	'contact' => array(
