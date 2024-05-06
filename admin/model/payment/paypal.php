@@ -218,6 +218,14 @@ class PayPal extends \Opencart\System\Engine\Model {
 		if (!empty($data['environment'])) {
 			$implode[] = "`environment` = '" . $this->db->escape($data['environment']) . "'";
 		}
+		
+		if (isset($data['tracking_number'])) {
+			$implode[] = "`tracking_number` = '" . $this->db->escape($data['tracking_number']) . "'";
+		}
+		
+		if (isset($data['carrier_name'])) {
+			$implode[] = "`carrier_name` = '" . $this->db->escape($data['carrier_name']) . "'";
+		}
 				
 		if ($implode) {
 			$sql .= implode(", ", $implode);
@@ -265,11 +273,47 @@ class PayPal extends \Opencart\System\Engine\Model {
 		return $agree_status;
 	}
 	
+	public function addOrderHistory(string $order_history_token, int $order_id, int $order_status_id): bool {
+		if (VERSION >= '4.0.2.0') {
+			$separator = '.';
+		} else {
+			$separator = '|';
+		}
+		
+		$data = array(
+			'order_id' => $order_id,
+			'order_status_id' => $order_status_id
+		);
+			
+		$curl = curl_init();
+			
+		curl_setopt($curl, CURLOPT_URL, HTTP_CATALOG . 'index.php?route=extension/paypal/payment/paypal' . $separator . 'addOrderHistory&order_history_token=' . $order_history_token);
+		curl_setopt($curl, CURLOPT_HEADER, 0);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
+		curl_setopt($curl, CURLOPT_FORBID_REUSE, 1);
+		curl_setopt($curl, CURLOPT_FRESH_CONNECT, 1);
+		curl_setopt($curl, CURLOPT_POST, 1);
+		curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
+
+		$response = curl_exec($curl);
+			
+		curl_close($curl);
+			
+		$result = json_decode($response, true);
+		
+		if (!empty($result['success'])) {
+			return true;
+		} else {
+			return false;
+		} 		
+	}
+	
 	public function checkVersion(string $opencart_version, string $paypal_version): array|bool {
 		$curl = curl_init();
 			
 		curl_setopt($curl, CURLOPT_URL, 'https://www.opencart.com/index.php?route=api/promotion/paypalCheckoutIntegration&opencart=' . $opencart_version . '&paypal=' . $paypal_version);
-		curl_setopt($curl, CURLOPT_HEADER, 0);
 		curl_setopt($curl, CURLOPT_HEADER, 0);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -325,7 +369,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 	
 	public function install(): void {
 		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "paypal_checkout_integration_customer_token` (`customer_id` INT(11) NOT NULL, `payment_method` VARCHAR(20) NOT NULL, `vault_id` VARCHAR(50) NOT NULL, `vault_customer_id` VARCHAR(50) NOT NULL, `card_type` VARCHAR(40) NOT NULL, `card_nice_type` VARCHAR(40) NOT NULL, `card_last_digits` VARCHAR(4) NOT NULL, `card_expiry` VARCHAR(20) NOT NULL, `main_token_status` TINYINT(1) NOT NULL, PRIMARY KEY (`customer_id`, `payment_method`, `vault_id`), KEY `vault_customer_id` (`vault_customer_id`), KEY `main_token_status` (`main_token_status`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci");
-		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order` (`order_id` INT(11) NOT NULL, `paypal_order_id` VARCHAR(20) NOT NULL, `transaction_id` VARCHAR(20) NOT NULL, `transaction_status` VARCHAR(20) NOT NULL, `payment_method` VARCHAR(20) NOT NULL, `vault_id` VARCHAR(50) NOT NULL, `vault_customer_id` VARCHAR(50) NOT NULL, `card_type` VARCHAR(40) NOT NULL, `card_nice_type` VARCHAR(40) NOT NULL, `card_last_digits` VARCHAR(4) NOT NULL, `card_expiry` VARCHAR(20) NOT NULL, `environment` VARCHAR(20) NOT NULL, PRIMARY KEY (`order_id`), KEY `paypal_order_id` (`paypal_order_id`), KEY `transaction_id` (`transaction_id`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci");
+		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order` (`order_id` INT(11) NOT NULL, `paypal_order_id` VARCHAR(20) NOT NULL, `transaction_id` VARCHAR(20) NOT NULL, `transaction_status` VARCHAR(20) NOT NULL, `payment_method` VARCHAR(20) NOT NULL, `vault_id` VARCHAR(50) NOT NULL, `vault_customer_id` VARCHAR(50) NOT NULL, `card_type` VARCHAR(40) NOT NULL, `card_nice_type` VARCHAR(40) NOT NULL, `card_last_digits` VARCHAR(4) NOT NULL, `card_expiry` VARCHAR(20) NOT NULL, `environment` VARCHAR(20) NOT NULL, `tracking_number` VARCHAR(64) NOT NULL, `carrier_name` VARCHAR(64) NOT NULL, PRIMARY KEY (`order_id`), KEY `paypal_order_id` (`paypal_order_id`), KEY `transaction_id` (`transaction_id`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci");
 	}
 	
 	public function uninstall(): void {

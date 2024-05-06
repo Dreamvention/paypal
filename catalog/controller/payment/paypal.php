@@ -402,7 +402,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					}
 				}
 				
-				if ($setting['applepay_button']['product']['status']) {
+				if ($setting['applepay_button']['product']['status'] && $this->isApple()) {
 					$data['components'][] = 'applepay';
 					$data['applepay_button_status'] = $setting['applepay_button']['product']['status'];
 					$data['applepay_button_insert_tag'] = html_entity_decode($setting['applepay_button']['product']['insert_tag']);
@@ -494,7 +494,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					$data['googlepay_amount'] = number_format($item_total * $data['currency_value'], $data['decimal_place'], '.', '');
 				}
 				
-				if ($setting['applepay_button']['cart']['status']) {
+				if ($setting['applepay_button']['cart']['status'] && $this->isApple()) {
 					$data['components'][] = 'applepay';
 					$data['applepay_button_status'] = $setting['applepay_button']['cart']['status'];
 					$data['applepay_button_insert_tag'] = html_entity_decode($setting['applepay_button']['cart']['insert_tag']);
@@ -625,7 +625,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					}
 				}
 				
-				if ($setting['applepay_button']['checkout']['status']) {
+				if ($setting['applepay_button']['checkout']['status'] && $this->isApple()) {
 					$data['components'][] = 'applepay';
 					$data['applepay_button_status'] = $setting['applepay_button']['checkout']['status'];
 					$data['applepay_button_align'] = $setting['applepay_button']['checkout']['align'];
@@ -955,19 +955,28 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				$item_total = 0;
 				$tax_total = 0;
 				
+				$this->load->model('tool/image');
+				
 				foreach ($this->cart->getProducts() as $product) {
 					$product_price = number_format($product['price'] * $currency_value, $decimal_place, '.', '');
 				
-					$item_info[] = [
-						'name' => $product['name'],
-						'sku' => $product['model'],
-						'url' => $this->url->link('product/product', 'language=' . $this->config->get('config_language') . '&product_id=' . $product['product_id']),
-						'quantity' => $product['quantity'],
-						'unit_amount' => [
-							'currency_code' => $currency_code,
-							'value' => $product_price
-						]
+					$product_info = [];
+					
+					$product_info['name'] = $product['name'];
+					$product_info['quantity'] = $product['quantity'];
+					$product_info['sku'] = $product['model'];
+					$product_info['url'] = $this->url->link('product/product', 'product_id=' . $product['product_id'], true);
+					
+					if (is_file(DIR_IMAGE . html_entity_decode($product['image'], ENT_QUOTES, 'UTF-8'))) {				
+						$product_info['image_url'] = $this->model_tool_image->resize(html_entity_decode($product['image'], ENT_QUOTES, 'UTF-8'), $this->config->get('config_image_thumb_width'), $this->config->get('config_image_thumb_height'));
+					} 
+					
+					$product_info['unit_amount'] = [
+						'currency_code' => $currency_code,
+						'value' => $product_price
 					];
+
+					$item_info[] = $product_info;
 				
 					$item_total += $product_price * $product['quantity'];
 				
@@ -982,14 +991,17 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				
 				if (!empty($this->session->data['vouchers'])) {
 					foreach ($this->session->data['vouchers'] as $voucher) {
-						$item_info[] = [
-							'name' => $voucher['description'],
-							'quantity' => 1,
-							'unit_amount' => [
-								'currency_code' => $currency_code,
-								'value' => $voucher['amount']
-							]
+						$voucher_info = [];
+	
+						$voucher_info['name'] = $voucher['description'];
+						$voucher_info['quantity'] = 1;
+						
+						$voucher_info['unit_amount'] = [
+							'currency_code' => $currency_code,
+							'value' => $voucher['amount']
 						];
+												
+						$item_info[] = $voucher_info;
 					
 						$item_total += $voucher['amount'];
 					}
@@ -3485,6 +3497,35 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$this->response->setOutput(json_encode($data));
 	}
 	
+	public function addOrderHistory() {
+		if (!empty($this->request->get['order_history_token']) && !empty($this->request->post['order_id']) && !empty($this->request->post['order_status_id'])) {
+			$this->load->language('extension/paypal/payment/paypal');
+		
+			$this->load->model('extension/paypal/payment/paypal');
+			
+			$_config = new \Opencart\System\Engine\Config();
+			$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
+			$_config->load('paypal');
+			
+			$config_setting = $_config->get('paypal_setting');
+		
+			$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('payment_paypal_setting'));
+					
+			if (hash_equals($setting['general']['order_history_token'], $this->request->get['order_history_token'])) {		
+				$this->load->model('checkout/order');
+
+				$this->model_checkout_order->addHistory($this->request->post['order_id'], $this->request->post['order_status_id'], '', true);
+			
+				$data['success'] = $this->language->get('success_order');
+			}	
+		}
+							
+		$data['error'] = $this->error;
+				
+		$this->response->addHeader('Content-Type: application/json');
+		$this->response->setOutput(json_encode($data));
+	}
+	
 	public function callback(): bool {
 		$this->load->language('extension/paypal/payment/paypal');
 		
@@ -4176,7 +4217,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					$this->document->addScript('https://pay.google.com/gp/p/js/pay.js');
 				}
 				
-				if (!empty($setting['applepay_button'][$params['page_code']]['status'])) {
+				if (!empty($setting['applepay_button'][$params['page_code']]['status']) && $this->isApple()) {
 					$this->document->addScript('https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js');
 				}
 								
@@ -4523,7 +4564,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		if (!empty($this->request->server['HTTP_USER_AGENT'])) {
 			$user_agent = strtolower($this->request->server['HTTP_USER_AGENT']);
 			
-			$apple_agents = ['ipod', 'iphone', 'ipad'];
+			$apple_agents = ['ipod', 'iphone', 'ipad', 'apple'];
 
             foreach ($apple_agents as $apple_agent){
                 if (stripos($user_agent, $apple_agent)) {

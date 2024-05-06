@@ -261,6 +261,14 @@ class PayPal extends \Opencart\System\Engine\Model {
 			$implode[] = "`environment` = '" . $this->db->escape($data['environment']) . "'";
 		}
 		
+		if (isset($data['tracking_number'])) {
+			$implode[] = "`tracking_number` = '" . $this->db->escape($data['tracking_number']) . "'";
+		}
+		
+		if (isset($data['carrier_name'])) {
+			$implode[] = "`carrier_name` = '" . $this->db->escape($data['carrier_name']) . "'";
+		}
+		
 		if ($implode) {
 			$sql .= implode(", ", $implode);
 		}
@@ -299,6 +307,14 @@ class PayPal extends \Opencart\System\Engine\Model {
 		
 		if (!empty($data['environment'])) {
 			$implode[] = "`environment` = '" . $this->db->escape($data['environment']) . "'";
+		}
+		
+		if (isset($data['tracking_number'])) {
+			$implode[] = "`tracking_number` = '" . $this->db->escape($data['tracking_number']) . "'";
+		}
+		
+		if (isset($data['carrier_name'])) {
+			$implode[] = "`carrier_name` = '" . $this->db->escape($data['carrier_name']) . "'";
 		}
 				
 		if ($implode) {

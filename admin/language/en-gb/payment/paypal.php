@@ -89,6 +89,7 @@ $_['text_pending_status']					= 'Pending Status';
 $_['text_refunded_status']					= 'Refunded Status';
 $_['text_reversed_status']					= 'Reversed Status';
 $_['text_voided_status']					= 'Voided Status';
+$_['text_shipped_status']					= 'Shipped Status';
 $_['text_insert_prepend']					= 'Insert Into Begin';
 $_['text_insert_append']					= 'Insert Into End';
 $_['text_insert_before']					= 'Insert Before';
@@ -193,7 +194,9 @@ $_['text_step_coupon']						= 'Use Coupon Code';
 $_['text_step_shipping']					= 'Estimate Shipping & Taxes';
 $_['text_step_payment_method']				= 'Step 5: Payment Method';
 $_['text_step_confirm_order']				= 'Step 6: Confirm Order';
+$_['text_payment_information']				= 'Payment Information';
 $_['text_transaction_id']   				= 'Transaction ID';
+$_['text_transaction_description']   		= 'Transaction Description';
 $_['text_transaction_created']				= 'Payment authorization was created.';
 $_['text_transaction_voided']				= 'Payment authorization was voided.';
 $_['text_transaction_completed']			= 'Payment capture was completed.';
@@ -201,6 +204,11 @@ $_['text_transaction_declined']				= 'Payment capture was declined.';
 $_['text_transaction_pending']				= 'The state of a payment capture was changed to pending.';
 $_['text_transaction_refunded']				= 'A merchant refunded the payment capture.';
 $_['text_transaction_reversed']				= 'PayPal reversed the payment capture.';
+$_['text_transaction_action']				= 'Action';
+$_['text_tracker_information']   			= 'Tracking Information';
+$_['text_tracking_number'] 					= 'Tracking Number';
+$_['text_carrier_name'] 					= 'Carrier';
+$_['text_tracker_action']					= 'Action';
 $_['text_loading']          				= '...';
 
 // Entry
@@ -305,6 +313,8 @@ $_['button_capture_payment']				= 'Capture';
 $_['button_reauthorize_payment']			= 'Reauthorize';
 $_['button_void_payment']					= 'Void';
 $_['button_refund_payment']					= 'Refund';
+$_['button_create_tracker']					= 'Add Tracking Information';
+$_['button_cancel_tracker']					= 'Cancel Tracking Information';
 
 // Success
 $_['success_save']		 					= 'Success: You have modified PayPal!';
@@ -315,6 +325,8 @@ $_['success_capture_payment']				= 'Success: Payment capture was completed.';
 $_['success_reauthorize_payment']			= 'Success: Payment authorization was reauthorized.';
 $_['success_void_payment']					= 'Success: Payment authorization was voided.';
 $_['success_refund_payment']				= 'Success: Payment capture was refunded.';
+$_['success_create_tracker']				= 'Success: Tracking information has been added successfully.';
+$_['success_cancel_tracker']				= 'Success: Tracking information has been cancelled successfully.';
 
 // Error
 $_['error_permission']	 					= 'Warning: You do not have permission to modify payment PayPal!';

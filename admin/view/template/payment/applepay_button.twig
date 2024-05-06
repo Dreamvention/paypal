@@ -157,6 +157,31 @@
 													</div>
 												</div>
 											</div>
+											{% if text_applepay_alert %}
+											<div class="row mb-3">
+												<div class="col col-md-12">
+													<p class="alert alert-info">{{ text_applepay_alert }}</p>
+												</div>
+											</div>
+											<div class="row mb-3">
+												<div class="col col-md-12">
+													<p class="footnote step-1">{{ text_applepay_step_1 }}</p>
+													<div class="row">
+														<div class="col col-md-6">
+															<a href="{{ applepay_download_url }}" target="_blank" class="btn btn-primary button-download w-100">{{ button_download }}</a>
+														</div>
+														<div class="col col-md-6">
+															<button type="button" class="btn btn-primary button-download-host w-100">{{ button_download_host }}</button>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="row mb-3">
+												<div class="col col-md-12">
+													<p class="footnote step-2">{{ text_applepay_step_2 }}</p>
+												</div>
+											</div>
+											{% endif %}
 											{% if (applepay_button['page_code'] != 'checkout') %}
 											<div class="row">
 												<div class="col col-md-6">
