@@ -412,6 +412,33 @@ class PayPal {
 			return false;
 		}
 	}
+	
+	//IN:  order id, tracker info
+	public function createOrderTracker($order_id, $tracker_info) {
+		$command = '/v2/checkout/orders/' . $order_id . '/track';
+		
+		$params = $tracker_info;
+				
+		$result = $this->execute('POST', $command, $params, true);
+		
+		if (!empty($result['id'])) {
+			return $result;
+		} else {
+			return false;
+		}
+	}
+	
+	//IN:  order id, tracker id
+	//OUT: tracker info, if no return - check errors
+	public function updateOrderTracker($order_id, $tracker_id, $tracker_info) {
+		$command = '/v2/checkout/orders/' . $order_id . '/trackers/' . $tracker_id;
+		
+		$params = $tracker_info;
+				
+		$result = $this->execute('PATCH', $command, $params, true);
+		
+		return true;
+	}
 				
 	//OUT: number of errors
 	public function hasErrors()	{
