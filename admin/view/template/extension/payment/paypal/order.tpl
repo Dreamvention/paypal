@@ -1,5 +1,5 @@
 <div class="row">
-	<div class="col-sm-6">
+	<div class="col-lg-6">
 		<table class="table table-bordered">
 			<thead>
 				<tr>
@@ -12,8 +12,6 @@
 					<td>
 						<a href="<?php echo $transaction_url; ?>" target="_blank"><?php echo $transaction_id; ?></a>
 						<input type="hidden" name="order_id" value="<?php echo $order_id; ?>" id="input_order_id" />
-						<input type="hidden" name="paypal_order_id" value="<?php echo $paypal_order_id; ?>" id="input_paypal_order_id" />
-						<input type="hidden" name="transaction_id" value="<?php echo $transaction_id; ?>" id="input_transaction_id" />
 						<input type="hidden" name="country_code" value="<?php echo $country_code; ?>" id="input_country_code" />
 					</td>
 				</tr>
@@ -21,17 +19,47 @@
 					<td><?php echo $text_transaction_description; ?></td>
 					<td><?php echo ${'text_transaction_' . $transaction_status}; ?></td>
 				</tr>
-				<?php if (($transaction_status == 'created') || ($transaction_status == 'completed')) { ?>
+				<?php if (($transaction_status == 'created') || ($transaction_status == 'completed') || ($transaction_status == 'partially_captured') || ($transaction_status == 'partially_refunded')) { ?>
 				<tr>
 					<td><?php echo $text_transaction_action; ?></td>
 					<td>
-						<?php if ($transaction_status == 'created') { ?>
-						<button type="button" class="btn btn-primary button-capture-payment"><?php echo $button_capture_payment; ?></button>
-						<button type="button" class="btn btn-primary button-reauthorize-payment"><?php echo $button_reauthorize_payment; ?></button>
-						<button type="button" class="btn btn-primary button-void-payment"><?php echo $button_void_payment; ?></button>
+						<?php if (($transaction_status == 'created') || ($transaction_status == 'partially_captured')) { ?>
+						<div class="row" style="margin: 0px -4px">
+							<div class="col-lg-4" style="padding: 4px 4px;">
+								<button type="button" class="btn btn-primary btn-block button-capture-payment"><?php echo $button_capture_payment; ?></button>
+							</div>
+							<div class="col-lg-4" style="padding: 4px 4px;">
+								<input type="text" name="capture_amount" value="<?php echo $capture_amount; ?>" id="input_capture_amount" class="form-control" />
+							</div>
+							<div class="col-lg-4" style="padding: 4px 4px;">
+								<div class="checkbox">
+									<label><input type="checkbox" name="final_capture" value="1" checked="checked" id="input_final_capture">&nbsp;<?php echo $text_final_capture; ?></label>
+								</div>
+							</div>
+						</div>
+						<div class="row" style="margin: 0px -4px">
+							<div class="col-lg-4" style="padding: 4px 4px;">
+								<button type="button" class="btn btn-primary btn-block button-reauthorize-payment"><?php echo $button_reauthorize_payment; ?></button>
+							</div>
+							<div class="col-lg-4" style="padding: 4px 4px;">
+								<input type="text" name="reauthorize_amount" value="<?php echo $reauthorize_amount; ?>" id="input_reauthorize_amount" class="form-control" />
+							</div>
+						</div>
+						<div class="row" style="margin: 0px -4px">
+							<div class="col-lg-4" style="padding: 4px 4px;">
+								<button type="button" class="btn btn-primary btn-block button-void-payment"><?php echo $button_void_payment; ?></button>
+							</div>
+						</div>
 						<?php } ?>
-						<?php if ($transaction_status == 'completed') { ?>
-						<button type="button" class="btn btn-primary button-refund-payment"><?php echo $button_refund_payment; ?></button>
+						<?php if (($transaction_status == 'completed') || ($transaction_status == 'partially_refunded')) { ?>
+						<div class="row" style="margin: 0px -4px">
+							<div class="col-lg-4" style="padding: 4px 4px;">
+								<button type="button" class="btn btn-primary btn-block button-refund-payment"><?php echo $button_refund_payment; ?></button>
+							</div>
+							<div class="col-lg-4" style="padding: 4px 4px;">
+								<input type="text" name="refund_amount" value="<?php echo $refund_amount; ?>" id="input_refund_amount" class="form-control" />
+							</div>
+						</div>
 						<?php } ?>
 					</td>
 				</tr>
@@ -40,7 +68,7 @@
 		</table>
 	</div>
 	<?php if ($transaction_status == 'completed') { ?>
-	<div class="col-sm-6">
+	<div class="col-lg-6">
 		<table class="table table-bordered">
 			<thead>
 				<tr>
@@ -92,7 +120,7 @@ window.addEventListener('load', function () {
 		$.ajax({
 			type: 'post',
 			url: '<?php echo $capture_payment_url; ?>',
-			data: {'order_id': $('#tab-paypal #input_order_id').val(), 'transaction_id': $('#tab-paypal #input_transaction_id').val()},
+			data: {'order_id': $('#tab-paypal #input_order_id').val(), 'capture_amount': $('#tab-paypal #input_capture_amount').val(), 'final_capture': $('#tab-paypal #input_final_capture:checked').val()},
 			dataType: 'json',
 			beforeSend: function() {
 				$('#tab-paypal .btn').prop('disabled', true);
@@ -127,7 +155,7 @@ window.addEventListener('load', function () {
 		$.ajax({
 			type: 'post',
 			url: '<?php echo $reauthorize_payment_url; ?>',
-			data: {'order_id': $('#tab-paypal #input_order_id').val(), 'transaction_id': $('#tab-paypal #input_transaction_id').val()},
+			data: {'order_id': $('#tab-paypal #input_order_id').val(), 'reauthorize_amount': $('#tab-paypal #input_reauthorize_amount').val()},
 			dataType: 'json',
 			beforeSend: function() {
 				$('#tab-paypal .btn').prop('disabled', true);
@@ -162,7 +190,7 @@ window.addEventListener('load', function () {
 		$.ajax({
 			type: 'post',
 			url: '<?php echo $void_payment_url; ?>',
-			data: {'order_id': $('#tab-paypal #input_order_id').val(), 'transaction_id': $('#tab-paypal #input_transaction_id').val()},
+			data: {'order_id': $('#tab-paypal #input_order_id').val()},
 			dataType: 'json',
 			beforeSend: function() {
 				$('#tab-paypal .btn').prop('disabled', true);
@@ -197,7 +225,7 @@ window.addEventListener('load', function () {
 		$.ajax({
 			type: 'post',
 			url: '<?php echo $refund_payment_url; ?>',
-			data: {'order_id': $('#tab-paypal #input_order_id').val(), 'transaction_id': $('#tab-paypal #input_transaction_id').val()},
+			data: {'order_id': $('#tab-paypal #input_order_id').val(), 'refund_amount': $('#tab-paypal #input_refund_amount').val()},
 			dataType: 'json',
 			beforeSend: function() {
 				$('#tab-paypal .btn').prop('disabled', true);
@@ -232,7 +260,7 @@ window.addEventListener('load', function () {
 		$.ajax({
 			type: 'post',
 			url: '<?php echo $create_tracker_url; ?>',
-			data: {'order_id': $('#tab-paypal #input_order_id').val(), 'paypal_order_id': $('#tab-paypal #input_paypal_order_id').val(), 'transaction_id': $('#tab-paypal #input_transaction_id').val(), 'country_code': $('#tab-paypal #input_country_code').val(), 'tracking_number': $('#tab-paypal #input_tracking_number').val(), 'carrier_name': $('#tab-paypal #input_carrier_name').val()},
+			data: {'order_id': $('#tab-paypal #input_order_id').val(), 'country_code': $('#tab-paypal #input_country_code').val(), 'tracking_number': $('#tab-paypal #input_tracking_number').val(), 'carrier_name': $('#tab-paypal #input_carrier_name').val()},
 			dataType: 'json',
 			beforeSend: function() {
 				$('#tab-paypal .btn').prop('disabled', true);
@@ -267,7 +295,7 @@ window.addEventListener('load', function () {
 		$.ajax({
 			type: 'post',
 			url: '<?php echo $cancel_tracker_url; ?>',
-			data: {'order_id': $('#tab-paypal #input_order_id').val(), 'paypal_order_id': $('#tab-paypal #input_paypal_order_id').val(), 'transaction_id': $('#tab-paypal #input_transaction_id').val(), 'tracking_number': $('#tab-paypal #input_tracking_number').val()},
+			data: {'order_id': $('#tab-paypal #input_order_id').val(), 'tracking_number': $('#tab-paypal #input_tracking_number').val()},
 			dataType: 'json',
 			beforeSend: function() {
 				$('#tab-paypal .btn').prop('disabled', true);
