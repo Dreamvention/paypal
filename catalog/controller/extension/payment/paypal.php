@@ -10,7 +10,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			ini_set('serialize_precision', 14);
 		}
 		
-		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && ($this->config->get('paypal_version') < '3.0.0'))) {
+		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && ($this->config->get('paypal_version') < '3.1.0'))) {
 			$this->update();
 		}
 	}
@@ -42,9 +42,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			
 			$data['button_status'] = $setting['button']['checkout']['status'];
 			$data['googlepay_button_status'] = $setting['googlepay_button']['checkout']['status'];
-			$data['applepay_button_status'] = $setting['applepay_button']['checkout']['status'];
 			$data['card_status'] = $setting['card']['status'];
 			
+			if ($setting['applepay_button']['checkout']['status'] && $this->isApple()) {
+				$data['applepay_button_status'] = $setting['applepay_button']['checkout']['status'];
+			} else {
+				$data['applepay_button_status'] = false;
+			}
+
 			$data['logged'] = $this->customer->isLogged();
 										
 			require_once DIR_SYSTEM .'library/paypal/paypal.php';
@@ -120,8 +125,13 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			
 		$data['button_status'] = $setting['button']['checkout']['status'];
 		$data['googlepay_button_status'] = $setting['googlepay_button']['checkout']['status'];
-		$data['applepay_button_status'] = $setting['applepay_button']['checkout']['status'];
 		$data['card_status'] = $setting['card']['status'];
+		
+		if ($setting['applepay_button']['checkout']['status'] && $this->isApple()) {
+			$data['applepay_button_status'] = $setting['applepay_button']['checkout']['status'];
+		} else {
+			$data['applepay_button_status'] = false;
+		}
 							
 		require_once DIR_SYSTEM .'library/paypal/paypal.php';
 		
@@ -1287,7 +1297,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 						$this->session->data['guest']['firstname'] = (isset($paypal_order_info['payer']['name']['given_name']) ? $paypal_order_info['payer']['name']['given_name'] : '');
 						$this->session->data['guest']['lastname'] = (isset($paypal_order_info['payer']['name']['surname']) ? $paypal_order_info['payer']['name']['surname'] : '');
 						$this->session->data['guest']['email'] = (isset($paypal_order_info['payer']['email_address']) ? $paypal_order_info['payer']['email_address'] : '');
-						$this->session->data['guest']['telephone'] = '';
+						$this->session->data['guest']['telephone'] = (isset($paypal_order_info['payer']['phone']['phone_number']['national_number']) ? $paypal_order_info['payer']['phone']['phone_number']['national_number'] : '');
 						$this->session->data['guest']['custom_field'] = array();
 					}
 								
@@ -1363,38 +1373,103 @@ class ControllerExtensionPaymentPayPal extends Controller {
 							}
 						}
 					}
-					
-					if (empty($paypal_order_info['payer']['name']) && empty($paypal_order_info['purchase_units'][0]['shipping']['address']) && !empty($paypal_order_info['payment_source'])) {
-						foreach ($paypal_order_info['payment_source'] as $payment_source) {
-							$this->session->data['guest']['firstname'] = (isset($payment_source['card']['name']) ? $payment_source['card']['name'] : '');
+									
+					if (($payment_type == 'googlepay_button') && !empty($this->request->post['payment_data'])) {
+						$payment_data = json_decode(htmlspecialchars_decode($this->request->post['payment_data']), true);
+						
+						if (isset($payment_data['paymentMethodData']['info']['billingAddress']['name'])) {
+							$payment_name = explode(' ', $payment_data['paymentMethodData']['info']['billingAddress']['name']);
+							$payment_firstname = $payment_name[0];
+							unset($payment_name[0]);
+							$payment_lastname = implode(' ', $payment_name);
+						}
 							
-							$this->session->data['payment_address']['firstname'] = (isset($payment_source['card']['name']) ? $payment_source['card']['name'] : '');
-							$this->session->data['payment_address']['address_1'] = (isset($payment_source['card']['billing_address']['address_line_1']) ? $payment_source['card']['billing_address']['address_line_1'] : '');
-							$this->session->data['payment_address']['city'] = (isset($payment_source['card']['billing_address']['admin_area_2']) ? $payment_source['card']['billing_address']['admin_area_2'] : '');
-							$this->session->data['payment_address']['postcode'] = (isset($payment_source['card']['billing_address']['postal_code']) ? $payment_source['card']['billing_address']['postal_code'] : '');
+						$this->session->data['guest']['firstname'] = (isset($payment_firstname) ? $payment_firstname : '');
+						$this->session->data['guest']['lastname'] = (isset($payment_lastname) ? $payment_lastname : '');
+						$this->session->data['guest']['email'] = (isset($payment_data['email']) ? $payment_data['email'] : '');
+						$this->session->data['guest']['telephone'] = (isset($payment_data['paymentMethodData']['info']['billingAddress']['phoneNumber']) ? $payment_data['paymentMethodData']['info']['billingAddress']['phoneNumber'] : '');
+						
+						$this->session->data['payment_address']['firstname'] = (isset($shipping_firstname) ? $shipping_firstname : '');
+						$this->session->data['payment_address']['lastname'] = (isset($shipping_lastname) ? $shipping_lastname : '');
+						$this->session->data['payment_address']['address_1'] = (isset($payment_data['paymentMethodData']['info']['billingAddress']['address1']) ? $payment_data['paymentMethodData']['info']['billingAddress']['address1'] : '');
+						$this->session->data['payment_address']['city'] = (isset($payment_data['paymentMethodData']['info']['billingAddress']['locality']) ? $payment_data['paymentMethodData']['info']['billingAddress']['locality'] : '');
+						$this->session->data['payment_address']['postcode'] = (isset($payment_data['paymentMethodData']['info']['billingAddress']['postalCode']) ? $payment_data['paymentMethodData']['info']['billingAddress']['postalCode'] : '');
 							
-							if (isset($payment_source['card']['billing_address']['country_code'])) {
-								$country_info = $this->model_extension_payment_paypal->getCountryByCode($payment_source['card']['billing_address']['country_code']);
+						if (isset($payment_data['paymentMethodData']['info']['billingAddress']['countryCode'])) {
+							$country_info = $this->model_extension_payment_paypal->getCountryByCode($payment_data['paymentMethodData']['info']['billingAddress']['countryCode']);
+			
+							if ($country_info) {
+								$this->session->data['payment_address']['country'] = $country_info['name'];
+								$this->session->data['payment_address']['country_id'] = $country_info['country_id'];
+							}
+						}
+							
+						if ($this->cart->hasShipping()) {
+							if (isset($payment_data['shippingAddress']['name'])) {
+								$shipping_name = explode(' ', $payment_data['shippingAddress']['name']);
+								$shipping_firstname = $shipping_name[0];
+								unset($shipping_name[0]);
+								$shipping_lastname = implode(' ', $shipping_name);
+							}
+						
+							$this->session->data['shipping_address']['firstname'] = (isset($shipping_firstname) ? $shipping_firstname : '');
+							$this->session->data['shipping_address']['lastname'] = (isset($shipping_lastname) ? $shipping_lastname : '');
+							$this->session->data['shipping_address']['address_1'] = (isset($payment_data['shippingAddress']['address1']) ? $payment_data['shippingAddress']['address1'] : '');
+							$this->session->data['shipping_address']['city'] = (isset($payment_data['shippingAddress']['locality']) ? $payment_data['shippingAddress']['locality'] : '');
+							$this->session->data['shipping_address']['postcode'] = (isset($payment_data['shippingAddress']['postalCode']) ? $payment_data['shippingAddress']['postalCode'] : '');
+							
+							if (isset($payment_data['shippingAddress']['countryCode'])) {
+								$country_info = $this->model_extension_payment_paypal->getCountryByCode($payment_data['shippingAddress']['countryCode']);
 			
 								if ($country_info) {
-									$this->session->data['payment_address']['country'] = $country_info['name'];
-									$this->session->data['payment_address']['country_id'] = $country_info['country_id'];
+									$this->session->data['shipping_address']['country'] = $country_info['name'];
+									$this->session->data['shipping_address']['country_id'] = $country_info['country_id'];
 								}
 							}
-							
-							if ($this->cart->hasShipping()) {
-								$this->session->data['shipping_address']['firstname'] = $this->session->data['payment_address']['firstname'];
-								$this->session->data['shipping_address']['address_1'] = $this->session->data['payment_address']['address_1'];
-								$this->session->data['shipping_address']['city'] = $this->session->data['payment_address']['city'];
-								$this->session->data['shipping_address']['postcode'] = $this->session->data['payment_address']['postcode'] ;
-								$this->session->data['shipping_address']['country'] = $this->session->data['payment_address']['country'];
-								$this->session->data['shipping_address']['country_id'] = $this->session->data['payment_address']['country_id'];
-							}
-											
-							break;
 						}
 					}
 					
+					if (($payment_type == 'applepay_button') && !empty($this->request->post['payment_data'])) {
+						$payment_data = json_decode(htmlspecialchars_decode($this->request->post['payment_data']), true);
+					
+						$this->session->data['guest']['firstname'] = (isset($payment_data['billingContact']['givenName']) ? $payment_data['billingContact']['givenName'] : '');
+						$this->session->data['guest']['lastname'] = (isset($payment_data['billingContact']['familyName']) ? $payment_data['billingContact']['familyName'] : '');
+						$this->session->data['guest']['email'] = (isset($payment_data['shippingContact']['emailAddress']) ? $payment_data['shippingContact']['emailAddress'] : '');
+						$this->session->data['guest']['telephone'] = (isset($payment_data['shippingContact']['phoneNumber']) ? $payment_data['shippingContact']['phoneNumber'] : '');
+						
+						$this->session->data['payment_address']['firstname'] = (isset($payment_data['billingContact']['givenName']) ? $payment_data['billingContact']['givenName'] : '');
+						$this->session->data['payment_address']['lastname'] = (isset($payment_data['billingContact']['familyName']) ? $payment_data['billingContact']['familyName'] : '');
+						$this->session->data['payment_address']['address_1'] = (isset($payment_data['billingContact']['addressLines']) ? $payment_data['billingContact']['addressLines'] : '');
+						$this->session->data['payment_address']['city'] = (isset($payment_data['billingContact']['locality']) ? $payment_data['billingContact']['locality'] : '');
+						$this->session->data['payment_address']['postcode'] = (isset($payment_data['billingContact']['postalCode']) ? $payment_data['billingContact']['postalCode'] : '');
+							
+						if (isset($payment_data['billingContact']['countryCode'])) {
+							$country_info = $this->model_extension_payment_paypal->getCountryByCode($payment_data['billingContact']['countryCode']);
+			
+							if ($country_info) {
+								$this->session->data['payment_address']['country'] = $country_info['name'];
+								$this->session->data['payment_address']['country_id'] = $country_info['country_id'];
+							}
+						}
+							
+						if ($this->cart->hasShipping()) {						
+							$this->session->data['shipping_address']['firstname'] = (isset($payment_data['shippingContact']['givenName']) ? $payment_data['shippingContact']['givenName'] : '');
+							$this->session->data['shipping_address']['lastname'] = (isset($payment_data['shippingContact']['familyName']) ? $payment_data['shippingContact']['familyName'] : '');
+							$this->session->data['shipping_address']['address_1'] = (isset($payment_data['shippingContact']['addressLines']) ? $payment_data['shippingContact']['addressLines'] : '');
+							$this->session->data['shipping_address']['city'] = (isset($payment_data['shippingContact']['locality']) ? $payment_data['shippingContact']['locality'] : '');
+							$this->session->data['shipping_address']['postcode'] = (isset($payment_data['shippingContact']['postalCode']) ? $payment_data['shippingContact']['postalCode'] : '');
+							
+							if (isset($payment_data['shippingContact']['countryCode'])) {
+								$country_info = $this->model_extension_payment_paypal->getCountryByCode($payment_data['shippingContact']['countryCode']);
+			
+								if ($country_info) {
+									$this->session->data['shipping_address']['country'] = $country_info['name'];
+									$this->session->data['shipping_address']['country_id'] = $country_info['country_id'];
+								}
+							}
+						}
+					}
+
 					if ($payment_type == 'button') {
 						$this->session->data['payment_method'] = array(
 							'code'       => 'paypal',
@@ -1559,7 +1634,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 								$card_nice_type = (!empty($this->request->post['card_nice_type']) ? $this->request->post['card_nice_type'] : '');
 								$card_last_digits = '';
 								$card_expiry = '';
-								
+																
 								if (!$this->cart->hasShipping()) {
 									$seller_protection_status = 'NOT_ELIGIBLE';
 								}
@@ -1633,6 +1708,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 										'card_nice_type' => $card_nice_type,
 										'card_last_digits' => $card_last_digits,
 										'card_expiry' => $card_expiry,
+										'total' => $order_info['total'],
+										'currency_code' => $order_info['currency_code'],
 										'environment' => $environment
 									);
 
@@ -1760,6 +1837,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 										'card_nice_type' => $card_nice_type,
 										'card_last_digits' => $card_last_digits,
 										'card_expiry' => $card_expiry,
+										'total' => $order_info['total'],
+										'currency_code' => $order_info['currency_code'],
 										'environment' => $environment
 									);
 
@@ -2941,6 +3020,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 									'card_nice_type' => $card_nice_type,
 									'card_last_digits' => $card_last_digits,
 									'card_expiry' => $card_expiry,
+									'total' => $order_data['total'],
+									'currency_code' => $order_data['currency_code'],
 									'environment' => $environment
 								);
 
@@ -3068,6 +3149,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 									'card_nice_type' => $card_nice_type,
 									'card_last_digits' => $card_last_digits,
 									'card_expiry' => $card_expiry,
+									'total' => $order_data['total'],
+									'currency_code' => $order_data['currency_code'],
 									'environment' => $environment
 								);
 
@@ -3638,6 +3721,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 											'card_nice_type' => $card_nice_type,
 											'card_last_digits' => $card_last_digits,
 											'card_expiry' => $card_expiry,
+											'total' => $order_info['total'],
+											'currency_code' => $order_info['currency_code'],
 											'environment' => $environment
 										);
 
@@ -3737,6 +3822,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 											'card_nice_type' => $card_nice_type,
 											'card_last_digits' => $card_last_digits,
 											'card_expiry' => $card_expiry,
+											'total' => $order_info['total'],
+											'currency_code' => $order_info['currency_code'],
 											'environment' => $environment
 										);
 
@@ -3899,11 +3986,14 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					$order_id = reset($invoice_id);
 					
 					$order_info = $this->model_checkout_order->getOrder($order_id);
-				
-					if ($order_info) {
-						$order_status_id = 0;
-						$transaction_status = '';
 					
+					$paypal_order_info = $this->model_extension_payment_paypal->getPayPalOrder($order_id);
+
+					if ($order_info && $paypal_order_info) {
+						$order_status_id = 0;
+						$transaction_id = $paypal_order_info['transaction_id'];
+						$transaction_status = $paypal_order_info['transaction_status'];
+
 						if ($webhook_event['event_type'] == 'PAYMENT.AUTHORIZATION.CREATED') {
 							$order_status_id = $setting['order_status']['pending']['id'];
 							$transaction_status = 'created';
@@ -3915,8 +4005,13 @@ class ControllerExtensionPaymentPayPal extends Controller {
 						}
 			
 						if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.COMPLETED') {
-							$order_status_id = $setting['order_status']['completed']['id'];
-							$transaction_status = 'completed';
+							if (!empty($webhook_event['resource']['final_capture'])) {
+								$order_status_id = $setting['order_status']['completed']['id'];
+								$transaction_status = 'completed';
+							} else {
+								$order_status_id = $setting['order_status']['partially_captured']['id'];
+								$transaction_status = 'partially_captured';
+							}
 						}
 		
 						if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.DENIED') {
@@ -3930,8 +4025,15 @@ class ControllerExtensionPaymentPayPal extends Controller {
 						}
 		
 						if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.REFUNDED') {
-							$order_status_id = $setting['order_status']['refunded']['id'];
-							$transaction_status = 'refunded';
+							$result = $paypal->getPaymentCapture($transaction_id);
+							
+							if (!empty($result['status'] == 'REFUNDED')) {
+								$order_status_id = $setting['order_status']['refunded']['id'];
+								$transaction_status = 'refunded';
+							} elseif (!empty($result['status'] == 'PARTIALLY_REFUNDED')) {
+								$order_status_id = $setting['order_status']['partially_refunded']['id'];
+								$transaction_status = 'partially_refunded';
+							}
 						}
 		
 						if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.REVERSED') {
@@ -3951,13 +4053,13 @@ class ControllerExtensionPaymentPayPal extends Controller {
 									
 						if (isset($webhook_event['resource']['id']) && $transaction_status) {
 							$transaction_id = $webhook_event['resource']['id'];
-				
-							$paypal_order_data = array(
-								'order_id' => $order_id,
-								'transaction_status' => $transaction_status
-							);
-					
-							if (($transaction_status != 'refunded') && ($transaction_status != 'reversed')) {
+											
+							$paypal_order_data = array();
+							
+							$paypal_order_data['order_id'] = $order_id;
+							$paypal_order_data['transaction_status'] = $transaction_status;
+												
+							if (($transaction_status == 'created') && ($transaction_status == 'completed')) {
 								$paypal_order_data['transaction_id'] = $transaction_id;
 							}
 
