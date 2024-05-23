@@ -157,7 +157,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 		if (!empty($data['card_expiry'])) {
 			$implode[] = "`card_expiry` = '" . $this->db->escape($data['card_expiry']) . "'";
 		}
-					
+							
 		if ($implode) {
 			$sql .= implode(", ", $implode);
 		}
@@ -255,6 +255,14 @@ class PayPal extends \Opencart\System\Engine\Model {
 		
 		if (!empty($data['card_expiry'])) {
 			$implode[] = "`card_expiry` = '" . $this->db->escape($data['card_expiry']) . "'";
+		}
+		
+		if (!empty($data['total'])) {
+			$implode[] = "`total` = '" . (float)$data['total'] . "'";
+		}
+				
+		if (!empty($data['currency_code'])) {
+			$implode[] = "`currency_code` = '" . $this->db->escape($data['currency_code']) . "'";
 		}
 				
 		if (!empty($data['environment'])) {
@@ -742,11 +750,18 @@ class PayPal extends \Opencart\System\Engine\Model {
 	}
 	
 	public function update(): void {
-		$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_customer_token`");
-		$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order`");
+		if ($this->config->get('paypal_version') < '3.0.0') {
+			$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_customer_token`");
+			$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order`");
 				
-		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "paypal_checkout_integration_customer_token` (`customer_id` INT(11) NOT NULL, `payment_method` VARCHAR(20) NOT NULL, `vault_id` VARCHAR(50) NOT NULL, `vault_customer_id` VARCHAR(50) NOT NULL, `card_type` VARCHAR(40) NOT NULL, `card_nice_type` VARCHAR(40) NOT NULL, `card_last_digits` VARCHAR(4) NOT NULL, `card_expiry` VARCHAR(20) NOT NULL, `main_token_status` TINYINT(1) NOT NULL, PRIMARY KEY (`customer_id`, `payment_method`, `vault_id`), KEY `vault_customer_id` (`vault_customer_id`), KEY `main_token_status` (`main_token_status`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci");
-		$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order` (`order_id` INT(11) NOT NULL, `paypal_order_id` VARCHAR(20) NOT NULL, `transaction_id` VARCHAR(20) NOT NULL, `transaction_status` VARCHAR(20) NOT NULL, `payment_method` VARCHAR(20) NOT NULL, `vault_id` VARCHAR(50) NOT NULL, `vault_customer_id` VARCHAR(50) NOT NULL, `card_type` VARCHAR(40) NOT NULL, `card_nice_type` VARCHAR(40) NOT NULL, `card_last_digits` VARCHAR(4) NOT NULL, `card_expiry` VARCHAR(20) NOT NULL, `environment` VARCHAR(20) NOT NULL, PRIMARY KEY (`order_id`), KEY `paypal_order_id` (`paypal_order_id`), KEY `transaction_id` (`transaction_id`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci");
+			$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "paypal_checkout_integration_customer_token` (`customer_id` INT(11) NOT NULL, `payment_method` VARCHAR(20) NOT NULL, `vault_id` VARCHAR(50) NOT NULL, `vault_customer_id` VARCHAR(50) NOT NULL, `card_type` VARCHAR(40) NOT NULL, `card_nice_type` VARCHAR(40) NOT NULL, `card_last_digits` VARCHAR(4) NOT NULL, `card_expiry` VARCHAR(20) NOT NULL, `main_token_status` TINYINT(1) NOT NULL, PRIMARY KEY (`customer_id`, `payment_method`, `vault_id`), KEY `vault_customer_id` (`vault_customer_id`), KEY `main_token_status` (`main_token_status`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci");
+			$this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order` (`order_id` INT(11) NOT NULL, `paypal_order_id` VARCHAR(20) NOT NULL, `transaction_id` VARCHAR(20) NOT NULL, `transaction_status` VARCHAR(20) NOT NULL, `payment_method` VARCHAR(20) NOT NULL, `vault_id` VARCHAR(50) NOT NULL, `vault_customer_id` VARCHAR(50) NOT NULL, `card_type` VARCHAR(40) NOT NULL, `card_nice_type` VARCHAR(40) NOT NULL, `card_last_digits` VARCHAR(4) NOT NULL, `card_expiry` VARCHAR(20) NOT NULL, `total` DECIMAL(15,2) NOT NULL, `currency_code` VARCHAR(3) NOT NULL, `environment` VARCHAR(20) NOT NULL, `tracking_number` VARCHAR(64) NOT NULL, `carrier_name` VARCHAR(64) NOT NULL, PRIMARY KEY (`order_id`), KEY `paypal_order_id` (`paypal_order_id`), KEY `transaction_id` (`transaction_id`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci");
+		} elseif ($this->config->get('paypal_version') < '3.1.0') {
+			$this->db->query("ALTER TABLE `" . DB_PREFIX . "paypal_checkout_integration_order` ADD COLUMN `total` DECIMAL(15,2) NOT NULL AFTER `card_expiry`");
+			$this->db->query("ALTER TABLE `" . DB_PREFIX . "paypal_checkout_integration_order` ADD COLUMN `currency_code` VARCHAR(3) NOT NULL AFTER `total`");
+			$this->db->query("ALTER TABLE `" . DB_PREFIX . "paypal_checkout_integration_order` ADD COLUMN `tracking_number` VARCHAR(64) NOT NULL AFTER `environment`");
+			$this->db->query("ALTER TABLE `" . DB_PREFIX . "paypal_checkout_integration_order` ADD COLUMN `carrier_name` VARCHAR(64) NOT NULL AFTER `tracking_number`");
+		}
 				
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_order_info'");
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_header'");
@@ -774,6 +789,20 @@ class PayPal extends \Opencart\System\Engine\Model {
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_extension_get_extension_by_code', `description` = '', `trigger` = 'catalog/model/setting/extension/getExtensionByCode/after', `action` = 'extension/paypal/payment/paypal|extension_get_extension_by_code_after', `status` = '1', `sort_order` = '4'");
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_delete_order', `description` = '', `trigger` = 'catalog/model/checkout/order/deleteOrder/before', `action` = 'extension/paypal/payment/paypal|order_delete_order_before', `status` = '1', `sort_order` = '5'");
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_customer_delete_customer', `description` = '', `trigger` = 'admin/model/customer/customer/deleteCustomer/before', `action` = 'extension/paypal/payment/paypal|customer_delete_customer_before', `status` = '1', `sort_order` = '6'");
+		}
+		
+		if ($this->config->get('paypal_version') < '3.1.0') {
+			$setting = array();
+			
+			$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "setting` WHERE store_id = '0' AND `key` = 'payment_paypal_setting'");
+			
+			if ($query->row) {
+				$setting[$query->row['key']] = json_decode($query->row['value'], true);
+			}
+						
+			$setting['payment_paypal_setting']['general']['order_history_token'] = sha1(uniqid(mt_rand(), 1));
+			
+			$this->db->query("UPDATE " . DB_PREFIX . "setting SET `value` = '" . $this->db->escape(json_encode($setting)) . "', serialized = '1' WHERE `key` = '" . $this->db->escape('payment_paypal_setting') . "' AND store_id = '0'");
 		}
 								
 		$_config = new \Opencart\System\Engine\Config();

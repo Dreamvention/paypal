@@ -1,6 +1,6 @@
 <?php 
 $_['paypal_setting'] = [
-	'version' => '3.0.5',
+	'version' => '3.1.0',
 	'partner' => [
 		'production' => [
 			'partner_id' => 'TY2Q25KP2PX9L',
@@ -272,6 +272,21 @@ $_['paypal_setting'] = [
 			'code' => 'pending',
 			'name' => 'text_pending_status',
 			'id' => 1
+		],
+		'pending' => [
+			'code' => 'pending',
+			'name' => 'text_pending_status',
+			'id' => 1
+		],
+		'partially_captured' => [
+			'code' => 'partially_captured',
+			'name' => 'text_partially_captured_status',
+			'id' => 1
+		],
+		'partially_refunded' => [
+			'code' => 'partially_refunded',
+			'name' => 'text_partially_refunded_status',
+			'id' => 11
 		],
 		'refunded' => [
 			'code' => 'refunded',
