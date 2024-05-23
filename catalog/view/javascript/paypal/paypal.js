@@ -601,6 +601,8 @@ var PayPalAPI = (function () {
 								}
 							});
 							
+							paymentData.paymentMethodData.info.billingAddress.phoneNumber = paymentData.paymentMethodData.info.billingAddress.phoneNumber.replace('+', '');
+							
 							const confirmOrderResponse = await PayPalSDK.Googlepay().confirmOrder({
 								orderId: paypal_order_id,
 								paymentMethodData: paymentData.paymentMethodData
@@ -613,7 +615,7 @@ var PayPalAPI = (function () {
 									$.ajax({
 										method: 'post',
 										url: 'index.php?route=payment/paypal/approveOrder',
-										data: {'page_code': paypal_data['page_code'], 'payment_type': 'googlepay_button', 'paypal_order_id': paypal_order_id},
+										data: {'page_code': paypal_data['page_code'], 'payment_type': 'googlepay_button', 'paypal_order_id': paypal_order_id, 'payment_data': JSON.stringify(paymentData)},
 										dataType: 'json',
 										async: false,
 										success: function(json) {					
@@ -636,7 +638,7 @@ var PayPalAPI = (function () {
 								$.ajax({
 									method: 'post',
 									url: 'index.php?route=payment/paypal/approveOrder',
-									data: {'page_code': paypal_data['page_code'], 'payment_type': 'googlepay_button', 'paypal_order_id': paypal_order_id},
+									data: {'page_code': paypal_data['page_code'], 'payment_type': 'googlepay_button', 'paypal_order_id': paypal_order_id, 'payment_data': JSON.stringify(paymentData)},
 									dataType: 'json',
 									async: false,
 									success: function(json) {					
@@ -709,7 +711,10 @@ var PayPalAPI = (function () {
 					onClick: function() {
 						const paymentDataRequest = Object.assign({}, {apiVersion, apiVersionMinor});
 						
+						allowedPaymentMethods[0].parameters.billingAddressParameters.phoneNumberRequired = true;
+						
 						paymentDataRequest.allowedPaymentMethods = allowedPaymentMethods;
+						
 						paymentDataRequest.transactionInfo = {
 							countryCode: countryCode,
 							currencyCode: paypal_data['currency_code'],
@@ -719,9 +724,10 @@ var PayPalAPI = (function () {
 						}
 						
 						paymentDataRequest.merchantInfo = merchantInfo;
-
 						paymentDataRequest.callbackIntents = ['PAYMENT_AUTHORIZATION'];
-					
+						paymentDataRequest.emailRequired = true;
+						paymentDataRequest.shippingAddressRequired = true;
+											
 						paymentsClient.loadPaymentData(paymentDataRequest);
 					}
 				});
@@ -798,8 +804,8 @@ var PayPalAPI = (function () {
 				currencyCode: paypal_data['currency_code'],
 				merchantCapabilities,
 				supportedNetworks,
-				requiredBillingContactFields: ['name', 'phone', 'email', 'postalAddress'],
-				requiredShippingContactFields: [],
+				requiredBillingContactFields: ['name', 'postalAddress'],
+				requiredShippingContactFields: ['name', 'postalAddress', 'phone', 'email'],
 				total: {
 					label: 'Total',
 					amount: paypal_data['applepay_amount'],
@@ -881,6 +887,8 @@ var PayPalAPI = (function () {
 							console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
 						}
 					});
+					
+					event.payment.shippingContact.phoneNumber = event.payment.shippingContact.phoneNumber.replace('+', '');
 																	
 					await ApplePaySDK.confirmOrder({
 						orderId: paypal_order_id, 
@@ -892,7 +900,7 @@ var PayPalAPI = (function () {
 					$.ajax({
 						method: 'post',
 						url: 'index.php?route=payment/paypal/approveOrder',
-						data: {'page_code': paypal_data['page_code'], 'payment_type': 'applepay_button', 'paypal_order_id': paypal_order_id},
+						data: {'page_code': paypal_data['page_code'], 'payment_type': 'applepay_button', 'paypal_order_id': paypal_order_id, 'payment_data': JSON.stringify(event.payment)},
 						dataType: 'json',
 						async: false,
 						success: function(json) {					
