@@ -2770,12 +2770,16 @@ class ControllerPaymentPayPal extends Controller {
 			$data['text_transaction_pending'] = $this->language->get('text_transaction_pending');
 			$data['text_transaction_refunded'] = $this->language->get('text_transaction_refunded');
 			$data['text_transaction_partially_refunded'] = $this->language->get('text_transaction_partially_refunded');
-			$data['text_transaction_reversed'] = $this->language->get('text_transaction_reversed');	
+			$data['text_transaction_reversed'] = $this->language->get('text_transaction_reversed');
+			$data['text_transaction_comment'] = $this->language->get('text_transaction_comment');
+			$data['text_transaction_notify'] = $this->language->get('text_transaction_notify');
 			$data['text_transaction_action'] = $this->language->get('text_transaction_action');	
 			$data['text_final_capture'] = $this->language->get('text_final_capture');
 			$data['text_tracker_information'] = $this->language->get('text_tracker_information');
 			$data['text_tracking_number'] = $this->language->get('text_tracking_number');
 			$data['text_carrier_name'] = $this->language->get('text_carrier_name');
+			$data['text_tracker_comment'] = $this->language->get('text_tracker_comment');
+			$data['text_tracker_notify'] = $this->language->get('text_tracker_notify');
 			$data['text_tracker_action'] = $this->language->get('text_tracker_action');
 				
 			$data['button_capture_payment'] = $this->language->get('button_capture_payment');
@@ -2807,7 +2811,8 @@ class ControllerPaymentPayPal extends Controller {
 			$data['autocomplete_carrier_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/autocompleteCarrier', 'token=' . $this->session->data['token'], true));
 			$data['create_tracker_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/createTracker', 'token=' . $this->session->data['token'], true));
 			$data['cancel_tracker_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/cancelTracker', 'token=' . $this->session->data['token'], true));
-				
+			$data['info_order_history_url'] = str_replace('&amp;', '&', $this->url->link('sale/order/history', 'token=' . $this->session->data['token'] . '&order_id=' . $data['order_id'], true));
+			
 			$data['country_code'] = '';
 								
 			$country_id = $this->config->get('config_country_id');
@@ -2892,7 +2897,6 @@ class ControllerPaymentPayPal extends Controller {
 			if (isset($paypal_order_info['purchase_units'][0]['payments']) && !$this->error) {
 				$payments = $paypal_order_info['purchase_units'][0]['payments'];
 				
-				$order_status_id = 0;
 				$transaction_id = $data['transaction_id'];
 				$transaction_status = $data['transaction_status'];
 
@@ -2901,22 +2905,18 @@ class ControllerPaymentPayPal extends Controller {
 						$transaction_id = $authorization['id'];
 						
 						if (($authorization['status'] == 'CREATED') || ($authorization['status'] == 'PENDING')) {
-							$order_status_id = $setting['order_status']['pending']['id'];
 							$transaction_status = 'created';
 						}
 						
 						if ($authorization['status'] == 'CAPTURED') {
-							$order_status_id = $setting['order_status']['completed']['id'];
 							$transaction_status = 'completed';
 						}
 						
 						if ($authorization['status'] == 'PARTIALLY_CAPTURED') {
-							$order_status_id = $setting['order_status']['partially_captured']['id'];
 							$transaction_status = 'partially_captured';
 						}
 						
 						if ($authorization['status'] == 'VOIDED') {
-							$order_status_id = $setting['order_status']['voided']['id'];
 							$transaction_status = 'voided';
 						}
 						
@@ -2929,18 +2929,15 @@ class ControllerPaymentPayPal extends Controller {
 				if (!empty($payments['captures'])) {
 					foreach ($payments['captures'] as $capture) {
 						if (($capture['status'] == 'COMPLETED') && ($transaction_status == 'completed')) {
-							$order_status_id = $setting['order_status']['completed']['id'];
 							$transaction_id = $capture['id'];
 							$transaction_status = 'completed';
 						}
 						
 						if ($capture['status'] == 'PARTIALLY_REFUNDED') {
-							$order_status_id = $setting['order_status']['partially_refunded']['id'];
 							$transaction_status = 'partially_refunded';
 						}
 						
 						if ($capture['status'] == 'REFUNDED') {
-							$order_status_id = $setting['order_status']['refunded']['id'];
 							$transaction_status = 'refunded';
 						}
 						
@@ -2957,11 +2954,7 @@ class ControllerPaymentPayPal extends Controller {
 						}
 					}
 				}
-				
-				if ($order_status_id && ($order_info['order_status_id'] != $order_status_id)) {					
-					$this->model_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id);
-				}
-				
+								
 				$paypal_order_data = array();
 							
 				$paypal_order_data['order_id'] = $order_id;
@@ -2998,6 +2991,14 @@ class ControllerPaymentPayPal extends Controller {
 				$final_capture = true;
 			} else {
 				$final_capture = false;
+			}
+			
+			$comment = $this->request->post['comment'];
+			
+			if (!empty($this->request->post['notify'])) {
+				$notify = true;
+			} else {
+				$notify = false;
 			}
 									
 			$order_info = $this->model_sale_order->getOrder($order_id);
@@ -3087,8 +3088,8 @@ class ControllerPaymentPayPal extends Controller {
 						$transaction_status = 'partially_captured';
 					}
 					
-					if ($order_status_id && ($order_info['order_status_id'] != $order_status_id)) {					
-						$this->model_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id);
+					if ($order_status_id) {					
+						$this->model_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
 					}
 				
 					$paypal_order_data = array();
@@ -3118,12 +3119,20 @@ class ControllerPaymentPayPal extends Controller {
 			
 			$order_id = (int)$this->request->post['order_id'];
 			$reauthorize_amount = (float)$this->request->post['reauthorize_amount'];
+			$comment = $this->request->post['comment'];
+			
+			if (!empty($this->request->post['notify'])) {
+				$notify = true;
+			} else {
+				$notify = false;
+			}
 												
 			$paypal_order_info = $this->model_payment_paypal->getPayPalOrder($order_id);
 
 			if ($paypal_order_info) {
 				$transaction_id = $paypal_order_info['transaction_id'];
 				$currency_code = $paypal_order_info['currency_code'];
+				$order_status_id = 0;
 
 				$_config = new Config();
 				$_config->load('paypal');
@@ -3191,8 +3200,13 @@ class ControllerPaymentPayPal extends Controller {
 				}
 							
 				if (isset($result['id']) && isset($result['status']) && !$this->error) {
+					$order_status_id = $setting['order_status']['pending']['id'];
 					$transaction_id = $result['id'];
 					$transaction_status = 'created';
+					
+					if ($order_status_id) {					
+						$this->model_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
+					}
 														
 					$paypal_order_data = array(
 						'order_id' => $order_id,
@@ -3220,11 +3234,19 @@ class ControllerPaymentPayPal extends Controller {
 			$this->load->model('payment/paypal');
 			
 			$order_id = (int)$this->request->post['order_id'];
+			$comment = $this->request->post['comment'];
+			
+			if (!empty($this->request->post['notify'])) {
+				$notify = true;
+			} else {
+				$notify = false;
+			}
 															
 			$paypal_order_info = $this->model_payment_paypal->getPayPalOrder($order_id);
 
 			if ($paypal_order_info) {
 				$transaction_id = $paypal_order_info['transaction_id'];
+				$order_status_id = 0;
 								
 				$_config = new Config();
 				$_config->load('paypal');
@@ -3283,7 +3305,12 @@ class ControllerPaymentPayPal extends Controller {
 				}
 			
 				if (!$this->error) {
+					$order_status_id = $setting['order_status']['voided']['id'];
 					$transaction_status = 'voided';
+					
+					if ($order_status_id) {					
+						$this->model_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
+					}
 														
 					$paypal_order_data = array(
 						'order_id' => $order_id,
@@ -3312,6 +3339,13 @@ class ControllerPaymentPayPal extends Controller {
 			
 			$order_id = (int)$this->request->post['order_id'];
 			$refund_amount = (float)$this->request->post['refund_amount'];
+			$comment = $this->request->post['comment'];
+			
+			if (!empty($this->request->post['notify'])) {
+				$notify = true;
+			} else {
+				$notify = false;
+			}
 															
 			$order_info = $this->model_sale_order->getOrder($order_id);
 			
@@ -3532,8 +3566,8 @@ class ControllerPaymentPayPal extends Controller {
 						$transaction_status = 'partially_refunded';
 					}
 					
-					if ($order_status_id && ($order_info['order_status_id'] != $order_status_id)) {					
-						$this->model_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id);
+					if ($order_status_id) {					
+						$this->model_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
 					}
 				
 					$paypal_order_data = array();
@@ -3591,7 +3625,7 @@ class ControllerPaymentPayPal extends Controller {
 	}
 	
 	public function createTracker() {						
-		if ($this->config->get('paypal_status') && !empty($this->request->post['order_id']) && !empty($this->request->post['country_code']) && isset($this->request->post['tracking_number']) && isset($this->request->post['carrier_name'])) {
+		if ($this->config->get('paypal_status') && !empty($this->request->post['order_id'])) {
 			$this->load->language('payment/paypal');
 			
 			$this->load->model('payment/paypal');
@@ -3600,6 +3634,13 @@ class ControllerPaymentPayPal extends Controller {
 			$country_code = $this->request->post['country_code'];
 			$tracking_number = $this->request->post['tracking_number'];
 			$carrier_name = $this->request->post['carrier_name'];
+			$comment = $this->request->post['comment'];
+			
+			if (!empty($this->request->post['notify'])) {
+				$notify = true;
+			} else {
+				$notify = false;
+			}
 			
 			$paypal_order_info = $this->model_payment_paypal->getPayPalOrder($order_id);
 
@@ -3663,7 +3704,7 @@ class ControllerPaymentPayPal extends Controller {
 				$tracker_info['capture_id'] = $transaction_id;
 				$tracker_info['tracking_number'] = $tracking_number;
 				$tracker_info['carrier'] = $carrier_code;
-				$tracker_info['notify_payer'] = false;
+				$tracker_info['notify_payer'] = $notify;
 						
 				if ($carrier_code == 'OTHER') {
 					$tracker_info['carrier_name_other'] = $carrier_name;
@@ -3709,8 +3750,8 @@ class ControllerPaymentPayPal extends Controller {
 					if ($order_info) {
 						$order_status_id = $setting['order_status']['shipped']['id'];
 					
-						if ($order_info['order_status_id'] != $order_status_id) {					
-							$this->model_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id);
+						if ($order_status_id) {						
+							$this->model_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
 						}
 					}
 												
@@ -3726,7 +3767,7 @@ class ControllerPaymentPayPal extends Controller {
 	}
 	
 	public function cancelTracker() {						
-		if ($this->config->get('paypal_status') && !empty($this->request->post['order_id']) && isset($this->request->post['tracking_number'])) {
+		if ($this->config->get('paypal_status') && !empty($this->request->post['order_id'])) {
 			$this->load->language('payment/paypal');
 			
 			$this->load->model('payment/paypal');

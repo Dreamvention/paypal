@@ -3568,6 +3568,21 @@ class ControllerPaymentPayPal extends Controller {
 		
 			$this->load->model('payment/paypal');
 			
+			$order_id = $this->request->post['order_id'];
+			$order_status_id = $this->request->post['order_status_id'];
+			
+			if (!empty($this->request->post['comment'])) {
+				$comment = $this->request->post['comment'];
+			} else {
+				$comment = '';
+			}
+			
+			if (!empty($this->request->post['notify'])) {
+				$notify = $this->request->post['notify'];
+			} else {
+				$notify = false;
+			}
+			
 			$_config = new Config();
 			$_config->load('paypal');
 			
@@ -3578,7 +3593,7 @@ class ControllerPaymentPayPal extends Controller {
 			if (hash_equals($setting['general']['order_history_token'], $this->request->get['order_history_token'])) {		
 				$this->load->model('checkout/order');
 
-				$this->model_checkout_order->addOrderHistory($this->request->post['order_id'], $this->request->post['order_status_id'], '', true);
+				$this->model_checkout_order->addOrderHistory($order_id, $order_status_id, $comment, $notify);
 			
 				$data['success'] = $this->language->get('success_order');
 			}	
