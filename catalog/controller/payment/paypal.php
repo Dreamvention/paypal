@@ -2635,13 +2635,13 @@ class ControllerPaymentPayPal extends Controller {
 				$sub_total = $this->cart->getSubTotal();
 
 				// Affiliate
-				$this->load->model('account/customer');
-				
-				$affiliate_info = $this->model_account_customer->getAffiliateByTracking($this->request->cookie['tracking']);
+				$this->load->model('affiliate/affiliate');
+
+				$affiliate_info = $this->model_affiliate_affiliate->getAffiliateByCode($this->request->cookie['tracking']);
 
 				if ($affiliate_info) {
-					$order_data['affiliate_id'] = $affiliate_info['customer_id'];
-					$order_data['commission'] = ($sub_total / 100) * $affiliate_info['commission'];
+					$order_data['affiliate_id'] = $affiliate_info['affiliate_id'];
+					$order_data['commission'] = ($subtotal / 100) * $affiliate_info['commission'];
 				} else {
 					$order_data['affiliate_id'] = 0;
 					$order_data['commission'] = 0;
