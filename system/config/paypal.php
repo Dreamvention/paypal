@@ -1,6 +1,6 @@
 <?php 
 $_['paypal_setting'] = array(
-	'version' => '3.1.3',
+	'version' => '3.1.4',
 	'partner' => array(
 		'production' => array(
 			'partner_id' => 'TY2Q25KP2PX9L',
@@ -241,7 +241,7 @@ $_['paypal_setting'] = array(
 			'page_code' => 'home',
 			'page_name' => 'text_home',
 			'status' => true,
-			'insert_tag' => '#common-home',
+			'insert_tag' => '.common-home #content',
 			'insert_type' => 'prepend',
 			'layout' => 'flex',
 			'logo_type' => 'primary',
