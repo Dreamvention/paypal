@@ -4270,7 +4270,7 @@ class ControllerPaymentPayPal extends Controller {
 		$this->model_payment_paypal->update();
 	}
 	
-	public function header_before($route, &$data) {
+	public function content_top_before($route, &$data) {
 		$this->load->model('payment/paypal');
 		
 		$agree_status = $this->model_payment_paypal->getAgreeStatus();
@@ -4283,6 +4283,12 @@ class ControllerPaymentPayPal extends Controller {
 		
 			$setting = array_replace_recursive((array)$config_setting, (array)$this->config->get('paypal_setting'));
 			
+			$currency_code = $this->session->data['currency'];
+					
+			if (empty($setting['currency'][$currency_code]['status'])) {
+				$currency_code = $setting['general']['currency_code'];
+			}
+			
 			if (isset($this->request->get['route'])) {
 				$route = $this->request->get['route'];
 			} else {
@@ -4291,18 +4297,19 @@ class ControllerPaymentPayPal extends Controller {
 			
 			$params = array();
 			
-			if (($route == 'common/home') && $setting['message']['home']['status']) {
+			if (($route == 'common/home') && ($setting['message']['home']['status'] && !empty($setting['paylater_country'][$setting['general']['country_code']]) && ($currency_code == $setting['general']['currency_code']))) {
 				$params['page_code'] = 'home';
 			}
-			if (($route == 'product/product') && ($setting['button']['product']['status'] || $setting['googlepay_button']['product']['status'] || $setting['applepay_button']['product']['status'] || $setting['message']['product']['status'])) {
+			
+			if (($route == 'product/product') && ($setting['button']['product']['status'] || $setting['googlepay_button']['product']['status'] || $setting['applepay_button']['product']['status'] || ($setting['message']['product']['status'] && !empty($setting['paylater_country'][$setting['general']['country_code']]) && ($currency_code == $setting['general']['currency_code'])))) {
 				$params['page_code'] = 'product';
 			}
 			
-			if (($route == 'checkout/cart') && ($setting['button']['cart']['status'] || $setting['googlepay_button']['cart']['status'] || $setting['applepay_button']['cart']['status'] || $setting['message']['cart']['status'])) {
+			if (($route == 'checkout/cart') && ($setting['button']['cart']['status'] || $setting['googlepay_button']['cart']['status'] || $setting['applepay_button']['cart']['status'] || ($setting['message']['cart']['status'] && !empty($setting['paylater_country'][$setting['general']['country_code']]) && ($currency_code == $setting['general']['currency_code'])))) {
 				$params['page_code'] = 'cart';
 			}
 			
-			if (($route == $setting['general']['checkout_route']) && ($setting['button']['checkout']['status'] || $setting['googlepay_button']['checkout']['status'] || $setting['applepay_button']['checkout']['status'] || $setting['card']['status'] || $setting['message']['checkout']['status'])) {
+			if (($route == $setting['general']['checkout_route']) && ($setting['button']['checkout']['status'] || $setting['googlepay_button']['checkout']['status'] || $setting['applepay_button']['checkout']['status'] || $setting['card']['status'] || ($setting['message']['checkout']['status'] && !empty($setting['paylater_country'][$setting['general']['country_code']]) && ($currency_code == $setting['general']['currency_code'])))) {
 				$params['page_code'] = 'checkout';
 			}
 			

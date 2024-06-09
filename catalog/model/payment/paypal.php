@@ -793,12 +793,13 @@ class ModelPaymentPayPal extends Model {
 		
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_order_info'");
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_header'");
+		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_content_top'");
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_extension_get_extensions'");
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_order_delete_order'");
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_customer_delete_customer'");
 		
 		$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_info', `trigger` = 'admin/view/sale/order_info/before', `action` = 'payment/paypal/order_info_before'");
-		$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_header', `trigger` = 'catalog/controller/common/header/before', `action` = 'payment/paypal/header_before'");
+		$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_content_top', `trigger` = 'catalog/controller/common/content_top/before', `action` = 'payment/paypal/content_top_before'");
 		$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_extension_get_extensions', `trigger` = 'catalog/model/extension/extension/getExtensions/after', `action` = 'payment/paypal/extension_get_extensions_after'");
 		$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_delete_order', `trigger` = 'catalog/model/checkout/order/deleteOrder/before', `action` = 'payment/paypal/order_delete_order_before'");
 		$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_customer_delete_customer', `trigger` = 'admin/model/customer/customer/deleteCustomer/before', `action` = 'payment/paypal/customer_delete_customer_before'");
