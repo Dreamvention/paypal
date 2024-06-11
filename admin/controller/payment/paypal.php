@@ -13,7 +13,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$this->separator = '|';
 		}
 		
-		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && ($this->config->get('paypal_version') < '3.1.0'))) {
+		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && ($this->config->get('paypal_version') < '3.1.4'))) {
 			$this->update();
 		}
     }
