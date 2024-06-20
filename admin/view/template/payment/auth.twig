@@ -60,11 +60,11 @@
 							</div>
 						</div>
 					</div>
-					<div class="automatic-authorization {% if (authorization_type == 'manual') %}hidden{% endif %}">
+					<div class="automatic-authorization {% if (authorization_type == 'manual') %} hidden {% endif %}">
 						<a href="{{ configure_url[environment]['ppcp'] }}" target="_blank" class="btn btn-primary button-connect-ppcp" data-paypal-button="PPLtBlue" data-paypal-onboard-complete="onBoardedCallback">{{ button_connect }}</a>
 						<div class="checkout-express">{{ text_checkout_express }}</div>
 					</div>
-					<div class="manual-authorization {% if (authorization_type == 'automatic') %}hidden{% endif %}">
+					<div class="manual-authorization {% if (authorization_type == 'automatic') %} hidden {% endif %}">
 						<div class="row mb-3 text-start">
 							<label class="col-form-label" for="input_merchant_id">{{ entry_merchant_id }}</label>
 							<div class="input-group">

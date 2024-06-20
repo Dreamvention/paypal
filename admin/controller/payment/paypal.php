@@ -2413,11 +2413,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						$order_status_id = $setting['order_status']['partially_captured']['id'];
 						$transaction_status = 'partially_captured';
 					}
-					
-					if ($order_status_id) {					
-						$this->model_extension_paypal_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
-					}
-				
+									
 					$paypal_order_data = [];
 							
 					$paypal_order_data['order_id'] = $order_id;
@@ -2425,6 +2421,10 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					$paypal_order_data['transaction_status'] = $transaction_status;
 
 					$this->model_extension_paypal_payment_paypal->editPayPalOrder($paypal_order_data);
+					
+					if ($order_status_id) {					
+						$this->model_extension_paypal_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
+					}
 												
 					$data['success'] = $this->language->get('success_capture_payment');
 				}
@@ -2530,11 +2530,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					$order_status_id = $setting['order_status']['pending']['id'];
 					$transaction_id = $result['id'];
 					$transaction_status = 'created';
-					
-					if ($order_status_id) {					
-						$this->model_extension_paypal_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
-					}
-														
+																			
 					$paypal_order_data = [
 						'order_id' => $order_id,
 						'transaction_id' => $transaction_id,
@@ -2542,6 +2538,10 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					];
 	
 					$this->model_extension_paypal_payment_paypal->editPayPalOrder($paypal_order_data);
+					
+					if ($order_status_id) {					
+						$this->model_extension_paypal_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
+					}
 								
 					$data['success'] = $this->language->get('success_reauthorize_payment');
 				}
@@ -2635,17 +2635,17 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				if (!$this->error) {
 					$order_status_id = $setting['order_status']['voided']['id'];
 					$transaction_status = 'voided';
-					
-					if ($order_status_id) {					
-						$this->model_extension_paypal_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
-					}
-														
+																			
 					$paypal_order_data = [
 						'order_id' => $order_id,
 						'transaction_status' => $transaction_status
 					];
 
 					$this->model_extension_paypal_payment_paypal->editPayPalOrder($paypal_order_data);
+					
+					if ($order_status_id) {					
+						$this->model_extension_paypal_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
+					}
 								
 					$data['success'] = $this->language->get('success_void_payment');
 				}
@@ -2894,17 +2894,17 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						$order_status_id = $setting['order_status']['partially_refunded']['id'];
 						$transaction_status = 'partially_refunded';
 					}
-					
-					if ($order_status_id) {					
-						$this->model_extension_paypal_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
-					}
-				
+									
 					$paypal_order_data = [];
 							
 					$paypal_order_data['order_id'] = $order_id;	
 					$paypal_order_data['transaction_status'] = $transaction_status;
 
 					$this->model_extension_paypal_payment_paypal->editPayPalOrder($paypal_order_data);
+					
+					if ($order_status_id) {					
+						$this->model_extension_paypal_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
+					}
 													
 					$data['success'] = $this->language->get('success_refund_payment');
 				}
