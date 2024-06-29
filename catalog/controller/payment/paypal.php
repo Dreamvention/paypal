@@ -70,7 +70,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$data['card_status'] = $setting['card']['status'];
 			$data['message_status'] = $setting['message']['checkout']['status'];
 			
-			if ($setting['applepay_button']['checkout']['status'] && $this->isApple()) {
+			if ($setting['applepay_button']['checkout']['status'] && !empty($this->session->data['paypal']['applepay'])) {
 				$data['applepay_button_status'] = $setting['applepay_button']['checkout']['status'];
 			} else {
 				$data['applepay_button_status'] = false;
@@ -161,7 +161,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$data['card_status'] = $setting['card']['status'];
 		$data['message_status'] = $setting['message']['checkout']['status'];
 		
-		if ($setting['applepay_button']['checkout']['status'] && $this->isApple()) {
+		if ($setting['applepay_button']['checkout']['status'] && !empty($this->session->data['paypal']['applepay'])) {
 			$data['applepay_button_status'] = $setting['applepay_button']['checkout']['status'];
 		} else {
 			$data['applepay_button_status'] = false;
@@ -263,6 +263,10 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			}
 		
 			$data['decimal_place'] = $setting['currency'][$data['currency_code']]['decimal_place'];
+			
+			if (!empty($this->request->post['applepay'])) {
+				$this->session->data['paypal']['applepay'] = true;
+			}
 			
 			$data['components'] = [];
 			
@@ -412,7 +416,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					}
 				}
 				
-				if ($setting['applepay_button']['product']['status'] && $this->isApple()) {
+				if ($setting['applepay_button']['product']['status'] && !empty($this->session->data['paypal']['applepay'])) {
 					$data['components'][] = 'applepay';
 					$data['applepay_button_status'] = $setting['applepay_button']['product']['status'];
 					$data['applepay_button_insert_tag'] = html_entity_decode($setting['applepay_button']['product']['insert_tag']);
@@ -504,7 +508,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					$data['googlepay_amount'] = number_format($item_total * $data['currency_value'], $data['decimal_place'], '.', '');
 				}
 				
-				if ($setting['applepay_button']['cart']['status'] && $this->isApple()) {
+				if ($setting['applepay_button']['cart']['status'] && !empty($this->session->data['paypal']['applepay'])) {
 					$data['components'][] = 'applepay';
 					$data['applepay_button_status'] = $setting['applepay_button']['cart']['status'];
 					$data['applepay_button_insert_tag'] = html_entity_decode($setting['applepay_button']['cart']['insert_tag']);
@@ -635,7 +639,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					}
 				}
 				
-				if ($setting['applepay_button']['checkout']['status'] && $this->isApple()) {
+				if ($setting['applepay_button']['checkout']['status'] && !empty($this->session->data['paypal']['applepay'])) {
 					$data['components'][] = 'applepay';
 					$data['applepay_button_status'] = $setting['applepay_button']['checkout']['status'];
 					$data['applepay_button_align'] = $setting['applepay_button']['checkout']['align'];
@@ -4336,7 +4340,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					$this->document->addScript('https://pay.google.com/gp/p/js/pay.js');
 				}
 				
-				if (!empty($setting['applepay_button'][$params['page_code']]['status']) && $this->isApple()) {
+				if (!empty($setting['applepay_button'][$params['page_code']]['status'])) {
 					$this->document->addScript('https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js');
 				}
 								
@@ -4390,7 +4394,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					];
 				}
 				
-				if ($setting['applepay_button']['checkout']['status'] && $this->isApple()) {
+				if ($setting['applepay_button']['checkout']['status'] && !empty($this->session->data['paypal']['applepay'])) {
 					$this->config->set('payment_paypal_applepay_status', 1);
 					
 					$output[] = [
@@ -4443,7 +4447,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					];
 				}
 				
-				if (($code == 'paypal_applepay') && $setting['applepay_button']['checkout']['status'] && $this->isApple()) {
+				if (($code == 'paypal_applepay') && $setting['applepay_button']['checkout']['status'] && !empty($this->session->data['paypal']['applepay'])) {
 					$this->config->set('payment_paypal_applepay_status', 1);
 					
 					$output = [
@@ -4678,23 +4682,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		
 		return $data;
 	}
-	
-	private function isApple(): bool {
-		if (!empty($this->request->server['HTTP_USER_AGENT'])) {
-			$user_agent = strtolower($this->request->server['HTTP_USER_AGENT']);
-			
-			$apple_agents = ['ipod', 'iphone', 'ipad', 'apple'];
-
-            foreach ($apple_agents as $apple_agent){
-                if (stripos($user_agent, $apple_agent)) {
-                    return true;
-                }
-			}
-        }
 		
-		return false;
-	}
-	
 	private function strlen(string $str): int {
 		if (VERSION >= '4.0.2.0') {
 			return (int)oc_strlen($str);

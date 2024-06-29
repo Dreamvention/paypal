@@ -84,7 +84,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 					];
 				}
 				
-				if ($setting['applepay_button']['checkout']['status'] && $this->isApple()) {
+				if ($setting['applepay_button']['checkout']['status'] && !empty($this->session->data['paypal']['applepay'])) {
 					$option_data['applepay'] = [
 						'code' => 'paypal.applepay',
 						'name' => $this->language->get('text_paypal_applepay_title')
@@ -812,21 +812,5 @@ class PayPal extends \Opencart\System\Engine\Model {
 		$this->db->query("INSERT INTO " . DB_PREFIX . "setting SET store_id = '0', `code` = 'paypal_version', `key` = 'paypal_version', `value` = '" . $this->db->escape($config_setting['version']) . "'");
 		
 		$this->db->query("UPDATE `" . DB_PREFIX . "setting` SET `value` = 'Lax', `serialized` = '0'  WHERE `code` = 'config' AND `key` = 'config_session_samesite' AND `store_id` = '0'");
-	}
-	
-	private function isApple(): bool {
-		if (!empty($this->request->server['HTTP_USER_AGENT'])) {
-			$user_agent = strtolower($this->request->server['HTTP_USER_AGENT']);
-			
-			$apple_agents = array('ipod', 'iphone', 'ipad', 'apple');
-
-            foreach ($apple_agents as $apple_agent){
-                if (stripos($user_agent, $apple_agent)) {
-                    return true;
-                }
-			}
-        }
-		
-		return false;
 	}
 }
