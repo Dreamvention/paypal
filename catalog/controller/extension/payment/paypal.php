@@ -1678,7 +1678,6 @@ class ControllerExtensionPaymentPayPal extends Controller {
 								}
 						
 								if ($authorization_status == 'DENIED') {
-									$order_status_id = $setting['order_status']['denied']['id'];
 									$transaction_status = 'denied';
 							
 									$this->error['warning'] = $this->language->get('error_authorization_denied');
@@ -1752,7 +1751,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 									}
 								}
 									
-								if (($authorization_status == 'CREATED') || ($authorization_status == 'DENIED') || ($authorization_status == 'PENDING')) {
+								if (($authorization_status == 'CREATED') || ($authorization_status == 'PENDING')) {
 									$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
 											
 									$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $order_status_id, $message);
@@ -1766,7 +1765,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 									} 
 								}
 													
-								if (($authorization_status == 'CREATED') || ($authorization_status == 'PARTIALLY_CAPTURED') || ($authorization_status == 'PARTIALLY_CREATED') || ($authorization_status == 'VOIDED') || ($authorization_status == 'PENDING')) {
+								if (($authorization_status == 'CREATED') || ($authorization_status == 'PARTIALLY_CAPTURED') || ($authorization_status == 'PARTIALLY_CREATED') || ($authorization_status == 'PENDING')) {
 									$data['url'] = $this->url->link('checkout/success', '', true);
 								}
 							}
@@ -1807,7 +1806,6 @@ class ControllerExtensionPaymentPayPal extends Controller {
 								}
 						
 								if ($capture_status == 'DECLINED') {
-									$order_status_id = $setting['order_status']['denied']['id'];
 									$transaction_status = 'denied';
 							
 									$this->error['warning'] = $this->language->get('error_capture_declined');
@@ -1881,7 +1879,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 									}
 								}
 									
-								if (($capture_status == 'COMPLETED') || ($capture_status == 'DECLINED') || ($capture_status == 'PENDING')) {
+								if (($capture_status == 'COMPLETED') || ($capture_status == 'PENDING')) {
 									$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
 													
 									$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $order_status_id, $message);
@@ -1895,7 +1893,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 									} 
 								}
 						
-								if (($capture_status == 'COMPLETED') || ($capture_status == 'PARTIALLY_REFUNDED') || ($capture_status == 'REFUNDED') || ($capture_status == 'PENDING')) {
+								if (($capture_status == 'COMPLETED') || ($capture_status == 'PENDING')) {
 									$data['url'] = $this->url->link('checkout/success', '', true);
 								}
 							}
@@ -3023,7 +3021,6 @@ class ControllerExtensionPaymentPayPal extends Controller {
 							}
 						
 							if ($authorization_status == 'DENIED') {
-								$order_status_id = $setting['order_status']['denied']['id'];
 								$transaction_status = 'denied';
 							
 								$this->error['warning'] = $this->language->get('error_authorization_denied');
@@ -3097,7 +3094,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 								}
 							}
 							
-							if (($authorization_status == 'CREATED') || ($authorization_status == 'DENIED') || ($authorization_status == 'PENDING')) {
+							if (($authorization_status == 'CREATED') || ($authorization_status == 'PENDING')) {
 								$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
 											
 								$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $order_status_id, $message);
@@ -3111,7 +3108,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 								} 
 							}
 
-							if (($authorization_status == 'CREATED') || ($authorization_status == 'PARTIALLY_CAPTURED') || ($authorization_status == 'PARTIALLY_CREATED') || ($authorization_status == 'VOIDED') || ($authorization_status == 'PENDING')) {
+							if (($authorization_status == 'CREATED') || ($authorization_status == 'PARTIALLY_CAPTURED') || ($authorization_status == 'PARTIALLY_CREATED') || ($authorization_status == 'PENDING')) {
 								$this->response->redirect($this->url->link('checkout/success', '', true));
 							}
 						}
@@ -3152,7 +3149,6 @@ class ControllerExtensionPaymentPayPal extends Controller {
 							}
 						
 							if ($capture_status == 'DECLINED') {
-								$order_status_id = $setting['order_status']['denied']['id'];
 								$transaction_status = 'denied';
 							
 								$this->error['warning'] = $this->language->get('error_capture_declined');
@@ -3226,7 +3222,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 								}
 							}
 							
-							if (($capture_status == 'COMPLETED') || ($capture_status == 'DECLINED') || ($capture_status == 'PENDING')) {
+							if (($capture_status == 'COMPLETED') || ($capture_status == 'PENDING')) {
 								$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
 											
 								$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $order_status_id, $message);
@@ -3240,7 +3236,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 								} 
 							}
 														
-							if (($capture_status == 'COMPLETED') || ($capture_status == 'PARTIALLY_REFUNDED') || ($capture_status == 'REFUNDED') || ($capture_status == 'PENDING')) {
+							if (($capture_status == 'COMPLETED') || ($capture_status == 'PENDING')) {
 								$this->response->redirect($this->url->link('checkout/success', '', true));
 							}
 						}
@@ -3790,7 +3786,6 @@ class ControllerExtensionPaymentPayPal extends Controller {
 									}
 						
 									if ($authorization_status == 'DENIED') {
-										$order_status_id = $setting['order_status']['denied']['id'];
 										$transaction_status = 'denied';
 							
 										$this->error['warning'] = $this->language->get('error_authorization_denied');
@@ -3851,7 +3846,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 										}
 									}
 									
-									if (($authorization_status == 'CREATED') || ($authorization_status == 'DENIED') || ($authorization_status == 'PENDING')) {
+									if (($authorization_status == 'CREATED') || ($authorization_status == 'PENDING')) {
 										$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
 											
 										$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $order_status_id, $message);
@@ -3865,7 +3860,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 										} 
 									}
 													
-									if (($authorization_status == 'CREATED') || ($authorization_status == 'PARTIALLY_CAPTURED') || ($authorization_status == 'PARTIALLY_CREATED') || ($authorization_status == 'VOIDED') || ($authorization_status == 'PENDING')) {
+									if (($authorization_status == 'CREATED') || ($authorization_status == 'PARTIALLY_CAPTURED') || ($authorization_status == 'PARTIALLY_CREATED') || ($authorization_status == 'PENDING')) {
 										$this->response->redirect($this->url->link('checkout/success', '', true));
 									}
 								}
@@ -3891,7 +3886,6 @@ class ControllerExtensionPaymentPayPal extends Controller {
 									}
 						
 									if ($capture_status == 'DECLINED') {
-										$order_status_id = $setting['order_status']['denied']['id'];
 										$transaction_status = 'denied';
 							
 										$this->error['warning'] = $this->language->get('error_capture_declined');
@@ -3952,7 +3946,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 										}
 									}
 									
-									if (($capture_status == 'COMPLETED') || ($capture_status == 'DECLINED') || ($capture_status == 'PENDING')) {
+									if (($capture_status == 'COMPLETED') || ($capture_status == 'PENDING')) {
 										$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
 													
 										$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $order_status_id, $message);
@@ -3966,7 +3960,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 										} 
 									}
 						
-									if (($capture_status == 'COMPLETED') || ($capture_status == 'PARTIALLY_REFUNDED') || ($capture_status == 'REFUNDED') || ($capture_status == 'PENDING')) {
+									if (($capture_status == 'COMPLETED') || ($capture_status == 'PENDING')) {
 										$this->response->redirect($this->url->link('checkout/success', '', true));
 									}
 								}
@@ -4107,7 +4101,10 @@ class ControllerExtensionPaymentPayPal extends Controller {
 						}
 		
 						if ($webhook_event['event_type'] == 'PAYMENT.AUTHORIZATION.VOIDED') {
-							$order_status_id = $setting['order_status']['voided']['id'];
+							if ($order_info['order_status_id'] != 0) {
+								$order_status_id = $setting['order_status']['voided']['id'];
+							}
+							
 							$transaction_status = 'voided';
 						}
 			
@@ -4122,7 +4119,10 @@ class ControllerExtensionPaymentPayPal extends Controller {
 						}
 		
 						if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.DENIED') {
-							$order_status_id = $setting['order_status']['denied']['id'];
+							if ($order_info['order_status_id'] != 0) {
+								$order_status_id = $setting['order_status']['denied']['id'];
+							}
+							
 							$transaction_status = 'denied';
 						}
 		
@@ -4135,16 +4135,25 @@ class ControllerExtensionPaymentPayPal extends Controller {
 							$result = $paypal->getPaymentCapture($transaction_id);
 							
 							if (!empty($result['status'] == 'REFUNDED')) {
-								$order_status_id = $setting['order_status']['refunded']['id'];
+								if ($order_info['order_status_id'] != 0) {
+									$order_status_id = $setting['order_status']['refunded']['id'];
+								}
+								
 								$transaction_status = 'refunded';
 							} elseif (!empty($result['status'] == 'PARTIALLY_REFUNDED')) {
-								$order_status_id = $setting['order_status']['partially_refunded']['id'];
+								if ($order_info['order_status_id'] != 0) {
+									$order_status_id = $setting['order_status']['partially_refunded']['id'];
+								}
+								
 								$transaction_status = 'partially_refunded';
 							}
 						}
 		
 						if ($webhook_event['event_type'] == 'PAYMENT.CAPTURE.REVERSED') {
-							$order_status_id = $setting['order_status']['reversed']['id'];
+							if ($order_info['order_status_id'] != 0) {
+								$order_status_id = $setting['order_status']['reversed']['id'];
+							}
+							
 							$transaction_status = 'reversed';
 						}
 		
@@ -4168,8 +4177,6 @@ class ControllerExtensionPaymentPayPal extends Controller {
 						}
 						
 						if ($order_status_id && ($order_info['order_status_id'] != $order_status_id)) {					
-							$this->load->model('checkout/order');
-
 							$this->model_checkout_order->addOrderHistory($order_id, $order_status_id, '', true);
 						}
 					}
