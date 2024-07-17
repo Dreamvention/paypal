@@ -233,6 +233,10 @@
 	border-bottom-left-radius: 0px;
     border-top-left-radius: 0px;
 }
+.payment-paypal .card .form-check {
+	margin-top: 7px;
+	margin-bottom: 7px;
+}
 .payment-paypal .card .form-check-input {
 	display: inline-block;
 	width: 27px;
@@ -244,12 +248,17 @@
 	background-size: contain;
 	background-position: center;
 	border: 1px solid #919697;
+	border-radius: 3px;
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
 	-webkit-print-color-adjust: exact;
 	color-adjust: exact;
 	cursor: pointer;
+}
+.payment-paypal .card .form-check-input-mini {
+	width: 16px;
+	height: 16px;
 }
 .payment-paypal .card .form-check-input[type=radio] {
 	border-radius: 50%;
@@ -271,6 +280,11 @@
 	display: inline-block;
 	margin: 0px 0px;
 	vertical-align: middle;
+}
+.payment-paypal .card .form-control.form-control-list {
+	height: auto;
+	border: 1px solid #919697;
+	border-radius: 3px;
 }
 .payment-paypal .card .hr {
 	display: inline-block;
