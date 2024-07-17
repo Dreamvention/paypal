@@ -2456,7 +2456,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 
 					$this->model_extension_payment_paypal->editPayPalOrder($paypal_order_data);
 					
-					if ($order_status_id) {					
+					if ($order_status_id && ($order_info['order_status_id'] != $order_status_id) && !in_array($order_info['order_status_id'], $setting['final_order_status'])) {		
 						$this->model_extension_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
 					}
 												
@@ -2476,6 +2476,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$this->load->language('extension/payment/paypal');
 			
 			$this->load->model('extension/payment/paypal');
+			$this->load->model('sale/order');
 			
 			$order_id = (int)$this->request->post['order_id'];
 			$reauthorize_amount = (float)$this->request->post['reauthorize_amount'];
@@ -2487,9 +2488,11 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				$notify = false;
 			}
 												
+			$order_info = $this->model_sale_order->getOrder($order_id);
+			
 			$paypal_order_info = $this->model_extension_payment_paypal->getPayPalOrder($order_id);
 
-			if ($paypal_order_info) {
+			if ($order_info && $paypal_order_info) {
 				$transaction_id = $paypal_order_info['transaction_id'];
 				$currency_code = $paypal_order_info['currency_code'];
 				$order_status_id = 0;
@@ -2572,7 +2575,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 	
 					$this->model_extension_payment_paypal->editPayPalOrder($paypal_order_data);
 					
-					if ($order_status_id) {					
+					if ($order_status_id && ($order_info['order_status_id'] != $order_status_id) && !in_array($order_info['order_status_id'], $setting['final_order_status'])) {			
 						$this->model_extension_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
 					}
 								
@@ -2592,6 +2595,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$this->load->language('extension/payment/paypal');
 			
 			$this->load->model('extension/payment/paypal');
+			$this->load->model('sale/order');
 			
 			$order_id = (int)$this->request->post['order_id'];
 			$comment = $this->request->post['comment'];
@@ -2602,9 +2606,11 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				$notify = false;
 			}
 															
+			$order_info = $this->model_sale_order->getOrder($order_id);
+			
 			$paypal_order_info = $this->model_extension_payment_paypal->getPayPalOrder($order_id);
 
-			if ($paypal_order_info) {
+			if ($order_info && $paypal_order_info) {
 				$transaction_id = $paypal_order_info['transaction_id'];
 				$order_status_id = 0;
 								
@@ -2675,7 +2681,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 
 					$this->model_extension_payment_paypal->editPayPalOrder($paypal_order_data);
 					
-					if ($order_status_id) {					
+					if ($order_status_id && ($order_info['order_status_id'] != $order_status_id) && !in_array($order_info['order_status_id'], $setting['final_order_status'])) {			
 						$this->model_extension_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
 					}
 								
@@ -2933,7 +2939,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 
 					$this->model_extension_payment_paypal->editPayPalOrder($paypal_order_data);
 					
-					if ($order_status_id) {					
+					if ($order_status_id && ($order_info['order_status_id'] != $order_status_id) && !in_array($order_info['order_status_id'], $setting['final_order_status'])) {		
 						$this->model_extension_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
 					}
 													
@@ -2989,6 +2995,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$this->load->language('extension/payment/paypal');
 			
 			$this->load->model('extension/payment/paypal');
+			$this->load->model('sale/order');
 			
 			$order_id = $this->request->post['order_id'];
 			$country_code = $this->request->post['country_code'];
@@ -3002,9 +3009,11 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				$notify = false;
 			}
 			
+			$order_info = $this->model_sale_order->getOrder($order_id);
+			
 			$paypal_order_info = $this->model_extension_payment_paypal->getPayPalOrder($order_id);
 
-			if ($paypal_order_info) {
+			if ($order_info && $paypal_order_info) {
 				$paypal_order_id = $paypal_order_info['paypal_order_id'];
 				$transaction_id = $paypal_order_info['transaction_id'];
 				
@@ -3102,17 +3111,11 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					);
 	
 					$this->model_extension_payment_paypal->editPayPalOrder($paypal_order_data);
-				
-					$this->load->model('sale/order');
-				
-					$order_info = $this->model_sale_order->getOrder($order_id);
-				
-					if ($order_info) {
-						$order_status_id = $setting['order_status']['shipped']['id'];
+
+					$order_status_id = $setting['order_status']['shipped']['id'];
 					
-						if ($order_status_id) {					
-							$this->model_extension_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
-						}
+					if ($order_status_id && ($order_info['order_status_id'] != $order_status_id) && !in_array($order_info['order_status_id'], $setting['final_order_status'])) {					
+						$this->model_extension_payment_paypal->addOrderHistory($setting['general']['order_history_token'], $order_id, $order_status_id, $comment, $notify);
 					}
 												
 					$data['success'] = $this->language->get('success_create_tracker');
