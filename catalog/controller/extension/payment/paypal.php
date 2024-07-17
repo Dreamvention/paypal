@@ -1751,7 +1751,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 									}
 								}
 									
-								if (($authorization_status == 'CREATED') || ($authorization_status == 'PENDING')) {
+								if ($order_status_id) {
 									$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
 											
 									$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $order_status_id, $message);
@@ -1879,7 +1879,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 									}
 								}
 									
-								if (($capture_status == 'COMPLETED') || ($capture_status == 'PENDING')) {
+								if ($order_status_id) {
 									$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
 													
 									$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $order_status_id, $message);
@@ -3094,7 +3094,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 								}
 							}
 							
-							if (($authorization_status == 'CREATED') || ($authorization_status == 'PENDING')) {
+							if ($order_status_id) {
 								$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
 											
 								$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $order_status_id, $message);
@@ -3222,7 +3222,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 								}
 							}
 							
-							if (($capture_status == 'COMPLETED') || ($capture_status == 'PENDING')) {
+							if ($order_status_id) {
 								$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
 											
 								$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $order_status_id, $message);
@@ -3846,7 +3846,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 										}
 									}
 									
-									if (($authorization_status == 'CREATED') || ($authorization_status == 'PENDING')) {
+									if ($order_status_id) {
 										$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
 											
 										$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $order_status_id, $message);
@@ -3946,7 +3946,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 										}
 									}
 									
-									if (($capture_status == 'COMPLETED') || ($capture_status == 'PENDING')) {
+									if ($order_status_id) {
 										$message = sprintf($this->language->get('text_order_message'), $seller_protection_status);
 													
 										$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $order_status_id, $message);
@@ -4176,7 +4176,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 							$this->model_extension_payment_paypal->editPayPalOrder($paypal_order_data);
 						}
 						
-						if ($order_status_id && ($order_info['order_status_id'] != $order_status_id)) {					
+						if ($order_status_id && ($order_info['order_status_id'] != $order_status_id) && !in_array($order_info['order_status_id'], $setting['final_order_status'])) {					
 							$this->model_checkout_order->addOrderHistory($order_id, $order_status_id, '', true);
 						}
 					}
