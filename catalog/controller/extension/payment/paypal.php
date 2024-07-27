@@ -2633,7 +2633,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 
 				if ($affiliate_info) {
 					$order_data['affiliate_id'] = $affiliate_info['affiliate_id'];
-					$order_data['commission'] = ($subtotal / 100) * $affiliate_info['commission'];
+					$order_data['commission'] = ($sub_total / 100) * $affiliate_info['commission'];
 				} else {
 					$order_data['affiliate_id'] = 0;
 					$order_data['commission'] = 0;
