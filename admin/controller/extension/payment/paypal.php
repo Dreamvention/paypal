@@ -2123,6 +2123,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					'content' => $content
 				);
 			}	
+			
+			$this->load->language('sale/order');
 		}
 	}
 	
