@@ -2735,9 +2735,9 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			
 			if ($content) {	
 				$data['tabs'][] = array(
-				'code'    => 'paypal',
-				'title'   => $this->language->get('heading_title_main'),
-				'content' => $content
+					'code'    => 'paypal',
+					'title'   => $this->language->get('heading_title_main'),
+					'content' => $content
 				);
 			}
 		}
