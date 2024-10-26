@@ -60,9 +60,7 @@ class PayPalApplePay extends \Opencart\System\Engine\Controller {
 			];	
 				
 			$paypal->setAccessToken($token_info);
-		
-			$data['client_token'] = $paypal->getClientToken();
-						
+								
 			if ($paypal->hasErrors()) {
 				$error_messages = [];
 				
@@ -141,9 +139,7 @@ class PayPalApplePay extends \Opencart\System\Engine\Controller {
 		];	
 				
 		$paypal->setAccessToken($token_info);
-		
-		$data['client_token'] = $paypal->getClientToken();
-						
+								
 		if ($paypal->hasErrors()) {
 			$error_messages = [];
 				
