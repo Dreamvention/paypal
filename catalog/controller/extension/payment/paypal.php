@@ -141,6 +141,8 @@ class ControllerExtensionPaymentPayPal extends Controller {
 			$data['applepay_button_status'] = false;
 		}
 		
+		$data['logged'] = $this->customer->isLogged();
+		
 		$data['text_paypal_title'] = $this->language->get('text_paypal_title');
 		$data['text_loading'] = $this->language->get('text_loading');
 			
