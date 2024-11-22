@@ -164,6 +164,8 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		} else {
 			$data['applepay_button_status'] = false;
 		}
+		
+		$data['logged'] = $this->customer->isLogged();
 			
 		require_once DIR_EXTENSION . 'paypal/system/library/paypal.php';
 
