@@ -232,7 +232,7 @@ class ControllerPaymentPayPal extends Controller {
 		);
 								
 		$data['cancel'] = $this->url->link('extension/payment', 'token=' . $this->session->data['token'], true);
-		$data['partner_url'] = str_replace('&amp;', '%26', $this->url->link('payment/paypal', 'token=' . $this->session->data['token'], true));
+		$data['partner_url'] = str_replace(array('&amp;', '?'), array('%26', '%3F'), $this->url->link('payment/paypal', 'token=' . $this->session->data['token'], true));
 		$data['callback_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/callback', 'token=' . $this->session->data['token'], true));
 		$data['connect_url'] = str_replace('&amp;', '&', $this->url->link('payment/paypal/connect', 'token=' . $this->session->data['token'], true));
 		$data['agree_url'] =  str_replace('&amp;', '&', $this->url->link('payment/paypal/agree', 'token=' . $this->session->data['token'], true));
