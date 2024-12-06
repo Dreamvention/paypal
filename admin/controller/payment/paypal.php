@@ -210,7 +210,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		];
 		
 		$data['back'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment');
-		$data['partner_url'] = str_replace('&amp;', '%26', $this->url->link('extension/paypal/payment/paypal', 'user_token=' . $this->session->data['user_token']));
+		$data['partner_url'] = str_replace(['&amp;', '?'], ['%26', '%3F'], $this->url->link('extension/paypal/payment/paypal', 'user_token=' . $this->session->data['user_token']));
 		$data['callback_url'] = str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'callback', 'user_token=' . $this->session->data['user_token']));
 		$data['connect_url'] = str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'connect', 'user_token=' . $this->session->data['user_token']));
 		$data['agree_url'] =  str_replace('&amp;', '&', $this->url->link('extension/paypal/payment/paypal' . $this->separator . 'agree', 'user_token=' . $this->session->data['user_token']));
