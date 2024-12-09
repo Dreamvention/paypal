@@ -62,12 +62,12 @@ if (typeof PayPalAPI !== 'undefined') {
 <?php } else { ?>
 <div class="buttons">
 	<div class="pull-right">
-		<button type="button" id="button-confirm" class="btn btn-primary paypal-button-confirm" data-loading-text="<?php echo $text_loading; ?>"><?php echo $button_confirm; ?></button>
+		<button type="button" id="button-confirm" class="btn btn-primary paypal-button-confirm" data-loading-text="<?php echo $text_loading; ?>" onClick="loadPayPalModal()"><?php echo $button_confirm; ?></button>
 	</div>
 </div>
 <script type="text/javascript">
 
-$(document).on('click', '.paypal-button-confirm', function(event) {
+function loadPayPalModal() {
 	$('.paypal-button-confirm').prop('disabled', true).button('loading');
 	
 	$('#paypal_modal').remove();
@@ -83,7 +83,7 @@ $(document).on('click', '.paypal-button-confirm', function(event) {
 			PayPalAPI.init();
 		}
 	});
-});
+}
 
 </script>
 <?php } ?>
