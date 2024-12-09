@@ -15,11 +15,11 @@ if (typeof PayPalAPI !== 'undefined') {
 </script>
 {% else %}
 <div class="d-inline-block pt-2 pd-2 w-100 text-end">
-	<button type="button" id="button-confirm" class="btn btn-primary paypal-applepay-button-confirm">{{ button_confirm }}</button>
+	<button type="button" id="button-confirm" class="btn btn-primary paypal-applepay-button-confirm" onClick="loadPayPalModal()">{{ button_confirm }}</button>
 </div>
 <script type="text/javascript">
 
-$(document).on('click', '.paypal-applepay-button-confirm', function(event) {
+function loadPayPalModal() {
 	$('.paypal-applepay-button-confirm').prop('disabled', true).addClass('loading');
 	
 	$('#paypal_modal').remove();
@@ -35,7 +35,7 @@ $(document).on('click', '.paypal-applepay-button-confirm', function(event) {
 			PayPalAPI.init();
 		}
 	});
-});
+}
 
 </script>
 {% endif %}
