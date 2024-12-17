@@ -5,13 +5,13 @@ var PayPalAPI = (function () {
 	var paypal_callback;
 	
 	var showPayPalAlert = function(data) {
-		$('.alert-dismissible').remove();
+		$('.alert-paypal').remove();
 		
 		if (data['error'] && data['error']['warning']) {
 			if ($('#paypal_form').length) {
-				$('#paypal_form').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> ' + data['error']['warning'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+				$('#paypal_form').prepend('<div class="alert alert-danger alert-dismissible alert-paypal"><i class="fa fa-exclamation-circle"></i> ' + data['error']['warning'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
 			} else {
-				$('#content').parent().before('<div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> ' + data['error']['warning'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+				$('#content').parent().before('<div class="alert alert-danger alert-dismissible alert-paypal"><i class="fa fa-exclamation-circle"></i> ' + data['error']['warning'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
 				
 				$('html, body').animate({scrollTop: 0}, 'slow');
 			}
