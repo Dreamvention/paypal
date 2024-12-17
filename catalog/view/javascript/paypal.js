@@ -5,13 +5,13 @@ var PayPalAPI = (function () {
 	var paypal_callback;
 	
 	var showPayPalAlert = function(data) {
-		$('.alert-dismissible').remove();
+		$('.alert-paypal').remove();
 		
 		if (data['error'] && data['error']['warning']) {
 			if ($('#paypal_form').length) {
-				$('#paypal_form').prepend('<div class="alert alert-danger alert-dismissible"><i class="fas fa-exclamation-circle"></i> ' + data['error']['warning'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+				$('#paypal_form').prepend('<div class="alert alert-danger alert-dismissible alert-paypal"><i class="fas fa-exclamation-circle"></i> ' + data['error']['warning'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
 			} else {
-				$('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fas fa-exclamation-circle"></i> ' + data['error']['warning'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+				$('#alert').prepend('<div class="alert alert-danger alert-dismissible alert-paypal"><i class="fas fa-exclamation-circle"></i> ' + data['error']['warning'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
 			}
 		}
 	};
