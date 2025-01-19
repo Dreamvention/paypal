@@ -7,13 +7,13 @@ class PayPal extends \Opencart\System\Engine\Controller {
 	public function __construct($registry) {
         parent::__construct($registry);
 
-		if (VERSION >= '4.0.2.0') {
+		if (version_compare(VERSION, '4.0.2.0', '>=')) {
 			$this->separator = '.';
 		} else {
 			$this->separator = '|';
 		}
 		
-		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && ($this->config->get('paypal_version') < '3.1.4'))) {
+		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && (version_compare($this->config->get('paypal_version'), '3.1.4', '<')))) {
 			$this->update();
 		}
     }
@@ -1564,6 +1564,10 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
 			$setting = $this->model_setting_setting->getSetting('payment_paypal');
 			
+			if (!empty($this->request->post['payment_paypal_setting']['order_status'])) {
+				$setting['payment_paypal_setting']['final_order_status'] = array();
+			}
+			
 			$setting = array_replace_recursive($setting, $this->request->post);
 						
 			$this->model_setting_setting->editSetting('payment_paypal', $setting);
@@ -1939,12 +1943,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$this->model_setting_event->deleteEventByCode('paypal_order_delete_order');
 		$this->model_setting_event->deleteEventByCode('paypal_customer_delete_customer');
 		
-		if (VERSION >= '4.0.2.0') {
+		if (version_compare(VERSION, '4.0.2.0', '>=')) {
 			$this->model_setting_event->addEvent(['code' => 'paypal_order_info', 'description' => '', 'trigger' => 'admin/view/sale/order_info/before', 'action' => 'extension/paypal/payment/paypal.order_info_before', 'status' => true, 'sort_order' => 1]);
 			$this->model_setting_event->addEvent(['code' => 'paypal_content_top', 'description' => '', 'trigger' => 'catalog/controller/common/content_top/before', 'action' => 'extension/paypal/payment/paypal.content_top_before', 'status' => true, 'sort_order' => 2]);
 			$this->model_setting_event->addEvent(['code' => 'paypal_order_delete_order', 'description' => '', 'trigger' => 'catalog/model/checkout/order/deleteOrder/before', 'action' => 'extension/paypal/payment/paypal.order_delete_order_before', 'status' => true, 'sort_order' => 3]);
 			$this->model_setting_event->addEvent(['code' => 'paypal_customer_delete_customer', 'description' => '', 'trigger' => 'admin/model/customer/customer/deleteCustomer/before', 'action' => 'extension/paypal/payment/paypal.customer_delete_customer_before', 'status' => true, 'sort_order' => 4]);
-		} elseif (VERSION >= '4.0.1.0') {
+		} elseif (version_compare(VERSION, '4.0.1.0', '>=')) {
 			$this->model_setting_event->addEvent(['code' => 'paypal_order_info', 'description' => '', 'trigger' => 'admin/view/sale/order_info/before', 'action' => 'extension/paypal/payment/paypal|order_info_before', 'status' => true, 'sort_order' => 1]);
 			$this->model_setting_event->addEvent(['code' => 'paypal_content_top', 'description' => '', 'trigger' => 'catalog/controller/common/content_top/before', 'action' => 'extension/paypal/payment/paypal|content_top_before', 'status' => true, 'sort_order' => 2]);
 			$this->model_setting_event->addEvent(['code' => 'paypal_extension_get_extensions_by_type', 'description' => '', 'trigger' => 'catalog/model/setting/extension/getExtensionsByType/after', 'action' => 'extension/paypal/payment/paypal|extension_get_extensions_by_type_after', 'status' => true, 'sort_order' => 3]);
@@ -2009,12 +2013,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$this->model_setting_event->deleteEventByCode('paypal_order_delete_order');
 		$this->model_setting_event->deleteEventByCode('paypal_customer_delete_customer');
 		
-		if (VERSION >= '4.0.2.0') {
+		if (version_compare(VERSION, '4.0.2.0', '>=')) {
 			$this->model_setting_event->addEvent(['code' => 'paypal_order_info', 'description' => '', 'trigger' => 'admin/view/sale/order_info/before', 'action' => 'extension/paypal/payment/paypal.order_info_before', 'status' => true, 'sort_order' => 1]);
 			$this->model_setting_event->addEvent(['code' => 'paypal_content_top', 'description' => '', 'trigger' => 'catalog/controller/common/content_top/before', 'action' => 'extension/paypal/payment/paypal.content_top_before', 'status' => true, 'sort_order' => 2]);
 			$this->model_setting_event->addEvent(['code' => 'paypal_order_delete_order', 'description' => '', 'trigger' => 'catalog/model/checkout/order/deleteOrder/before', 'action' => 'extension/paypal/payment/paypal.order_delete_order_before', 'status' => true, 'sort_order' => 3]);
 			$this->model_setting_event->addEvent(['code' => 'paypal_customer_delete_customer', 'description' => '', 'trigger' => 'admin/model/customer/customer/deleteCustomer/before', 'action' => 'extension/paypal/payment/paypal.customer_delete_customer_before', 'status' => true, 'sort_order' => 4]);
-		} elseif (VERSION >= '4.0.1.0') {
+		} elseif (version_compare(VERSION, '4.0.1.0', '>=')) {
 			$this->model_setting_event->addEvent(['code' => 'paypal_order_info', 'description' => '', 'trigger' => 'admin/view/sale/order_info/before', 'action' => 'extension/paypal/payment/paypal|order_info_before', 'status' => true, 'sort_order' => 1]);
 			$this->model_setting_event->addEvent(['code' => 'paypal_content_top', 'description' => '', 'trigger' => 'catalog/controller/common/content_top/before', 'action' => 'extension/paypal/payment/paypal|content_top_before', 'status' => true, 'sort_order' => 2]);
 			$this->model_setting_event->addEvent(['code' => 'paypal_extension_get_extensions_by_type', 'description' => '', 'trigger' => 'catalog/model/setting/extension/getExtensionsByType/after', 'action' => 'extension/paypal/payment/paypal|extension_get_extensions_by_type_after', 'status' => true, 'sort_order' => 3]);

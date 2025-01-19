@@ -7,7 +7,7 @@ class PayPalPayLater extends \Opencart\System\Engine\Controller {
 	public function __construct($registry) {
 		parent::__construct($registry);
 		
-		if (VERSION >= '4.0.2.0') {
+		if (version_compare(VERSION, '4.0.2.0', '>=')) {
 			$this->separator = '.';
 		} else {
 			$this->separator = '|';

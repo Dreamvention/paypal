@@ -9,7 +9,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 			$implode[] = "'" . (int)$order_status_id . "'";
 		}
 		
-		if (VERSION >= '4.0.2.0') {
+		if (version_compare(VERSION, '4.0.2.0', '>=')) {
 			$query = $this->db->query("SELECT SUM(total) AS paypal_total FROM `" . DB_PREFIX . "order` WHERE order_status_id IN(" . implode(',', $implode) . ") AND payment_method LIKE '%paypal%'");
 		} else {
 			$query = $this->db->query("SELECT SUM(total) AS paypal_total FROM `" . DB_PREFIX . "order` WHERE order_status_id IN(" . implode(',', $implode) . ") AND payment_code = 'paypal'");
@@ -35,7 +35,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 			];
 		}
 
-		if (VERSION >= '4.0.2.0') {
+		if (version_compare(VERSION, '4.0.2.0', '>=')) {
 			$query = $this->db->query("SELECT SUM(total) AS total, SUM(IF (payment_method LIKE '%paypal%', total, 0)) AS paypal_total, HOUR(date_added) AS hour FROM `" . DB_PREFIX . "order` WHERE order_status_id IN(" . implode(',', $implode) . ") AND DATE(date_added) = DATE(NOW()) GROUP BY HOUR(date_added) ORDER BY date_added ASC");
 		} else {
 			$query = $this->db->query("SELECT SUM(total) AS total, SUM(IF (payment_code = 'paypal', total, 0)) AS paypal_total, HOUR(date_added) AS hour FROM `" . DB_PREFIX . "order` WHERE order_status_id IN(" . implode(',', $implode) . ") AND DATE(date_added) = DATE(NOW()) GROUP BY HOUR(date_added) ORDER BY date_added ASC");
@@ -73,7 +73,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 			];
 		}
 
-		if (VERSION >= '4.0.2.0') {
+		if (version_compare(VERSION, '4.0.2.0', '>=')) {
 			$query = $this->db->query("SELECT SUM(total) AS total, SUM(IF (payment_method LIKE '%paypal%', total, 0)) AS paypal_total, date_added FROM `" . DB_PREFIX . "order` WHERE order_status_id IN(" . implode(',', $implode) . ") AND DATE(date_added) >= DATE('" . $this->db->escape(date('Y-m-d', $date_start)) . "') GROUP BY DAYNAME(date_added)");
 		} else {
 			$query = $this->db->query("SELECT SUM(total) AS total, SUM(IF (payment_code = 'paypal', total, 0)) AS paypal_total, date_added FROM `" . DB_PREFIX . "order` WHERE order_status_id IN(" . implode(',', $implode) . ") AND DATE(date_added) >= DATE('" . $this->db->escape(date('Y-m-d', $date_start)) . "') GROUP BY DAYNAME(date_added)");
@@ -109,7 +109,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 			];
 		}
 
-		if (VERSION >= '4.0.2.0') {
+		if (version_compare(VERSION, '4.0.2.0', '>=')) {
 			$query = $this->db->query("SELECT SUM(total) AS total, SUM(IF (payment_method LIKE '%paypal%', total, 0)) AS paypal_total, date_added FROM `" . DB_PREFIX . "order` WHERE order_status_id IN(" . implode(',', $implode) . ") AND DATE(date_added) >= '" . $this->db->escape(date('Y') . '-' . date('m') . '-1') . "' GROUP BY DATE(date_added)");
 		} else {
 			$query = $this->db->query("SELECT SUM(total) AS total, SUM(IF (payment_code = 'paypal', total, 0)) AS paypal_total, date_added FROM `" . DB_PREFIX . "order` WHERE order_status_id IN(" . implode(',', $implode) . ") AND DATE(date_added) >= '" . $this->db->escape(date('Y') . '-' . date('m') . '-1') . "' GROUP BY DATE(date_added)");
@@ -143,7 +143,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 			];
 		}
 
-		if (VERSION >= '4.0.2.0') {
+		if (version_compare(VERSION, '4.0.2.0', '>=')) {
 			$query = $this->db->query("SELECT SUM(total) AS total, SUM(IF (payment_method LIKE '%paypal%', total, 0)) AS paypal_total, date_added FROM `" . DB_PREFIX . "order` WHERE order_status_id IN(" . implode(',', $implode) . ") AND YEAR(date_added) = YEAR(NOW()) GROUP BY MONTH(date_added)");
 		} else {
 			$query = $this->db->query("SELECT SUM(total) AS total, SUM(IF (payment_code = 'paypal', total, 0)) AS paypal_total, date_added FROM `" . DB_PREFIX . "order` WHERE order_status_id IN(" . implode(',', $implode) . ") AND YEAR(date_added) = YEAR(NOW()) GROUP BY MONTH(date_added)");
@@ -282,7 +282,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 	}
 	
 	public function addOrderHistory(string $order_history_token, int $order_id, int $order_status_id, string $comment = '', bool $notify = false): bool {
-		if (VERSION >= '4.0.2.0') {
+		if (version_compare(VERSION, '4.0.2.0', '>=')) {
 			$separator = '.';
 		} else {
 			$separator = '|';
@@ -388,7 +388,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 	}
 	
 	public function update(): void {
-		if ($this->config->get('paypal_version') < '3.1.0') {
+		if (version_compare($this->config->get('paypal_version'), '3.1.0', '<')) {
 			$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_customer_token`");
 			$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order`");
 					

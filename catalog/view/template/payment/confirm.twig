@@ -333,38 +333,7 @@ function onLoadPaymentAddress() {
 	});
 
 	$('#payment_address #input_payment_country').trigger('change');
-	
-	$('.date').daterangepicker({
-        singleDatePicker: true,
-        autoApply: true,
-        locale: {
-            format: 'YYYY-MM-DD'
-        }
-    });
-
-    $('.time').daterangepicker({
-        singleDatePicker: true,
-        datePicker: false,
-        autoApply: true,
-        timePicker: true,
-        timePicker24Hour: true,
-        locale: {
-            format: 'HH:mm'
-        }
-    }).on('show.daterangepicker', function (ev, picker) {
-        picker.container.find('.calendar-table').hide();
-    });
-
-    $('.datetime').daterangepicker({
-        singleDatePicker: true,
-        autoApply: true,
-        timePicker: true,
-        timePicker24Hour: true,
-        locale: {
-            format: 'YYYY-MM-DD HH:mm'
-        }
-    });
-	
+		
 	$('#payment_address .button-confirm').on('click', function(event) {
 		$.ajax({
 			type: 'post',
@@ -412,8 +381,8 @@ function onLoadShippingAddress() {
 			$('#shipping_address .row:last').after(this);
 		}
 
-		if ($(this).attr('data-sort') == $('#collapse-shipping-address .row').length - 2) {
-			$('#collapse-shipping-address .row:last').after(this);
+		if ($(this).attr('data-sort') == $('#shipping_address .row').length - 2) {
+			$('#shipping_address .row:last').after(this);
 		}
 
 		if ($(this).attr('data-sort') < -$('#shipping_address .row').length - 2) {
@@ -463,38 +432,7 @@ function onLoadShippingAddress() {
 	});
 
 	$('#shipping_address #input_shipping_country').trigger('change');
-	
-	$('.date').daterangepicker({
-        singleDatePicker: true,
-        autoApply: true,
-        locale: {
-            format: 'YYYY-MM-DD'
-        }
-    });
-
-    $('.time').daterangepicker({
-        singleDatePicker: true,
-        datePicker: false,
-        autoApply: true,
-        timePicker: true,
-        timePicker24Hour: true,
-        locale: {
-            format: 'HH:mm'
-        }
-    }).on('show.daterangepicker', function (ev, picker) {
-        picker.container.find('.calendar-table').hide();
-    });
-
-    $('.datetime').daterangepicker({
-        singleDatePicker: true,
-        autoApply: true,
-        timePicker: true,
-        timePicker24Hour: true,
-        locale: {
-            format: 'YYYY-MM-DD HH:mm'
-        }
-    });
-		
+			
 	$('#shipping_address .button-confirm').on('click', function(event) {
 		$.ajax({
 			type: 'post',
