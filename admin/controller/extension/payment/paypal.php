@@ -5,7 +5,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 	public function __construct($registry) {
 		parent::__construct($registry);
 		
-		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && ($this->config->get('paypal_version') < '3.1.4'))) {
+		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && (version_compare($this->config->get('paypal_version'), '3.1.4', '<')))) {
 			$this->update();
 		}
 	}
@@ -1642,6 +1642,10 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
 			$setting = $this->model_setting_setting->getSetting('payment_paypal');
 			
+			if (!empty($this->request->post['payment_paypal_setting']['order_status'])) {
+				$setting['payment_paypal_setting']['final_order_status'] = array();
+			}
+			
 			$setting = array_replace_recursive($setting, $this->request->post);
 						
 			$this->model_setting_setting->editSetting('payment_paypal', $setting);
@@ -2080,7 +2084,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 		$this->model_setting_event->addEvent('paypal_order_delete_order', 'catalog/model/checkout/order/deleteOrder/before', 'extension/payment/paypal/order_delete_order_before');
 		$this->model_setting_event->addEvent('paypal_customer_delete_customer', 'admin/model/customer/customer/deleteCustomer/before', 'extension/payment/paypal/customer_delete_customer_before');
 		
-		if ($this->config->get('paypal_version') < '3.1.0') {			
+		if (version_compare($this->config->get('paypal_version'), '3.1.0', '<')) {			
 			$this->load->model('setting/setting');
 			
 			$setting = $this->model_setting_setting->getSetting('payment_paypal');

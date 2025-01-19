@@ -782,7 +782,7 @@ class ModelExtensionPaymentPayPal extends Model {
 	}
 		
 	public function update() {
-		if ($this->config->get('paypal_version') < '3.1.0') {
+		if (version_compare($this->config->get('paypal_version'), '3.1.0', '<')) {
 			$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_customer_token`");
 			$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order`");
 			$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order_recurring`");
@@ -805,7 +805,7 @@ class ModelExtensionPaymentPayPal extends Model {
 		$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_delete_order', `trigger` = 'catalog/model/checkout/order/deleteOrder/before', `action` = 'extension/payment/paypal/order_delete_order_before', `sort_order` = '0', `status` = '1'");
 		$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_customer_delete_customer', `trigger` = 'admin/model/customer/customer/deleteCustomer/before', `action` = 'extension/payment/paypal/customer_delete_customer_before', `sort_order` = '0', `status` = '1'");
 		
-		if ($this->config->get('paypal_version') < '3.1.0') {
+		if (version_compare($this->config->get('paypal_version'), '3.1.0', '<')) {
 			$setting = array();
 			
 			$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "setting` WHERE store_id = '0' AND `key` = 'payment_paypal_setting'");
