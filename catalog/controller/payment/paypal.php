@@ -10,7 +10,7 @@ class ControllerPaymentPayPal extends Controller {
 			ini_set('serialize_precision', 14);
 		}
 		
-		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && ($this->config->get('paypal_version') < '3.1.4'))) {
+		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && (version_compare($this->config->get('paypal_version'), '3.1.4', '<')))) {
 			$this->update();
 		}
 	}

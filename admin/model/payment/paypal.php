@@ -373,7 +373,7 @@ class ModelPaymentPayPal extends Model {
 	}
 	
 	public function update() {
-		if ($this->config->get('paypal_version') < '3.1.0') {
+		if (version_compare($this->config->get('paypal_version'), '3.1.0', '<')) {
 			$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_customer_token`");
 			$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order`");
 			$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order_recurring`");
