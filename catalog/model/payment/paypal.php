@@ -797,7 +797,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 			$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "setting` WHERE store_id = '0' AND `key` = 'payment_paypal_setting'");
 			
 			if ($query->row) {
-				$setting[$query->row['key']] = json_decode($query->row['value'], true);
+				$setting = json_decode($query->row['value'], true);
 			}
 						
 			$setting['payment_paypal_setting']['general']['order_history_token'] = sha1(uniqid(mt_rand(), 1));
