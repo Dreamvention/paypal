@@ -108,7 +108,7 @@ class ControllerPaymentPayPalApplePay extends Controller {
 			$data['applepay_button_status'] = $setting['applepay_button']['checkout']['status'];
 		}
 				
-		$data['text_paypal_paylater_title'] = $this->language->get('text_paypal_paylater_title');
+		$data['text_paypal_applepay_title'] = $this->language->get('text_paypal_applepay_title');
 											
 		require_once DIR_SYSTEM .'library/paypal/paypal.php';
 		

@@ -623,6 +623,10 @@ class ModelPaymentPayPal extends Model {
 			'partner_attribution_id' => $partner_attribution_id
 		);
 		
+		if (isset($this->session->data['paypal_client_metadata_id'])) {
+			$paypal_info['client_metadata_id'] = $this->session->data['paypal_client_metadata_id'];
+		}
+		
 		$paypal = new PayPal($paypal_info);
 			
 		$token_info = array(

@@ -1,5 +1,5 @@
 <?php
-class ControllerPaymentPayPalGooglePay extends Controller {
+class ControllerPaymentPayPalFastlane extends Controller {
 	private $error = array();
 			
 	public function index() {
@@ -25,15 +25,13 @@ class ControllerPaymentPayPalGooglePay extends Controller {
 			$data['partner_attribution_id'] = $setting['partner'][$data['environment']]['partner_attribution_id'];
 			$data['checkout_mode'] = $setting['general']['checkout_mode'];
 			$data['transaction_method'] = $setting['general']['transaction_method'];
+			$data['fastlane_status'] = $setting['fastlane']['status'];
 			
-			if ($setting['googlepay_button']['checkout']['status']) {
-				$data['googlepay_button_status'] = $setting['googlepay_button']['checkout']['status'];
-			}
-											
 			$data['text_loading'] = $this->language->get('text_loading');
 			
+			$data['button_pay'] = $this->language->get('button_pay');
 			$data['button_confirm'] = $this->language->get('button_confirm');
-											
+														
 			require_once DIR_SYSTEM .'library/paypal/paypal.php';
 		
 			$paypal_info = array(
@@ -78,9 +76,9 @@ class ControllerPaymentPayPalGooglePay extends Controller {
 				$this->error['warning'] .= ' ' . sprintf($this->language->get('error_payment'), $this->url->link('information/contact', '', true));
 			}	
 
-			$data['error'] = $this->error;
+			$data['error'] = $this->error;			
 
-			return $this->load->view('payment/paypal/paypal_googlepay', $data);
+			return $this->load->view('payment/paypal/paypal_fastlane', $data);
 		}
 		
 		return '';
@@ -103,13 +101,10 @@ class ControllerPaymentPayPalGooglePay extends Controller {
 		$data['partner_id'] = $setting['partner'][$data['environment']]['partner_id'];
 		$data['partner_attribution_id'] = $setting['partner'][$data['environment']]['partner_attribution_id'];
 		$data['transaction_method'] = $setting['general']['transaction_method'];
-						
-		if ($setting['googlepay_button']['checkout']['status']) {
-			$data['googlepay_button_status'] = $setting['googlepay_button']['checkout']['status'];
-		}
+		$data['fastlane_status'] = $setting['fastlane']['status'];
+		
+		$data['text_paypal_fastlane_title'] = $this->language->get('text_paypal_fastlane_title');
 				
-		$data['text_paypal_googlepay_title'] = $this->language->get('text_paypal_googlepay_title');
-											
 		require_once DIR_SYSTEM .'library/paypal/paypal.php';
 		
 		$paypal_info = array(
@@ -154,8 +149,8 @@ class ControllerPaymentPayPalGooglePay extends Controller {
 			$this->error['warning'] .= ' ' . sprintf($this->language->get('error_payment'), $this->url->link('information/contact', '', true));
 		}	
 
-		$data['error'] = $this->error;	
+		$data['error'] = $this->error;		
 
-		$this->response->setOutput($this->load->view('payment/paypal/paypal_googlepay_modal', $data));
+		$this->response->setOutput($this->load->view('payment/paypal/paypal_fastlane_modal', $data));
 	}
 }
