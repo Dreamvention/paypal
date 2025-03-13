@@ -1,6 +1,6 @@
 <?php 
 $_['paypal_setting'] = array(
-	'version' => '3.1.14',
+	'version' => '3.2.0',
 	'partner' => array(
 		'production' => array(
 			'partner_id' => 'TY2Q25KP2PX9L',
@@ -194,6 +194,13 @@ $_['paypal_setting'] = array(
 			'card_ineligible' => 1,
 			'system_unavailable' => 0,
 			'system_bypassed' => 1
+		)
+	),
+	'fastlane' => array(
+		'status' => false,
+		'card' => array(
+			'align' => 'right',
+			'size' => 'large'
 		)
 	),
 	'message' => array(
@@ -678,8 +685,8 @@ $_['paypal_setting'] = array(
 		),
 	),
 	'button_width' => array(
-		'small' => '200px',
-		'medium' => '250px',
+		'small' => '250px',
+		'medium' => '300px',
 		'large' => '350px',
 		'responsive' => ''
 	),
@@ -826,8 +833,8 @@ $_['paypal_setting'] = array(
 		)
 	),
 	'googlepay_button_width' => array(
-		'small' => '200px',
-		'medium' => '250px',
+		'small' => '250px',
+		'medium' => '300px',
 		'large' => '350px',
 		'responsive' => ''
 	),
@@ -924,8 +931,8 @@ $_['paypal_setting'] = array(
 		)
 	),
 	'applepay_button_width' => array(
-		'small' => '200px',
-		'medium' => '250px',
+		'small' => '250px',
+		'medium' => '300px',
 		'large' => '350px',
 		'responsive' => ''
 	),
@@ -958,7 +965,7 @@ $_['paypal_setting'] = array(
 		)
 	),
 	'card_width' => array(
-		'medium' => '250px',
+		'medium' => '300px',
 		'large' => '350px',
 		'responsive' => ''
 	),
@@ -1021,6 +1028,39 @@ $_['paypal_setting'] = array(
 			'error' => 'error_3ds_system_bypassed',
 			'recommended' => 1
 		)
+	),
+	'fastlane_card_align' => array(
+		'left' => array(
+			'code' => 'left',
+			'name' => 'text_align_left'
+		),
+		'center' => array(
+			'code' => 'center',
+			'name' => 'text_align_center'
+		),
+		'right' => array(
+			'code' => 'right',
+			'name' => 'text_align_right'
+		)
+	),
+	'fastlane_card_size' => array(
+		'medium' => array(
+			'code' => 'medium',
+			'name' => 'text_medium'
+		),
+		'large' => array(
+			'code' => 'large',
+			'name' => 'text_large'
+		),
+		'responsive' => array(
+			'code' => 'responsive',
+			'name' => 'text_responsive'
+		)
+	),
+	'fastlane_card_width' => array(
+		'medium' => '300px',
+		'large' => '350px',
+		'responsive' => ''
 	),
 	'message_insert_type' => array(
 		'into_begin' => array(

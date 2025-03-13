@@ -9,6 +9,7 @@ class PayPal {
 	private $client_id = '';
 	private $secret = '';
 	private $partner_attribution_id = '';
+	private $client_metadata_id = '';
 	private $access_token = '';
 	private $errors = array();
 	private $last_response = array();
@@ -33,6 +34,10 @@ class PayPal {
 		
 		if (!empty($paypal_info['partner_attribution_id'])) {
 			$this->partner_attribution_id = $paypal_info['partner_attribution_id'];
+		}
+		
+		if (!empty($paypal_info['client_metadata_id'])) {
+			$this->client_metadata_id = $paypal_info['client_metadata_id'];
 		}
 	}
 	
@@ -486,6 +491,12 @@ class PayPal {
 		
 		return true;
 	}
+	
+	//IN:  length
+	//OUT: token
+	public function getToken($length = 32) {
+		return $this->token($length);
+	}
 				
 	//OUT: number of errors
 	public function hasErrors()	{
@@ -501,7 +512,7 @@ class PayPal {
 	public function getResponse() {
 		return $this->last_response;
 	}
-	
+		
 	private function execute($method, $command, $params = array(), $json = false) {
 		$this->errors = array();
 
@@ -525,6 +536,10 @@ class PayPal {
 			$curl_options[CURLOPT_HTTPHEADER][] = 'Content-Type: application/json';
 			$curl_options[CURLOPT_HTTPHEADER][] = 'PayPal-Request-Id: ' . $this->token(50);
 			$curl_options[CURLOPT_HTTPHEADER][] = 'PayPal-Partner-Attribution-Id: ' . $this->partner_attribution_id;
+			
+			if ($this->client_metadata_id) {
+				$curl_options[CURLOPT_HTTPHEADER][] = 'PayPal-Client-Metadata-Id: ' . $this->client_metadata_id;
+			}
 			
 			if ($this->access_token) {
 				$curl_options[CURLOPT_HTTPHEADER][] = 'Authorization: Bearer ' . $this->access_token;
@@ -580,7 +595,7 @@ class PayPal {
 				default:
 					$curl_options[CURLOPT_CUSTOMREQUEST] = strtoupper($method);
 			}
-						
+					
 			$ch = curl_init();
 			curl_setopt_array($ch, $curl_options);
 			$response = curl_exec($ch);
