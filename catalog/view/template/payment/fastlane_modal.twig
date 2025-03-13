@@ -1,0 +1,32 @@
+<div id="fastlane_modal" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">{{ text_fastlane }}</h4>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+			</div>
+			<div class="modal-body">
+				<div class="accordion fastlane-accordion" id="fastlane_accordion">
+					{% if shipping_required %}
+					<div class="accordion-item">
+						<div class="accordion-header">
+							<h4 class="accordion-title" data-original-title="{{ text_fastlane_shipping }}"><div class="accordion-button-disabled">{{ text_fastlane_shipping }}</div></h4>
+						</div>
+						<div class="accordion-collapse collapse" id="fastlane_collapse_shipping" data-bs-parent="#fastlane_accordion">
+							<div class="accordion-body"></div>
+						</div>
+					</div>
+					{% endif %}
+					<div class="accordion-item">
+						<div class="accordion-header">
+							<h4 class="accordion-title" data-original-title="{{ text_fastlane_payment }}"><div class="accordion-button-disabled">{{ text_fastlane_payment }}</div></h4>
+						</div>
+						<div class="accordion-collapse collapse" id="fastlane_collapse_payment" data-bs-parent="#fastlane_accordion">
+							<div class="accordion-body"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

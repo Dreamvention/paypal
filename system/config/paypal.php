@@ -1,6 +1,6 @@
 <?php 
 $_['paypal_setting'] = [
-	'version' => '3.1.14',
+	'version' => '3.2.0',
 	'partner' => [
 		'production' => [
 			'partner_id' => 'TY2Q25KP2PX9L',
@@ -194,6 +194,13 @@ $_['paypal_setting'] = [
 			'card_ineligible' => 1,
 			'system_unavailable' => 0,
 			'system_bypassed' => 1
+		]
+	],
+	'fastlane' => [
+		'status' => false,
+		'card' => [
+			'align' => 'right',
+			'size' => 'large'
 		]
 	],
 	'message' => [
@@ -678,8 +685,8 @@ $_['paypal_setting'] = [
 		],
 	],
 	'button_width' => [
-		'small' => '200px',
-		'medium' => '250px',
+		'small' => '250px',
+		'mediuml' => '300px',
 		'large' => '350px',
 		'responsive' => ''
 	],
@@ -826,8 +833,8 @@ $_['paypal_setting'] = [
 		]
 	],
 	'googlepay_button_width' => [
-		'small' => '200px',
-		'medium' => '250px',
+		'small' => '250px',
+		'mediuml' => '300px',
 		'large' => '350px',
 		'responsive' => ''
 	],
@@ -924,8 +931,8 @@ $_['paypal_setting'] = [
 		]
 	],
 	'applepay_button_width' => [
-		'small' => '200px',
-		'medium' => '250px',
+		'small' => '250px',
+		'mediuml' => '300px',
 		'large' => '350px',
 		'responsive' => ''
 	],
@@ -958,7 +965,7 @@ $_['paypal_setting'] = [
 		]
 	],
 	'card_width' => [
-		'medium' => '250px',
+		'mediuml' => '300px',
 		'large' => '350px',
 		'responsive' => ''
 	],
@@ -1022,6 +1029,39 @@ $_['paypal_setting'] = [
 			'recommended' => 1
 		]
 	],
+	'fastlane_card_align' => [
+		'left' => [
+			'code' => 'left',
+			'name' => 'text_align_left'
+		],
+		'center' => [
+			'code' => 'center',
+			'name' => 'text_align_center'
+		],
+		'right' => [
+			'code' => 'right',
+			'name' => 'text_align_right'
+		]
+	],
+	'fastlane_card_size' => [
+		'medium' => [
+			'code' => 'medium',
+			'name' => 'text_medium'
+		],
+		'large' => [
+			'code' => 'large',
+			'name' => 'text_large'
+		],
+		'responsive' => [
+			'code' => 'responsive',
+			'name' => 'text_responsive'
+		]
+	],
+	'fastlane_card_width' => array(
+		'medium' => '300px',
+		'large' => '350px',
+		'responsive' => ''
+	),
 	'message_insert_type' => [
 		'into_begin' => [
 			'code'	=> 'prepend',

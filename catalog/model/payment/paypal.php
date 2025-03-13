@@ -90,6 +90,13 @@ class PayPal extends \Opencart\System\Engine\Model {
 						'name' => $this->language->get('text_paypal_applepay_title')
 					];
 				}
+								
+				if ($setting['fastlane']['status'] && ($setting['general']['country_code'] == 'US') && !$this->customer->isLogged()) {
+					$option_data['fastlane'] = [
+						'code' => 'paypal.fastlane',
+						'name' => $this->language->get('text_paypal_fastlane_title')
+					];
+				}
 
 				$method_data = [
 					'code'       => 'paypal',
@@ -111,6 +118,12 @@ class PayPal extends \Opencart\System\Engine\Model {
 		}
 		
 		return $query->row['total'];
+	}
+	
+	public function getCountry(int $country_id): array {
+		$query = $this->db->query("SELECT *, c.name FROM `" . DB_PREFIX . "country` c LEFT JOIN `" . DB_PREFIX . "address_format` af ON (`c`.`address_format_id` = `af`.`address_format_id`) WHERE `c`.`country_id` = '" . (int)$country_id . "' AND `c`.`status` = '1'");
+
+		return $query->row;
 	}
 	
 	public function getCountryByCode(string $code): array {
@@ -594,6 +607,10 @@ class PayPal extends \Opencart\System\Engine\Model {
 			'environment' => $environment,
 			'partner_attribution_id' => $partner_attribution_id
 		];
+		
+		if (isset($this->session->data['paypal_client_metadata_id'])) {
+			$paypal_info['client_metadata_id'] = $this->session->data['paypal_client_metadata_id'];
+		}
 		
 		$paypal = new \Opencart\System\Library\PayPal($paypal_info);
 			

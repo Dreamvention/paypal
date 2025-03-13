@@ -390,6 +390,10 @@
 	width: 33px;
 	background-image: url('../image/payment/icon-card.svg');
 }
+.payment-paypal .card .tab .tab-icon-fastlane {
+	width: 37px;
+	background-image: url('../image/payment/icon-fastlane.svg');
+}
 .payment-paypal .card .tab .tab-icon-message-setting {
 	width: 37px;
 	background-image: url('../image/payment/icon-message-setting.svg');
@@ -480,6 +484,12 @@
 .payment-paypal .card .section-card-setting .legend {
 	padding: 10px 0px;
 }
+.payment-paypal .card .section-fastlane-setting {
+	padding: 0px 0px;
+}
+.payment-paypal .card .section-fastlane-setting .legend {
+	padding: 10px 0px;
+}
 .payment-paypal .card .section-message-setting {
 	padding: 0px 0px;
 }
@@ -506,11 +516,16 @@
 .payment-paypal .card .section-checkout .section-card {
 	display: block;
 	width: 100%;
-	padding: 15px 15px;
-	background: #F5F5F5;
+	background: #FFFFFF;
 	border: 1px solid #CECECE;
 	border-radius: 3px;
 	margin-bottom: 6px;
+}
+.payment-paypal .card .section-checkout .section-card .section-card-heading {
+	padding: 15px 15px;
+	background: #F5F5F5;
+	border-bottom: 1px solid transparent;
+	border-radius: 3px;
 }
 .payment-paypal .card .section-checkout .section-card .section-card-title {
 	font-size: 12px;
@@ -525,6 +540,14 @@
 	background-size: 8px 8px;
 	background-position: center;
 	background-repeat: no-repeat;
+}
+.payment-paypal .card .section-checkout .section-card .section-card-body {
+	padding: 15px 15px;
+	background: #FFFFFF;
+	border-top: 1px solid #CECECE;
+	border-bottom: 1px solid transparent;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
 }
 .payment-paypal .card .section-checkout .radio-payments {
 	padding: 15px 15px;
@@ -737,11 +760,16 @@
 .payment-paypal .card .section-cart .section-card {
 	display: block;
 	width: 100%;
-	padding: 15px 15px;
-	background: #F5F5F5;
+	background: #FFFFFF;
 	border: 1px solid #CECECE;
 	border-radius: 3px;
 	margin-bottom: 6px;
+}
+.payment-paypal .card .section-cart .section-card .section-card-heading {
+	padding: 15px 15px;
+	background: #F5F5F5;
+	border-bottom: 1px solid transparent;
+	border-radius: 3px;
 }
 .payment-paypal .card .section-cart .section-card .section-card-title {
 	font-size: 12px;
@@ -756,6 +784,14 @@
 	background-size: 8px 8px;
 	background-position: center;
 	background-repeat: no-repeat;
+}
+.payment-paypal .card .section-cart .section-card .section-card-body {
+	padding: 15px 15px;
+	background: #FFFFFF;
+	border-top: 1px solid #CECECE;
+	border-bottom: 1px solid transparent;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
 }
 .payment-paypal .card .section-cart .table-totals {
 	margin-bottom: 40px;
@@ -831,6 +867,17 @@
 }
 @media (max-width: 476px) {
 	.payment-paypal .card .paypal-card-container {
+		width: 100% !important;
+	}
+}
+.payment-paypal .card .fastlane-card {
+	position: relative;
+}
+.payment-paypal .card .fastlane-card-container {
+	position: relative;
+}
+@media (max-width: 476px) {
+	.payment-paypal .card .fastlane-card-container {
 		width: 100% !important;
 	}
 }
