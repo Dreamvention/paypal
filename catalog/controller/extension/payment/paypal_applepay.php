@@ -1,5 +1,5 @@
 <?php
-class ControllerExtensionPaymentPayPalGooglePay extends Controller {
+class ControllerExtensionPaymentPayPalApplePay extends Controller {
 	private $error = array();
 			
 	public function index() {
