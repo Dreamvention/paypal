@@ -108,6 +108,26 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				$webhook_id = $result['id'];
 			}
 			
+			$merchant_id = $this->request->get['merchantIdInPayPal'];
+			
+			$result = $paypal->getSellerStatus($config_setting['partner'][$environment]['partner_id'], $merchant_id);
+						
+			$fastlane_status = false;
+			
+			if (!empty($result['capabilities'])) {
+				foreach ($result['capabilities'] as $capability) {
+					if (($capability['name'] == 'FASTLANE_CHECKOUT') && ($capability['status'] == 'ACTIVE')) {
+						$fastlane_status = true;
+					}
+				}
+			}
+			
+			$country_code = '';
+			
+			if (!empty($result['country'])) {
+				$country_code = $result['country'];
+			}
+			
 			if ($paypal->hasErrors()) {
 				$error_messages = [];
 				
@@ -129,9 +149,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				
 				$this->error['warning'] = implode(' ', $error_messages);
 			}
-		
-			$merchant_id = $this->request->get['merchantIdInPayPal'];
-			
+					
 			$setting = $this->model_setting_setting->getSetting('payment_paypal');
 						
 			$setting['payment_paypal_environment'] = $environment;
@@ -147,13 +165,18 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$setting['payment_paypal_setting']['general']['callback_token'] = $callback_token;
 			$setting['payment_paypal_setting']['general']['webhook_token'] = $webhook_token;
 			$setting['payment_paypal_setting']['general']['cron_token'] = $cron_token;
-			
-			$this->load->model('localisation/country');
+			$setting['payment_paypal_setting']['fastlane']['status'] = $fastlane_status;
+						
+			if (!empty($country_code)) {
+				$setting['payment_paypal_setting']['general']['country_code'] = $country_code;
+			} else {
+				$this->load->model('localisation/country');
 		
-			$country = $this->model_localisation_country->getCountry($this->config->get('config_country_id'));
+				$country = $this->model_localisation_country->getCountry($this->config->get('config_country_id'));
 			
-			$setting['payment_paypal_setting']['general']['country_code'] = $country['iso_code_2'];
-									
+				$setting['payment_paypal_setting']['general']['country_code'] = $country['iso_code_2'];
+			}
+												
 			$currency_code = $this->config->get('config_currency');
 			$currency_value = $this->currency->getValue($this->config->get('config_currency'));
 		
@@ -1811,6 +1834,24 @@ class PayPal extends \Opencart\System\Engine\Controller {
 				if (isset($result['id'])) {
 					$webhook_id = $result['id'];
 				}
+				
+				$result = $paypal->getSellerStatus($config_setting['partner'][$environment]['partner_id'], $merchant_id);
+						
+				$fastlane_status = false;
+			
+				if (!empty($result['capabilities'])) {
+					foreach ($result['capabilities'] as $capability) {
+						if (($capability['name'] == 'FASTLANE_CHECKOUT') && ($capability['status'] == 'ACTIVE')) {
+							$fastlane_status = true;
+						}
+					}
+				}
+			
+				$country_code = '';
+			
+				if (!empty($result['country'])) {
+					$country_code = $result['country'];
+				}
 			
 				if ($paypal->hasErrors()) {
 					$error_messages = [];
@@ -1852,13 +1893,18 @@ class PayPal extends \Opencart\System\Engine\Controller {
 					$setting['payment_paypal_setting']['general']['callback_token'] = $callback_token;
 					$setting['payment_paypal_setting']['general']['webhook_token'] = $webhook_token;
 					$setting['payment_paypal_setting']['general']['cron_token'] = $cron_token;
-									
-					$this->load->model('localisation/country');
+					$setting['payment_paypal_setting']['fastlane']['status'] = $fastlane_status;
+						
+					if (!empty($country_code)) {
+						$setting['payment_paypal_setting']['general']['country_code'] = $country_code;
+					} else {
+						$this->load->model('localisation/country');
 		
-					$country = $this->model_localisation_country->getCountry($this->config->get('config_country_id'));
+						$country = $this->model_localisation_country->getCountry($this->config->get('config_country_id'));
 			
-					$setting['payment_paypal_setting']['general']['country_code'] = $country['iso_code_2'];
-									
+						$setting['payment_paypal_setting']['general']['country_code'] = $country['iso_code_2'];
+					}
+																		
 					$currency_code = $this->config->get('config_currency');
 					$currency_value = $this->currency->getValue($this->config->get('config_currency'));
 		
