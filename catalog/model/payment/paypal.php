@@ -121,19 +121,31 @@ class PayPal extends \Opencart\System\Engine\Model {
 	}
 	
 	public function getCountry(int $country_id): array {
-		$query = $this->db->query("SELECT *, c.name FROM `" . DB_PREFIX . "country` c LEFT JOIN `" . DB_PREFIX . "address_format` af ON (`c`.`address_format_id` = `af`.`address_format_id`) WHERE `c`.`country_id` = '" . (int)$country_id . "' AND `c`.`status` = '1'");
-
+		if (version_compare(VERSION, '4.1.0.1', '>=')) {
+			$query = $this->db->query("SELECT *, cd.name FROM " . DB_PREFIX . "country c LEFT JOIN " . DB_PREFIX . "country_description cd ON (c.country_id = cd.country_id) LEFT JOIN " . DB_PREFIX . "address_format af ON (c.address_format_id = af.address_format_id) WHERE c.country_id = '" . (int)$country_id . "' AND cd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND c.status = '1'");
+		} else {
+			$query = $this->db->query("SELECT *, c.name FROM " . DB_PREFIX . "country c LEFT JOIN " . DB_PREFIX . "address_format af ON (c.address_format_id = af.address_format_id) WHERE c.country_id = '" . (int)$country_id . "' AND c.status = '1'");
+		}
+		
 		return $query->row;
 	}
 	
 	public function getCountryByCode(string $code): array {
-		$query = $this->db->query("SELECT *, c.name FROM " . DB_PREFIX . "country c LEFT JOIN " . DB_PREFIX . "address_format af ON (c.address_format_id = af.address_format_id) WHERE c.iso_code_2 = '" . $this->db->escape($code) . "' AND c.status = '1'");
+		if (version_compare(VERSION, '4.1.0.1', '>=')) {
+			$query = $this->db->query("SELECT *, cd.name FROM " . DB_PREFIX . "country c LEFT JOIN " . DB_PREFIX . "country_description cd ON (c.country_id = cd.country_id) LEFT JOIN " . DB_PREFIX . "address_format af ON (c.address_format_id = af.address_format_id) WHERE c.iso_code_2 = '" . $this->db->escape($code) . "' AND cd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND c.status = '1'");
+		} else {
+			$query = $this->db->query("SELECT *, c.name FROM " . DB_PREFIX . "country c LEFT JOIN " . DB_PREFIX . "address_format af ON (c.address_format_id = af.address_format_id) WHERE c.iso_code_2 = '" . $this->db->escape($code) . "' AND c.status = '1'");
+		}
 
 		return $query->row;
 	}
 	
 	public function getZoneByCode(int $country_id, string $code): array {
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "zone WHERE country_id = '" . (int)$country_id . "' AND (code = '" . $this->db->escape($code) . "' OR name = '" . $this->db->escape($code) . "') AND status = '1'");
+		if (version_compare(VERSION, '4.1.0.1', '>=')) {
+			$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "zone z LEFT JOIN " . DB_PREFIX . "zone_description zd ON (z.zone_id = zd.zone_id) WHERE z.country_id = '" . (int)$country_id . "' AND zd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND (z.code = '" . $this->db->escape($code) . "' OR zd.name = '" . $this->db->escape($code) . "') AND z.status = '1'");
+		} else {
+			$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "zone z WHERE z.country_id = '" . (int)$country_id . "' AND (z.code = '" . $this->db->escape($code) . "' OR z.name = '" . $this->db->escape($code) . "') AND z.status = '1'");
+		}
 		
 		return $query->row;
 	}
