@@ -1,6 +1,6 @@
 <?php 
 $_['paypal_setting'] = [
-	'version' => '3.2.2',
+	'version' => '3.2.3',
 	'partner' => [
 		'production' => [
 			'partner_id' => 'TY2Q25KP2PX9L',
@@ -16,6 +16,7 @@ $_['paypal_setting'] = [
 	'general' => [
 		'debug' => false,
 		'vault_status' => false,
+		'invoice_id_tokenization_status' => true,
 		'checkout_mode' => 'multi_button',
 		'checkout_route' => 'checkout/checkout',
 		'transaction_method' => 'capture',
