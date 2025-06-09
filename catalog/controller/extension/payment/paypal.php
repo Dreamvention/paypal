@@ -1112,7 +1112,12 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				
 				if ($page_code == 'checkout') {
 					$paypal_order_info['purchase_units'][0]['description'] = 'Your order ' . $order_info['order_id'];
-					$paypal_order_info['purchase_units'][0]['invoice_id'] = $order_info['order_id'] . '_' . date('Ymd_His');
+					
+					if ($setting['general']['invoice_id_tokenization_status']) {
+						$paypal_order_info['purchase_units'][0]['invoice_id'] = $order_info['order_id'] . '_' . date('Ymd_His');
+					} else {
+						$paypal_order_info['purchase_units'][0]['invoice_id'] = $order_info['order_id'];
+					}
 					
 					if ($this->cart->hasShipping()) {
 						$paypal_order_info['purchase_units'][0]['shipping'] = $shipping_info;
@@ -3140,11 +3145,19 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					'value' => 'Your order ' . $this->session->data['order_id']
 				);
 			
-				$paypal_order_info[] = array(
-					'op' => 'add',
-					'path' => '/purchase_units/@reference_id==\'default\'/invoice_id',
-					'value' => $this->session->data['order_id'] . '_' . date('Ymd_His')
-				);
+				if ($setting['general']['invoice_id_tokenization_status']) {
+					$paypal_order_info[] = array(
+						'op' => 'add',
+						'path' => '/purchase_units/@reference_id==\'default\'/invoice_id',
+						'value' => $this->session->data['order_id'] . '_' . date('Ymd_His')
+					);
+				} else {
+					$paypal_order_info[] = array(
+						'op' => 'add',
+						'path' => '/purchase_units/@reference_id==\'default\'/invoice_id',
+						'value' => $this->session->data['order_id']
+					);
+				}
 						
 				$shipping_info = array();
 
@@ -3745,7 +3758,12 @@ class ControllerExtensionPaymentPayPal extends Controller {
 				$paypal_order_info['purchase_units'][0]['items'] = $item_info;
 				$paypal_order_info['purchase_units'][0]['amount'] = $amount_info;
 				$paypal_order_info['purchase_units'][0]['description'] = 'Your order ' . $this->session->data['order_id'];
-				$paypal_order_info['purchase_units'][0]['invoice_id'] = $this->session->data['order_id'] . '_' . date('Ymd_His');
+				
+				if ($setting['general']['invoice_id_tokenization_status']) {
+					$paypal_order_info['purchase_units'][0]['invoice_id'] = $this->session->data['order_id'] . '_' . date('Ymd_His');
+				} else {
+					$paypal_order_info['purchase_units'][0]['invoice_id'] = $this->session->data['order_id'];
+				}
 					
 				if ($this->cart->hasShipping()) {
 					$paypal_order_info['purchase_units'][0]['shipping'] = $shipping_info;
@@ -5331,7 +5349,7 @@ class ControllerExtensionPaymentPayPal extends Controller {
 					}
 				}
 									
-				if (isset($webhook_event['resource']['invoice_id']) && !$errors) {
+				if (!empty($webhook_event['resource']['invoice_id']) && !$errors) {
 					$invoice_id = explode('_', $webhook_event['resource']['invoice_id']);
 					$order_id = reset($invoice_id);
 					
