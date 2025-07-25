@@ -5512,7 +5512,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 								$paypal_order_data['transaction_id'] = $transaction_id;
 							}
 
-							$this->model_extension_payapl_payment_paypal->editPayPalOrder($paypal_order_data);
+							$this->model_extension_paypal_payment_paypal->editPayPalOrder($paypal_order_data);
 						}
 						
 						if ($order_status_id && ($order_info['order_status_id'] != $order_status_id) && !in_array($order_info['order_status_id'], $setting['final_order_status'])) {
