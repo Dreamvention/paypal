@@ -1,6 +1,6 @@
 <?php 
 $_['paypal_setting'] = [
-	'version' => '3.2.4',
+	'version' => '3.2.5',
 	'partner' => [
 		'production' => [
 			'partner_id' => 'TY2Q25KP2PX9L',
@@ -392,6 +392,9 @@ $_['paypal_setting'] = [
 		],
 		'AU' => [
 			'code' => 'AU'
+		],
+		'CA' => [
+			'code' => 'CA'
 		]
 	],
 	'currency' => [

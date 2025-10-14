@@ -2155,7 +2155,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$this->model_setting_event->deleteEventByCode('paypal_extension_get_extension_by_code');
 		$this->model_setting_event->deleteEventByCode('paypal_order_delete_order');
 		$this->model_setting_event->deleteEventByCode('paypal_customer_delete_customer');
-		
+						
 		if (version_compare(VERSION, '4.0.2.0', '>=')) {
 			$this->model_setting_event->addEvent(['code' => 'paypal_order_info', 'description' => '', 'trigger' => 'admin/view/sale/order_info/before', 'action' => 'extension/paypal/payment/paypal.order_info_before', 'status' => true, 'sort_order' => 1]);
 			$this->model_setting_event->addEvent(['code' => 'paypal_content_top', 'description' => '', 'trigger' => 'catalog/controller/common/content_top/before', 'action' => 'extension/paypal/payment/paypal.content_top_before', 'status' => true, 'sort_order' => 2]);
@@ -2176,7 +2176,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$this->model_setting_event->addEvent('paypal_order_delete_order', '', 'catalog/model/checkout/order/deleteOrder/before', 'extension/paypal/payment/paypal|order_delete_order_before', true, 5);
 			$this->model_setting_event->addEvent('paypal_customer_delete_customer', '', 'admin/model/customer/customer/deleteCustomer/before', 'extension/paypal/payment/paypal|customer_delete_customer_before', true, 6);
 		}
-				
+						
 		$_config = new \Opencart\System\Engine\Config();
 		$_config->addPath(DIR_EXTENSION . 'paypal/system/config/');
 		$_config->load('paypal');
@@ -2205,7 +2205,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$this->model_setting_event->deleteEventByCode('paypal_extension_get_extension_by_code');
 		$this->model_setting_event->deleteEventByCode('paypal_order_delete_order');
 		$this->model_setting_event->deleteEventByCode('paypal_customer_delete_customer');
-		
+				
 		$this->load->model('setting/setting');
 		
 		$this->model_setting_setting->deleteSetting('paypal_version');
@@ -2225,7 +2225,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$this->model_setting_event->deleteEventByCode('paypal_extension_get_extension_by_code');
 		$this->model_setting_event->deleteEventByCode('paypal_order_delete_order');
 		$this->model_setting_event->deleteEventByCode('paypal_customer_delete_customer');
-		
+				
 		if (version_compare(VERSION, '4.0.2.0', '>=')) {
 			$this->model_setting_event->addEvent(['code' => 'paypal_order_info', 'description' => '', 'trigger' => 'admin/view/sale/order_info/before', 'action' => 'extension/paypal/payment/paypal.order_info_before', 'status' => true, 'sort_order' => 1]);
 			$this->model_setting_event->addEvent(['code' => 'paypal_content_top', 'description' => '', 'trigger' => 'catalog/controller/common/content_top/before', 'action' => 'extension/paypal/payment/paypal.content_top_before', 'status' => true, 'sort_order' => 2]);
@@ -2246,7 +2246,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 			$this->model_setting_event->addEvent('paypal_order_delete_order', '', 'catalog/model/checkout/order/deleteOrder/before', 'extension/paypal/payment/paypal|order_delete_order_before', true, 5);
 			$this->model_setting_event->addEvent('paypal_customer_delete_customer', '', 'admin/model/customer/customer/deleteCustomer/before', 'extension/paypal/payment/paypal|customer_delete_customer_before', true, 6);
 		}
-		
+			
 		if ($this->config->get('paypal_version') < '3.1.0') {			
 			$this->load->model('setting/setting');
 			
@@ -3417,7 +3417,7 @@ class PayPal extends \Opencart\System\Engine\Controller {
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($data));
 	}
-
+	
 	private function validate(): array|bool {
 		if (!$this->user->hasPermission('modify', 'extension/paypal/payment/paypal')) {
 			$this->error['warning'] = $this->language->get('error_permission');
