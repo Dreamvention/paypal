@@ -320,7 +320,7 @@ var PayPalAPI = (function () {
 			}
 			
 			$.each(paypal_data['card_customer_tokens'], function(index, card_customer_token) {
-				html = '<div class="paypal-card-token"><div type="button" class="btn card-token-button" index="' + index + '"><i class="card-icon card-icon-' + card_customer_token['card_type'] + '"></i><span class="card-number">' + card_customer_token['card_number'] + '</span></div><div type="button" class="btn card-token-delete-button" index="' + index + '"><i class="fas fa-trash"></i></div></div></div>';
+				html = '<div class="paypal-card-token"><div type="button" class="btn card-token-button"><i class="card-icon card-icon-' + card_customer_token['card_type'] + '"></i><span class="card-number">' + card_customer_token['card_number'] + '</span></div><div type="button" class="btn card-token-delete-button"><i class="fas fa-trash"></i></div></div></div>';
 					
 				$('#paypal_card_tokens_container').append(html);
 			});
@@ -330,7 +330,7 @@ var PayPalAPI = (function () {
 	
 				if (!$('#paypal_card_tokens_container').hasClass('disabled')) {
 					var paypal_card_token = $(this).parents('.paypal-card-token');
-					var card_token_index = $(this).attr('index');
+					var card_token_index = paypal_card_token.index();
 											
 					paypal_card_token.addClass('paypal-spinner');
 					$('#paypal_card_tokens_container').addClass('disabled');
@@ -353,7 +353,7 @@ var PayPalAPI = (function () {
 						
 				if (!$('#paypal_card_tokens_container').hasClass('disabled')) {
 					var paypal_card_token = $(this).parents('.paypal-card-token');
-					var card_token_index = $(this).attr('index');
+					var card_token_index = paypal_card_token.index();
 								
 					paypal_card_token.addClass('paypal-spinner');
 					$('#paypal_card_tokens_container').addClass('disabled');
