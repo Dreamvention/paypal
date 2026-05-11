@@ -111,7 +111,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 	}
 	
 	public function hasProductInCart(int $product_id, array $option = [], int $subscription_plan_id = 0): int {
-		if (version_compare(VERSION, '4.1.0', '>=')) {
+		if (version_compare((string)VERSION, '4.1.0', '>=')) {
 			$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "cart WHERE `store_id` = '" . (int)$this->config->get('config_store_id') . "' AND customer_id = '" . (int)$this->customer->getId() . "' AND session_id = '" . $this->db->escape($this->session->getId()) . "' AND product_id = '" . (int)$product_id . "' AND subscription_plan_id = '" . (int)$subscription_plan_id . "' AND `option` = '" . $this->db->escape(json_encode($option)) . "'");
 		} else {
 			$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "cart WHERE api_id = '" . (isset($this->session->data['api_id']) ? (int)$this->session->data['api_id'] : 0) . "' AND customer_id = '" . (int)$this->customer->getId() . "' AND session_id = '" . $this->db->escape($this->session->getId()) . "' AND product_id = '" . (int)$product_id . "' AND subscription_plan_id = '" . (int)$subscription_plan_id . "' AND `option` = '" . $this->db->escape(json_encode($option)) . "'");
@@ -121,7 +121,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 	}
 	
 	public function getCountry(int $country_id): array {
-		if (version_compare(VERSION, '4.1.0.1', '>=')) {
+		if (version_compare((string)VERSION, '4.1.0.1', '>=')) {
 			$query = $this->db->query("SELECT *, cd.name FROM " . DB_PREFIX . "country c LEFT JOIN " . DB_PREFIX . "country_description cd ON (c.country_id = cd.country_id) LEFT JOIN " . DB_PREFIX . "address_format af ON (c.address_format_id = af.address_format_id) WHERE c.country_id = '" . (int)$country_id . "' AND cd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND c.status = '1'");
 		} else {
 			$query = $this->db->query("SELECT *, c.name FROM " . DB_PREFIX . "country c LEFT JOIN " . DB_PREFIX . "address_format af ON (c.address_format_id = af.address_format_id) WHERE c.country_id = '" . (int)$country_id . "' AND c.status = '1'");
@@ -131,7 +131,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 	}
 	
 	public function getCountryByCode(string $code): array {
-		if (version_compare(VERSION, '4.1.0.1', '>=')) {
+		if (version_compare((string)VERSION, '4.1.0.1', '>=')) {
 			$query = $this->db->query("SELECT *, cd.name FROM " . DB_PREFIX . "country c LEFT JOIN " . DB_PREFIX . "country_description cd ON (c.country_id = cd.country_id) LEFT JOIN " . DB_PREFIX . "address_format af ON (c.address_format_id = af.address_format_id) WHERE c.iso_code_2 = '" . $this->db->escape($code) . "' AND cd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND c.status = '1'");
 		} else {
 			$query = $this->db->query("SELECT *, c.name FROM " . DB_PREFIX . "country c LEFT JOIN " . DB_PREFIX . "address_format af ON (c.address_format_id = af.address_format_id) WHERE c.iso_code_2 = '" . $this->db->escape($code) . "' AND c.status = '1'");
@@ -141,7 +141,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 	}
 	
 	public function getZoneByCode(int $country_id, string $code): array {
-		if (version_compare(VERSION, '4.1.0.1', '>=')) {
+		if (version_compare((string)VERSION, '4.1.0.1', '>=')) {
 			$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "zone z LEFT JOIN " . DB_PREFIX . "zone_description zd ON (z.zone_id = zd.zone_id) WHERE z.country_id = '" . (int)$country_id . "' AND zd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND (z.code = '" . $this->db->escape($code) . "' OR zd.name = '" . $this->db->escape($code) . "') AND z.status = '1'");
 		} else {
 			$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "zone z WHERE z.country_id = '" . (int)$country_id . "' AND (z.code = '" . $this->db->escape($code) . "' OR z.name = '" . $this->db->escape($code) . "') AND z.status = '1'");
@@ -396,7 +396,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 	}
 		
 	public function getSubscriptions(): array {
-		if (version_compare(VERSION, '4.0.2.0', '>=')) {
+		if (version_compare((string)VERSION, '4.0.2.0', '>=')) {
 			$query = $this->db->query("SELECT `s`.`subscription_id` FROM `" . DB_PREFIX . "subscription` `s` JOIN `" . DB_PREFIX . "order` `o` USING(`order_id`) WHERE `s`.`subscription_status_id` = '" . (int)$this->config->get('config_subscription_active_status_id') . "' AND DATE(`s`.`date_next`) <= NOW() AND `o`.`payment_method` LIKE '%paypal%'");
 		} else {
 			$query = $this->db->query("SELECT `s`.`subscription_id` FROM `" . DB_PREFIX . "subscription` `s` JOIN `" . DB_PREFIX . "order` `o` USING(`order_id`) WHERE `s`.`subscription_status_id` = '" . (int)$this->config->get('config_subscription_active_status_id') . "' AND DATE(`s`.`date_next`) <= NOW() AND `o`.`payment_code` = 'paypal'");
@@ -412,7 +412,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 	}
 	
 	public function getSubscriptionsByOrderId(int $order_id): array {
-		if (version_compare(VERSION, '4.0.2.0', '>=')) {
+		if (version_compare((string)VERSION, '4.0.2.0', '>=')) {
 			$query = $this->db->query("SELECT `s`.`subscription_id` FROM `" . DB_PREFIX . "subscription` `s` JOIN `" . DB_PREFIX . "order` `o` USING(`order_id`) WHERE `s`.`order_id` = '" . (int)$order_id . "' AND `o`.`payment_method` LIKE '%paypal%'");
 		} else {
 			$query = $this->db->query("SELECT `s`.`subscription_id` FROM `" . DB_PREFIX . "subscription` `s` JOIN `" . DB_PREFIX . "order` `o` USING(`order_id`) WHERE `s`.`order_id` = '" . (int)$order_id . "' AND `o`.`payment_code` = 'paypal'");
@@ -434,7 +434,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 	}
 	
 	public function addSubscriptionTransaction($data) {
-		if (version_compare(VERSION, '4.0.2.0', '<')) {
+		if (version_compare((string)VERSION, '4.0.2.0', '<')) {
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "subscription_transaction` SET `subscription_id` = '" . (int)$data['subscription_id'] . "', `order_id` = '" . (int)$data['order_id'] . "', `transaction_id` = '" . (int)$data['transaction_id'] . "', `amount` = '" . (float)$data['amount'] . "', `date_added` = NOW()");
 		}
 	}
@@ -528,7 +528,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 				
 					$subscription_name = '';
 				
-					if (version_compare(VERSION, '4.0.2.0', '>=')) {			
+					if (version_compare((string)VERSION, '4.0.2.0', '>=')) {			
 						$product_info = $this->model_catalog_product->getProduct($subscription['product_id']);
 
 						if ($product_info) {
@@ -783,7 +783,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 	}
 	
 	public function update(): void {
-		if (version_compare($this->config->get('paypal_version'), '3.1.0', '<')) {
+		if (version_compare((string)$this->config->get('paypal_version'), '3.1.0', '<')) {
 			$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_customer_token`");
 			$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "paypal_checkout_integration_order`");
 				
@@ -799,12 +799,12 @@ class PayPal extends \Opencart\System\Engine\Model {
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_order_delete_order'");
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'paypal_customer_delete_customer'");
 		
-		if (version_compare(VERSION, '4.0.2.0', '>=')) {
+		if (version_compare((string)VERSION, '4.0.2.0', '>=')) {
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_info', `description` = '', `trigger` = 'admin/view/sale/order_info/before', `action` = 'extension/paypal/payment/paypal.order_info_before', `status` = '1', `sort_order` = '1'");
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_content_top', `description` = '', `trigger` = 'catalog/controller/common/content_top/before', `action` = 'extension/paypal/payment/paypal.content_top_before', `status` = '1', `sort_order` = '2'");
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_delete_order', `description` = '', `trigger` = 'catalog/model/checkout/order/deleteOrder/before', `action` = 'extension/paypal/payment/paypal.order_delete_order_before', `status` = '1', `sort_order` = '3'");
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_customer_delete_customer', `description` = '', `trigger` = 'admin/model/customer/customer/deleteCustomer/before', `action` = 'extension/paypal/payment/paypal.customer_delete_customer_before', `status` = '1', `sort_order` = '4'");
-		} elseif (version_compare(VERSION, '4.0.1.0', '>=')) {
+		} elseif (version_compare((string)VERSION, '4.0.1.0', '>=')) {
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_order_info', `description` = '', `trigger` = 'admin/view/sale/order_info/before', `action` = 'extension/paypal/payment/paypal|order_info_before', `status` = '1', `sort_order` = '1'");
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_content_top', `description` = '', `trigger` = 'catalog/controller/common/content_top/before', `action` = 'extension/paypal/payment/paypal|content_top_before', `status` = '1', `sort_order` = '2'");
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_extension_get_extensions_by_type', `description` = '', `trigger` = 'catalog/model/setting/extension/getExtensionsByType/after', `action` = 'extension/paypal/payment/paypal|extension_get_extensions_by_type_after', `status` = '1', `sort_order` = '3'");
@@ -820,7 +820,7 @@ class PayPal extends \Opencart\System\Engine\Model {
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'paypal_customer_delete_customer', `description` = '', `trigger` = 'admin/model/customer/customer/deleteCustomer/before', `action` = 'extension/paypal/payment/paypal|customer_delete_customer_before', `status` = '1', `sort_order` = '6'");
 		}
 		
-		if (version_compare($this->config->get('paypal_version'), '3.1.0', '<')) {
+		if (version_compare((string)$this->config->get('paypal_version'), '3.1.0', '<')) {
 			$setting = array();
 			
 			$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "setting` WHERE store_id = '0' AND `key` = 'payment_paypal_setting'");
