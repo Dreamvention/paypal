@@ -5,12 +5,12 @@ class ControllerPaymentPayPal extends Controller {
 	public function __construct($registry) {
 		parent::__construct($registry);
 
-		if (version_compare(phpversion(), '7.1', '>=')) {
+		if (version_compare((string)phpversion(), '7.1', '>=')) {
 			ini_set('precision', 14);
 			ini_set('serialize_precision', 14);
 		}
 		
-		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && (version_compare($this->config->get('paypal_version'), '3.1.4', '<')))) {
+		if (empty($this->config->get('paypal_version')) || (!empty($this->config->get('paypal_version')) && (version_compare((string)$this->config->get('paypal_version'), '3.1.4', '<')))) {
 			$this->update();
 		}
 	}
