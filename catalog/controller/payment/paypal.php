@@ -1699,7 +1699,12 @@ class PayPal extends \Opencart\System\Engine\Controller {
 						$this->session->data['customer']['lastname'] = $customer_info['lastname'];
 						$this->session->data['customer']['email'] = $customer_info['email'];
 						$this->session->data['customer']['telephone'] = $customer_info['telephone'];
-						$this->session->data['customer']['custom_field'] = json_decode($customer_info['custom_field'], true);
+						
+						if (version_compare((string)VERSION, '4.1.0.0', '>=')) {
+							$this->session->data['customer']['custom_field'] = $customer_info['custom_field'];
+						} else {
+							$this->session->data['customer']['custom_field'] = json_decode($customer_info['custom_field'], true);
+						}
 					} else {
 						$this->session->data['customer']['customer_id'] = 0;
 						$this->session->data['customer']['customer_group_id'] = $this->config->get('config_customer_group_id');
